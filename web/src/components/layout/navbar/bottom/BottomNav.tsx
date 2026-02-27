@@ -14,9 +14,9 @@ export const BottomNavbar: React.FC = () => {
     const pathname = usePathname();
   return (
     <nav className="fixed lg:hidden bottom-0 w-full bg-white border-t border-gray-200 pt-1 px-4 z-50">
-      <div className="flex justify-between items-center max-w-md mx-auto">
+      <div className="flex justify-evenly items-center ">
         <Link
-          className={`flex flex-1 flex-col items-center justify-center gap-1 transition-colors py-2 ${
+          className={`flex flex-col items-center justify-center gap-1 transition-colors py-2 ${
             pathname === "/dashboard"
               ? "text-blue-500"
               : "text-gray-400 hover:text-blue-500"
@@ -27,7 +27,7 @@ export const BottomNavbar: React.FC = () => {
           <span className="text-[10px] font-medium">Dashboard</span>
         </Link>
         <Link
-          className={`flex flex-1 flex-col items-center justify-center gap-1 transition-colors py-2 ${
+          className={`flex flex-col items-center justify-center gap-1 transition-colors py-2 ${
             pathname === "/classes"
               ? "text-blue-500"
               : "text-gray-400 hover:text-blue-500"
@@ -38,7 +38,7 @@ export const BottomNavbar: React.FC = () => {
           <span className="text-[10px] font-medium">Classes</span>
         </Link>
         <Link
-          className="flex flex-1 flex-col items-center justify-center"
+          className="flex flex-col items-center justify-center"
           href="/add-class"
         >
           <div className="-translate-y-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/40 transition-transform hover:scale-105 active:scale-95">
@@ -46,7 +46,7 @@ export const BottomNavbar: React.FC = () => {
           </div>
         </Link>
         <Link
-          className={`flex flex-1 flex-col items-center justify-center gap-1 transition-colors py-2 ${
+          className={`flex flex-col items-center justify-center gap-1 transition-colors py-2 ${
             pathname === "/notifications"
               ? "text-blue-500"
               : "text-gray-400 hover:text-blue-500"
@@ -57,7 +57,7 @@ export const BottomNavbar: React.FC = () => {
           <span className="text-[10px] font-medium">Notifications</span>
         </Link>
         <Link 
-          className={`flex flex-1 flex-col items-center justify-center gap-1 py-2 ${
+          className={`flex flex-col items-center justify-center gap-1 transition-colors py-2 ${
             pathname === "/profile"
               ? "text-blue-500"
               : "text-gray-400 hover:text-blue-500"
