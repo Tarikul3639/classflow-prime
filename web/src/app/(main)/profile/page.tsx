@@ -93,7 +93,7 @@ const ProfileSettings: React.FC = () => {
                         Full Name
                       </label>
                       <input
-                        className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                        className="w-full bg-slate-50 border border-slate-200 outline-none rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary transition-all"
                         type="text"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
@@ -104,7 +104,7 @@ const ProfileSettings: React.FC = () => {
                         Email Address
                       </label>
                       <input
-                        className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                        className="w-full bg-slate-50 border border-slate-200 outline-none rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary transition-all"
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -115,7 +115,7 @@ const ProfileSettings: React.FC = () => {
                         Bio
                       </label>
                       <textarea
-                        className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-all resize-none"
+                        className="w-full bg-slate-50 border border-slate-200 outline-none rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary transition-all resize-none"
                         rows={3}
                         value={bio}
                         onChange={(e) => setBio(e.target.value)}
@@ -126,10 +126,10 @@ const ProfileSettings: React.FC = () => {
 
                 {/* Logout Button */}
                 <div className="mt-8">
-                  <button className="w-full border-2 border-red-500/20 text-red-500 rounded-lg py-2.5 px-4 font-bold text-sm hover:bg-red-500 hover:text-white transition-all flex items-center justify-center gap-2 group">
+                  <button className="w-full border-2 border-red-500/20 text-red-500 rounded-lg py-2.5 px-4 font-bold text-sm hover:bg-red-500 hover:text-white transition-all flex items-center justify-center gap-2 group cursor-pointer">
                     <LogOut
                       size={16}
-                      className="group-hover:rotate-12 transition-transform duration-300"
+                      className="group-hover:rotate-12 transition-transform duration-300 group-hover:text-white"
                     />
                     Log Out
                   </button>
