@@ -3,13 +3,13 @@
 import React, { useState } from "react";
 import {
   ArrowLeft,
-  Bell,
   Search,
   GraduationCap,
   Users,
   Copy,
   Plus,
 } from "lucide-react";
+import Link from "next/link";
 
 // Types
 interface ClassItem {
@@ -47,7 +47,7 @@ const Classes: React.FC = () => {
       avatar:
         "https://lh3.googleusercontent.com/aida-public/AB6AXuBWjfyC45SiOxiHCiYxJBYfJWPoz4gipczWkq4afrlMljef2yRNmCTq9TOkKIs9PSCI2Jy7XGRkDLkgYhCPygbjvRh8r0wqzENwKWnQf88zCChwkbbafylrxC6Tn6L5GG6eU85CNdvuZml3Js5NK_V_q-KLiJXSDBaK1kzBM-pfqGJF0KI9zux6NnKUAYhB2ltRnJ470wPpTNaj2BFdb5Jib_9o95IQeB4qI3SMMRF2Rq06fFwVmT6tMjhW_yclTlkHlp9fdPcYMg",
       badgeBg: "bg-blue-50",
-      badgeText: "text-blue-600",
+      badgeText: "text-pribg-primary",
     },
     {
       id: "2",
@@ -99,10 +99,10 @@ const Classes: React.FC = () => {
       {/* Sticky Header */}
       <header className="sticky top-0 z-10 bg-slate-50 border-b border-slate-200">
         <div className="px-4 lg:px-8 pt-4 pb-4">
-          <div className="flex items-center gap-3 max-w-7xl mx-auto mb-4">
-            <button className="group flex items-center justify-center p-2 rounded-lg hover:bg-white transition-colors border border-slate-200 bg-white cursor-pointer hover:border-blue-600/30">
+          <div className="flex items-center gap-3 mx-auto mb-4">
+            <button className="group flex items-center justify-center p-2 rounded-lg hover:bg-white transition-colors border border-slate-200 bg-white cursor-pointer hover:border-primary/30">
               <ArrowLeft
-                className="text-slate-900 group-hover:text-blue-600 group-hover:-translate-x-0.5 transition-all duration-200"
+                className="text-slate-900 group-hover:text-primary group-hover:-translate-x-0.5 transition-all duration-200"
                 size={18}
               />
             </button>
@@ -114,20 +114,20 @@ const Classes: React.FC = () => {
                 {classes.length} classes enrolled
               </p>
             </div>
-            <button className="hidden md:flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors shadow-sm">
+            <button className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors shadow-sm cursor-pointer">
               <Plus size={18} />
               <span>Create Class</span>
             </button>
           </div>
 
           {/* Search Bar */}
-          <div className="max-w-7xl mx-auto">
+          <div className="mx-auto">
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Search className="text-slate-400" size={18} />
               </div>
               <input
-                className="block w-full pl-10 pr-3 py-2.5 border border-slate-200 rounded-lg bg-white text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all text-sm"
+                className="block w-full rounded-xl border-none bg-slate-200 py-2.5 pl-10 pr-4 text-sm text-slate-900 placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-primary transition-all"
                 placeholder="Search by class name or code..."
                 type="text"
                 value={searchQuery}
@@ -139,15 +139,15 @@ const Classes: React.FC = () => {
 
         {/* Filter Chips */}
         <div className="px-4 lg:px-8 pb-4">
-          <div className="max-w-7xl mx-auto flex gap-2 overflow-x-auto no-scrollbar">
+          <div className="mx-auto flex gap-2 overflow-x-auto no-scrollbar">
             {filters.map((filter) => (
               <button
                 key={filter.id}
                 onClick={() => setActiveFilter(filter.id)}
-                className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all whitespace-nowrap ${
+                className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all whitespace-nowrap ${
                   activeFilter === filter.id
-                    ? "bg-slate-900 text-white shadow-sm"
-                    : "bg-white text-slate-600 border border-slate-200 hover:border-slate-300"
+                    ? "bg-primary text-white shadow-sm shadow-primary/20"
+                    : "bg-slate-200 text-slate-600 border border-transparent hover:border-slate-200"
                 }`}
               >
                 {filter.label}
@@ -159,10 +159,11 @@ const Classes: React.FC = () => {
 
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto pb-24 lg:pb-8">
-        <div className="max-w-7xl mx-auto px-4 lg:px-8 py-6">
+        <div className="mx-auto px-4 lg:px-8 py-6">
           <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {classes.map((classItem) => (
-              <div
+              <Link
+                href={`/classes/${classItem.id}/overview`}
                 key={classItem.id}
                 className="bg-white rounded-xl p-4 shadow-sm border border-slate-200 hover:shadow-md hover:border-slate-300 transition-all cursor-pointer"
               >
@@ -183,14 +184,17 @@ const Classes: React.FC = () => {
                   </div>
                   <img
                     alt={classItem.instructor}
-                    className="w-10 h-10 rounded-full object-cover border-2 border-slate-100 flex-shrink-0 ml-2"
+                    className="w-10 h-10 rounded-full object-cover border-2 border-slate-100 shrink-0 ml-2"
                     src={classItem.avatar}
                   />
                 </div>
 
                 {/* Instructor Info */}
                 <div className="flex items-center gap-1.5 mb-3 pb-3 border-b border-slate-100">
-                  <GraduationCap className="text-slate-400 flex-shrink-0" size={14} />
+                  <GraduationCap
+                    className="text-slate-400 shrink-0"
+                    size={14}
+                  />
                   <span className="text-xs text-slate-600 truncate">
                     {classItem.instructor}
                   </span>
@@ -215,33 +219,16 @@ const Classes: React.FC = () => {
                       {classItem.classCode}
                     </span>
                     <Copy
-                      className="text-slate-400 group-hover:text-blue-600 transition-colors"
+                      className="text-slate-400 group-hover:text-pribg-primary transition-colors"
                       size={13}
                     />
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </main>
         </div>
       </div>
-
-      {/* Mobile FAB */}
-      <div className="md:hidden fixed bottom-24 right-4 z-30">
-        <button className="flex items-center justify-center w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg shadow-blue-600/40 hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all">
-          <Plus size={24} />
-        </button>
-      </div>
-
-      <style jsx>{`
-        .no-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .no-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
     </div>
   );
 };

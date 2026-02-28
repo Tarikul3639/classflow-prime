@@ -156,7 +156,7 @@ const Notifications: React.FC = () => {
       {/* Sticky Header */}
       <header className="sticky top-0 z-10 bg-slate-50 border-b border-slate-200">
         <div className="px-4 lg:px-8 pt-4 pb-4">
-          <div className="flex items-center gap-3 max-w-7xl mx-auto">
+          <div className="flex items-center gap-3 mx-auto">
             <button className="group flex items-center justify-center p-2 rounded-lg hover:bg-white transition-colors border border-slate-200 bg-white cursor-pointer hover:border-primary/30">
               <ArrowLeft
                 className="text-slate-900 group-hover:text-primary group-hover:-translate-x-0.5 transition-all duration-200"
@@ -182,12 +182,12 @@ const Notifications: React.FC = () => {
 
         {/* Filter Chips */}
         <div className="px-4 lg:px-8 pb-4">
-          <div className="max-w-7xl mx-auto flex gap-2 overflow-x-auto no-scrollbar">
+          <div className="mx-auto flex gap-2 overflow-x-auto no-scrollbar">
             {filters.map((filter) => (
               <button
                 key={filter.id}
                 onClick={() => setActiveFilter(filter.id)}
-                className={`flex-shrink-0 px-4 md:px-5 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-semibold transition-all whitespace-nowrap ${
+                className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all whitespace-nowrap ${
                   activeFilter === filter.id
                     ? "bg-primary text-white shadow-sm shadow-primary/20"
                     : "bg-slate-200 text-slate-600 border border-transparent hover:border-slate-200"
@@ -202,7 +202,7 @@ const Notifications: React.FC = () => {
 
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto pb-24 lg:pb-8">
-        <div className="max-w-7xl mx-auto px-4 lg:px-8 py-6">
+        <div className="mx-auto px-4 lg:px-8 py-6">
           <main className="space-y-8">
             {Object.entries(groupedNotifications).map(
               ([dateKey, dateNotifications]) => (
@@ -229,7 +229,7 @@ const Notifications: React.FC = () => {
                         >
                           {/* Icon or Avatar */}
                           {notification.avatar ? (
-                            <div className="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden border border-slate-100">
+                            <div className="shrink-0 w-12 h-12 rounded-full overflow-hidden border border-slate-100">
                               <img
                                 alt={notification.title}
                                 className="w-full h-full object-cover"
@@ -238,7 +238,7 @@ const Notifications: React.FC = () => {
                             </div>
                           ) : (
                             <div
-                              className={`flex-shrink-0 w-12 h-12 rounded-lg ${notification.iconBg} flex items-center justify-center ${notification.iconColor}`}
+                              className={`shrink-0 w-12 h-12 rounded-lg ${notification.iconBg} flex items-center justify-center ${notification.iconColor}`}
                             >
                               <Icon size={24} />
                             </div>
@@ -251,7 +251,7 @@ const Notifications: React.FC = () => {
                                 {notification.title}
                               </h3>
                               {!notification.isRead && (
-                                <div className="h-2 w-2 rounded-full bg-primary mt-1.5 flex-shrink-0" />
+                                <div className="h-2 w-2 rounded-full bg-primary mt-1.5 shrink-0" />
                               )}
                             </div>
                             <p className="text-sm text-slate-600 mt-1 line-clamp-2">

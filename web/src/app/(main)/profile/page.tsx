@@ -27,10 +27,10 @@ const ProfileSettings: React.FC = () => {
     <div className="flex flex-col min-h-screen bg-slate-50">
       {/* Sticky Header */}
       <header className="sticky top-0 z-10 bg-slate-50 pb-4 pt-4 px-4 lg:px-8 border-b border-slate-200">
-        <div className="flex items-center gap-3 max-w-7xl mx-auto">
-          <button className="group flex items-center justify-center p-2 rounded-lg hover:bg-white transition-colors border border-slate-200 bg-white cursor-pointer hover:border-blue-600/30">
+        <div className="flex items-center gap-3 mx-auto">
+          <button className="group flex items-center justify-center p-2 rounded-lg hover:bg-white transition-colors border border-slate-200 bg-white cursor-pointer hover:border-primary/30">
             <ArrowLeft
-              className="text-slate-900 group-hover:text-blue-600 group-hover:-translate-x-0.5 transition-all duration-200"
+              className="text-slate-900 group-hover:text-primary group-hover:-translate-x-0.5 transition-all duration-200"
               size={18}
             />
           </button>
@@ -42,7 +42,7 @@ const ProfileSettings: React.FC = () => {
               Manage your account settings and class preferences.
             </p>
           </div>
-          <button className="flex bg-blue-600 text-white px-4 lg:px-5 py-2 lg:py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20">
+          <button className="flex bg-primary text-white px-4 lg:px-5 py-2 lg:py-2.5 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20">
             Save <span className="ml-1 hidden md:inline">Changes</span>
           </button>
         </div>
@@ -50,7 +50,7 @@ const ProfileSettings: React.FC = () => {
 
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto pb-24 lg:pb-8">
-        <div className="max-w-7xl mx-auto px-4 lg:px-8 py-6">
+        <div className="mx-auto px-4 lg:px-8 py-6">
           {/* Content Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Left Column - Profile Info */}
@@ -66,7 +66,7 @@ const ProfileSettings: React.FC = () => {
                           "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBfpo-xwmdOuSDI11UFt6Uo-zfOAy0Arx84Ltb0WBcuo7hd6utRBeV68VO53qJ2K_2wLk79hF5M0zFDzC_0OVL8mkdBPcvkIWi4f5DA-obHsl5ApQ9Y9n2aDJmfy-TJOvmTvNmQCSqayLMtIrc0LYIiilkEyWdjn_HnZPOSXzqB1c7x69bka7oB3xaF-RmiadEcUbY4C9MPWnu6UgasrRPBIkkbv0G9ejPS6E399yybBWRW2TtyMPZd7_-yOmvsBZ2KuGhtRJl1R7nO')",
                       }}
                     />
-                    <button className="absolute bottom-0 right-0 bg-blue-600 text-white p-1.5 rounded-full shadow-lg border-4 border-white hover:scale-110 transition-transform">
+                    <button className="absolute bottom-0 right-0 bg-primary text-white p-1.5 rounded-full shadow-lg border-4 border-white hover:scale-110 transition-transform">
                       <Edit size={14} />
                     </button>
                   </div>
@@ -76,7 +76,7 @@ const ProfileSettings: React.FC = () => {
                   <p className="text-slate-500 font-medium text-sm">
                     Student • Sophomore Year
                   </p>
-                  <div className="mt-3 flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-600 font-medium text-xs">
+                  <div className="mt-3 flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-primary font-medium text-xs">
                     <Verified size={14} />
                     alex.johnson@classflow.edu
                   </div>
@@ -93,7 +93,7 @@ const ProfileSettings: React.FC = () => {
                         Full Name
                       </label>
                       <input
-                        className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-all"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-all"
                         type="text"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
@@ -104,7 +104,7 @@ const ProfileSettings: React.FC = () => {
                         Email Address
                       </label>
                       <input
-                        className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-all"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-all"
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -115,7 +115,7 @@ const ProfileSettings: React.FC = () => {
                         Bio
                       </label>
                       <textarea
-                        className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-all resize-none"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-all resize-none"
                         rows={3}
                         value={bio}
                         onChange={(e) => setBio(e.target.value)}
@@ -145,7 +145,7 @@ const ProfileSettings: React.FC = () => {
                   <h3 className="text-base font-bold text-slate-900">
                     Joined Classes
                   </h3>
-                  <button className="text-blue-600 text-xs font-bold hover:underline">
+                  <button className="text-primary text-xs font-bold hover:underline">
                     Manage All
                   </button>
                 </div>
@@ -193,7 +193,7 @@ const ProfileSettings: React.FC = () => {
                   {/* Class 3 */}
                   <div className="flex items-center justify-between p-3 rounded-lg border border-slate-100 bg-slate-50/50 opacity-70">
                     <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600">
+                      <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center text-primary">
                         <BookOpen size={20} />
                       </div>
                       <div>
@@ -236,7 +236,7 @@ const ProfileSettings: React.FC = () => {
                     <button
                       onClick={() => setNotifications(!notifications)}
                       className={`relative inline-flex h-5 w-9 items-center rounded-full cursor-pointer transition-colors duration-200 ${
-                        notifications ? "bg-blue-600" : "bg-slate-200"
+                        notifications ? "bg-primary" : "bg-slate-200"
                       }`}
                     >
                       <span
@@ -265,7 +265,7 @@ const ProfileSettings: React.FC = () => {
                     <button
                       onClick={() => setDarkMode(!darkMode)}
                       className={`relative inline-flex h-5 w-9 items-center rounded-full cursor-pointer transition-colors duration-200 ${
-                        darkMode ? "bg-blue-600" : "bg-slate-200"
+                        darkMode ? "bg-primary" : "bg-slate-200"
                       }`}
                     >
                       <span
@@ -291,7 +291,7 @@ const ProfileSettings: React.FC = () => {
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1.5 text-blue-600 font-semibold text-xs">
+                    <div className="flex items-center gap-1.5 text-primary font-semibold text-xs">
                       English (US)
                       <ChevronRight size={14} />
                     </div>
