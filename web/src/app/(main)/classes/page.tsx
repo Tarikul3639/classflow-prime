@@ -8,6 +8,8 @@ import {
   Users,
   Copy,
   Plus,
+  UserPlus,
+  BookOpen,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -99,25 +101,23 @@ const Classes: React.FC = () => {
       {/* Sticky Header */}
       <header className="sticky top-0 z-10 bg-slate-50 border-b border-slate-200">
         <div className="px-4 lg:px-8 pt-4 pb-4">
-          <div className="flex items-center gap-3 mx-auto mb-4">
-            <button className="group flex items-center justify-center p-2 rounded-lg hover:bg-white transition-colors border border-slate-200 bg-white cursor-pointer hover:border-primary/30">
-              <ArrowLeft
-                className="text-slate-900 group-hover:text-primary group-hover:-translate-x-0.5 transition-all duration-200"
-                size={18}
-              />
-            </button>
-            <div className="flex-1 min-w-0">
-              <h1 className="text-2xl font-bold tracking-tight text-slate-900 truncate">
-                Classes
-              </h1>
-              <p className="text-slate-500 text-sm truncate">
-                {classes.length} classes enrolled
-              </p>
+          <div className="flex items-center gap-4 flex-1 pb-4 min-w-0">
+            {/* Visual Anchor: A themed icon box */}
+            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 text-primary">
+              <BookOpen className="size-5.5" />
             </div>
-            <button className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors shadow-sm cursor-pointer">
-              <Plus size={18} />
-              <span>Create Class</span>
-            </button>
+
+            <div className="min-w-0">
+              <h1 className="text-xl font-bold tracking-tight text-slate-900 truncate">
+                My Classes
+              </h1>
+              <div className="flex items-center gap-2">
+                <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                <p className="text-slate-600 text-xs font-medium">
+                  {classes.length} active sessions
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* Search Bar */}

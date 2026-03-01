@@ -52,21 +52,24 @@ export default function ClassLayout({ children, params }: ClassLayoutProps) {
         <div className="flex items-center justify-between mx-auto">
           <div className="flex items-center gap-3">
             <button
-              onClick={() => router.push("/classes")}
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 hover:bg-slate-100 transition-colors"
+              onClick={router.back}
+              className="group flex items-center justify-center p-2 rounded-lg hover:bg-white transition-colors border border-slate-200 bg-white cursor-pointer hover:border-primary/30"
             >
-              <ArrowLeft className="text-slate-600" size={20} />
+              <ArrowLeft
+                className="text-slate-900 group-hover:text-primary group-hover:-translate-x-0.5 transition-all duration-200"
+                size={18}
+              />
             </button>
             <h1 className="text-lg font-bold text-slate-900">Class Details</h1>
           </div>
-          <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-50">
+          <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-50 cursor-pointer transition-colors">
             <Share2 className="text-slate-600" size={20} />
           </button>
         </div>
       </header>
 
       {/* Class Info Card - Hero Style */}
-      <div className="p-4  mx-auto w-full">
+      <div className="p-4 mx-auto w-full">
         <div className="relative h-64 w-full rounded-2xl overflow-hidden shadow-lg">
           <img
             alt="Class Background"
@@ -172,7 +175,7 @@ export default function ClassLayout({ children, params }: ClassLayoutProps) {
       </div>
 
       {/* Page Content */}
-      <div className="flex-1 overflow-y-auto pb-24 lg:pb-8">{children}</div>
+      <div className="flex-1 overflow-y-auto">{children}</div>
     </div>
   );
 }

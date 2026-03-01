@@ -6,6 +6,7 @@ import {
   Plus,
   Bell,
   User,
+  BookOpen,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -17,11 +18,11 @@ export const BottomNavbar: React.FC = () => {
       <div className="flex justify-evenly items-center ">
         <Link
           className={`flex flex-col items-center justify-center gap-1 transition-colors py-2 ${
-            pathname === "/dashboard"
-              ? "text-blue-500"
-              : "text-gray-400 hover:text-blue-500"
+            pathname === "/"
+              ? "text-primary"
+              : "text-gray-400 hover:text-primary"
           }`}
-          href="/dashboard"
+          href="/"
         >
           <LayoutDashboard size={24} />
           <span className="text-[10px] font-medium">Dashboard</span>
@@ -29,12 +30,12 @@ export const BottomNavbar: React.FC = () => {
         <Link
           className={`flex flex-col items-center justify-center gap-1 transition-colors py-2 ${
             pathname === "/classes"
-              ? "text-blue-500"
-              : "text-gray-400 hover:text-blue-500"
+              ? "text-primary"
+              : "text-gray-400 hover:text-primary"
           }`}
           href="/classes"
         >
-          <GraduationCap size={24} />
+          <BookOpen size={24} />
           <span className="text-[10px] font-medium">Classes</span>
         </Link>
         <Link
@@ -48,8 +49,8 @@ export const BottomNavbar: React.FC = () => {
         <Link
           className={`flex flex-col items-center justify-center gap-1 transition-colors py-2 ${
             pathname === "/notifications"
-              ? "text-blue-500"
-              : "text-gray-400 hover:text-blue-500"
+              ? "text-primary"
+              : "text-gray-400 hover:text-primary"
           }`}
           href="/notifications"
         >
@@ -59,8 +60,8 @@ export const BottomNavbar: React.FC = () => {
         <Link 
           className={`flex flex-col items-center justify-center gap-1 transition-colors py-2 ${
             pathname === "/profile"
-              ? "text-blue-500"
-              : "text-gray-400 hover:text-blue-500"
+              ? "text-primary"
+              : "text-gray-400 hover:text-primary"
           }`}
           href="/profile"
         >

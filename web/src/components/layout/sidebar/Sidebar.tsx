@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { LayoutDashboard, GraduationCap, Bell, User } from "lucide-react";
+import { LayoutDashboard, GraduationCap, Bell, User, BookOpen } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
@@ -32,9 +32,9 @@ export const Sidebar: React.FC = () => {
       id: "dashboard",
       label: "Dashboard",
       icon: LayoutDashboard,
-      href: "/dashboard",
+      href: "/",
     },
-    { id: "classes", label: "Classes", icon: GraduationCap, href: "/classes" },
+    { id: "classes", label: "Classes", icon: BookOpen, href: "/classes" },
     {
       id: "notifications",
       label: "Notifications",
@@ -104,7 +104,7 @@ export const Sidebar: React.FC = () => {
               <Icon
                 size={22}
                 strokeWidth={isActive ? 2.5 : 2}
-                className="flex-shrink-0"
+                className="shrink-0"
               />
               <AnimatePresence>
                 {isExpanded && (
@@ -128,7 +128,7 @@ export const Sidebar: React.FC = () => {
         <div className="px-6 py-4 border-t border-slate-200">
           <div className="flex items-center gap-3">
             <div
-              className="h-10 w-10 rounded-full bg-cover bg-center ring-2 ring-slate-100 flex-shrink-0"
+              className="h-10 w-10 rounded-full bg-cover bg-center ring-2 ring-slate-100 shrink-0"
               style={{
                 backgroundImage:
                   "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBfpo-xwmdOuSDI11UFt6Uo-zfOAy0Arx84Ltb0WBcuo7hd6utRBeV68VO53qJ2K_2wLk79hF5M0zFDzC_0OVL8mkdBPcvkIWi4f5DA-obHsl5ApQ9Y9n2aDJmfy-TJOvmTvNmQCSqayLMtIrc0LYIiilkEyWdjn_HnZPOSXzqB1c7x69bka7oB3xaF-RmiadEcUbY4C9MPWnu6UgasrRPBIkkbv0G9ejPS6E399yybBWRW2TtyMPZd7_-yOmvsBZ2KuGhtRJl1R7nO')",

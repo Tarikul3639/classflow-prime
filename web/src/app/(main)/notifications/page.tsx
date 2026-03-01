@@ -11,6 +11,7 @@ import {
   Award,
   Search,
   Bell,
+  BookOpen,
 } from "lucide-react";
 
 // Types
@@ -157,18 +158,17 @@ const Notifications: React.FC = () => {
       <header className="sticky top-0 z-10 bg-slate-50 border-b border-slate-200">
         <div className="px-4 lg:px-8 pt-4 pb-4">
           <div className="flex items-center gap-3 mx-auto">
-            <button className="group flex items-center justify-center p-2 rounded-lg hover:bg-white transition-colors border border-slate-200 bg-white cursor-pointer hover:border-primary/30">
-              <ArrowLeft
-                className="text-slate-900 group-hover:text-primary group-hover:-translate-x-0.5 transition-all duration-200"
-                size={18}
-              />
-            </button>
+            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 text-primary">
+              <Bell className="size-5.5" />
+            </div>
+
             <div className="flex-1 min-w-0">
-              <h1 className="text-2xl font-bold tracking-tight text-slate-900 truncate">
+              <h1 className="text-xl font-bold tracking-tight text-slate-900 truncate">
                 Notifications
               </h1>
-              <p className="text-slate-500 text-sm truncate">
-                You have {notifications.filter((n) => !n.isRead).length} new notifications
+              <p className="text-slate-500 text-xs truncate">
+                You have {notifications.filter((n) => !n.isRead).length} new
+                notifications
               </p>
             </div>
             <button
