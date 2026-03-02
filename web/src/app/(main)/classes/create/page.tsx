@@ -203,6 +203,21 @@ export default function CreateClassPage() {
                       ))}
                     </select>
                   </div>
+
+                  {/* About this class */}
+                  <div>
+                    <label
+                      className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2.5 ml-1"
+                      htmlFor="about"
+                    >
+                      About this class
+                    </label>
+                    <textarea
+                      className="w-full bg-slate-50 border border-slate-200 outline-none rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none h-24"
+                      id="about"
+                      placeholder="Add a brief description or notes about this class (optional)"
+                    />
+                  </div>
                 </div>
               </div>
             </div>

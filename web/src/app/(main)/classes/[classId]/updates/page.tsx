@@ -11,6 +11,8 @@ import {
   LucideIcon,
   Plus,
 } from "lucide-react";
+import router, { Router } from "next/router";
+import Link from "next/link";
 
 // Types
 interface Update {
@@ -168,16 +170,16 @@ export default function UpdatesPage({
         <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
           {filters.map((filter) => (
             <button
-                key={filter.id}
-                onClick={() => setActiveFilter(filter.id)}
-                className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all whitespace-nowrap ${
-                  activeFilter === filter.id
-                    ? "bg-primary text-white shadow-sm shadow-primary/20"
-                    : "bg-slate-200 text-slate-600 border border-transparent hover:border-slate-200"
-                }`}
-              >
-                {filter.label}
-              </button>
+              key={filter.id}
+              onClick={() => setActiveFilter(filter.id)}
+              className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all whitespace-nowrap ${
+                activeFilter === filter.id
+                  ? "bg-primary text-white shadow-sm shadow-primary/20"
+                  : "bg-slate-200 text-slate-600 border border-transparent hover:border-slate-200"
+              }`}
+            >
+              {filter.label}
+            </button>
           ))}
         </div>
       </div>
@@ -190,14 +192,19 @@ export default function UpdatesPage({
             <Plus className="text-primary" size={24} />
           </div>
           <div>
-            <h4 className="font-bold text-slate-900 text-base">Post New Update</h4>
+            <h4 className="font-bold text-slate-900 text-base">
+              Post New Update
+            </h4>
             <p className="text-sm text-slate-600 mt-1">
               Share announcements, assignments, or important information
             </p>
           </div>
-          <button className="mt-2 px-6 py-2.5 rounded-xl border border-primary/30 bg-white/50 text-primary font-bold text-sm hover:bg-blue-50 transition-colors flex items-center gap-2">
+          <Link
+            href={`/classes/${params.classId}/updates/1`}
+            className="mt-2 px-6 py-2.5 rounded-xl border border-primary/30 bg-white/50 text-primary font-bold text-sm hover:bg-blue-50 transition-colors flex items-center gap-2"
+          >
             <span>Create Update</span>
-          </button>
+          </Link>
         </div>
 
         {Object.entries(groupedUpdates).map(([dateKey, dateUpdates]) => (
@@ -297,16 +304,6 @@ export default function UpdatesPage({
           </div>
         ))}
       </div>
-
-      <style jsx>{`
-        .no-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .no-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
     </>
   );
 }

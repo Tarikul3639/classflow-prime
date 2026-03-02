@@ -14,6 +14,8 @@ import {
   ChevronRight,
   User,
 } from "lucide-react";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
 
 const ProfileSettings: React.FC = () => {
   const [fullName, setFullName] = useState("Alex Johnson");
@@ -86,39 +88,31 @@ const ProfileSettings: React.FC = () => {
                     Personal Information
                   </h3>
                   <div className="space-y-4">
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                        Full Name
-                      </label>
-                      <input
-                        className="w-full bg-slate-50 border border-slate-200 outline-none rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary transition-all"
-                        type="text"
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                        Email Address
-                      </label>
-                      <input
-                        className="w-full bg-slate-50 border border-slate-200 outline-none rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary transition-all"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                        Bio
-                      </label>
-                      <textarea
-                        className="w-full bg-slate-50 border border-slate-200 outline-none rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary transition-all resize-none"
-                        rows={3}
-                        value={bio}
-                        onChange={(e) => setBio(e.target.value)}
-                      />
-                    </div>
+                    <Input
+                      label="Full Name"
+                      description="This is the name that will be displayed on your profile and to your classmates."
+                      type="text"
+                      className="px-3 py-2 text-sm"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                    />
+                    <Input
+                      label="Email Address"
+                      description="Your registered email address. Contact support to change it."
+                      type="email"
+                      className="px-3 py-2 text-sm"
+                      value={email}
+                      disabled
+                    />
+                    {/* Textarea */}
+                    <Textarea
+                      label="Bio"
+                      placeholder="Tell us about yourself..."
+                      description="Maximum 500 characters"
+                      value={bio}
+                      rows={4}
+                      onChange={(e) => setBio(e.target.value)}
+                    />
                   </div>
                 </div>
 
