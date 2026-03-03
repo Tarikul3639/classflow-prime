@@ -63,11 +63,14 @@ export default function UpdatesPage({
       date: "today",
       eventDate: "Fri, Oct 29",
       eventTime: "11:59 PM",
-      attachment: {
-        name: "Lab_3_Guidelines_Final_v2.pdf",
-        size: "2.4 MB",
-        type: "pdf",
-      },
+      attachment: [
+        {
+          name: "Lab_3_Guidelines_Final_v2.pdf",
+          size: "2.4 MB",
+          url: "https://example.com/lab3-guidelines.pdf",
+          type: "pdf",
+        },
+      ],
     },
     {
       _id: "4",
@@ -117,10 +120,7 @@ export default function UpdatesPage({
 
       <div className="px-4 py-2 space-y-4 pb-8 mx-auto w-full">
         <CreateUpdateCard classId={params.classId} />
-        <UpdatesList
-          groupedUpdates={groupedUpdates}
-          dateLabels={dateLabels}
-        />
+        <UpdatesList groupedUpdates={groupedUpdates} dateLabels={dateLabels} />
       </div>
     </>
   );

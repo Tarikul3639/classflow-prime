@@ -10,6 +10,7 @@ import { MaterialsSection } from "./MaterialsSection";
 interface Attachment {
   _id: string;
   name: string;
+  size: string;
   url: string;
   type: string;
 }

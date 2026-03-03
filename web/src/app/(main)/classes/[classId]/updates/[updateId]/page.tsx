@@ -10,6 +10,7 @@ import { ProTip } from "./_components/ProTip";
 interface Attachment {
   _id: string;
   name: string;
+  size: string;
   url: string;
   type: string;
 }
@@ -46,6 +47,7 @@ export default function UpdateEditorPage({
       {
         _id: "1",
         name: "exam-syllabus.pdf",
+        size: "2.4 MB",
         url: "https://example.com/syllabus.pdf",
         type: "pdf",
       },

@@ -27,7 +27,7 @@ export interface Update {
     size: string;
     type: string;
     url?: string;
-  };
+  }[];
   engagement?: {
     avatars?: string[];
     commentCount?: number;

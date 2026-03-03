@@ -11,6 +11,7 @@ interface Attachment {
   type: string;
   url?: string;
 }
+[];
 
 interface Engagement {
   avatars?: string[];
@@ -28,7 +29,7 @@ interface UpdateCardProps {
   description: string;
   eventDate?: string;
   eventTime?: string;
-  attachment?: Attachment;
+  attachment?: Attachment[];
   engagement?: Engagement;
 }
 
@@ -60,7 +61,11 @@ export default function UpdateCard({
           <div>
             <h4 className="text-sm font-bold text-slate-900">{title}</h4>
             <p className="text-xs text-slate-500">
-              {courseCode} • {courseName}
+              <div className="flex items-center gap-1.5">
+                <span>
+                  {eventDate} • {eventTime}
+                </span>
+              </div>
             </p>
           </div>
         </div>
@@ -70,18 +75,21 @@ export default function UpdateCard({
       </div>
 
       {/* Event Date/Time Badge */}
-      {eventDate && eventTime && (
+      {/* {eventDate && eventTime && (
         <div className="flex items-center gap-1.5 text-primary text-xs font-semibold bg-blue-50 w-fit px-2.5 py-1 rounded-md">
           <Timer size={14} />
           <span>
             {eventDate} • {eventTime}
           </span>
         </div>
-      )}
+      )} */}
 
       <p className="text-sm text-slate-600 leading-relaxed">{description}</p>
 
-      {attachment && <UpdateAttachment attachment={attachment} />}
+      {attachment &&
+        attachment.map((att) => (
+          <UpdateAttachment key={att.name} attachment={att} />
+        ))}
 
       {/* {engagement && <UpdateEngagement engagement={engagement} />} */}
     </article>
