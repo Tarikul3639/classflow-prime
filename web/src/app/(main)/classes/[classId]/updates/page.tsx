@@ -31,13 +31,15 @@ export default function UpdatesPage({
       icon: BookOpen,
       iconBg: "bg-blue-100",
       iconColor: "text-primary",
-      title: "Chapter 5 Quiz Announcement",
-      courseCode: "CS-101",
-      courseName: "Advanced Mathematics",
+      title: "Chapter 5 Quiz",
+      courseCode: "MATH 203",
+      courseName: "Linear Algebra",
       description:
         "Reminder: The quiz on Chapter 5 will cover Eigenvalues and Eigenvectors. Please bring your calculators.",
       timestamp: "10:30 AM",
       date: "today",
+      eventDate: "Wed, Oct 27",
+      eventTime: "10:30 AM",
       engagement: {
         avatars: [
           "https://lh3.googleusercontent.com/aida-public/AB6AXuBf7mfhNK7lu-43GqULI3kmwF4p-wofl4sA54MdriW_v2aB5hqG_8VVoT9hv-cmAfMoOXWdg2A1OXZtGcaGfhRsAoOKb9tDZOqIg0SvI0-ATWchVQzlFZHu1Vkm_yR8H6rJbQv1FC6-5JN3kozaTpMLakt7wR3KHxCkZzWlel6A28j5gX_1Hykz27tDcSP8iYcak23nH7Tg_TBw1qQBnz0ctqH5czh_KyvtFL1xV7rJFoR6qe7OgPUUcViUN-5wJGHYWmfDwNYq2-G6",
@@ -53,12 +55,14 @@ export default function UpdatesPage({
       iconBg: "bg-purple-100",
       iconColor: "text-purple-600",
       title: "Lab Report Submission",
-      courseCode: "CS-101",
-      courseName: "Advanced Mathematics",
+      courseCode: "PHY 102",
+      courseName: "Physics II",
       description:
         "The submission portal for Lab 3 is now open. Deadline is extended to Friday midnight.",
       timestamp: "9:15 AM",
       date: "today",
+      eventDate: "Fri, Oct 29",
+      eventTime: "11:59 PM",
       attachment: {
         name: "Lab_3_Guidelines_Final_v2.pdf",
         size: "2.4 MB",
@@ -71,22 +75,18 @@ export default function UpdatesPage({
       icon: Megaphone,
       iconBg: "bg-green-100",
       iconColor: "text-green-600",
-      title: "Guest Lecture Tomorrow",
-      courseCode: "CS-101",
-      courseName: "Advanced Mathematics",
+      title: "Guest Lecture",
+      courseCode: "BUS 301",
+      courseName: "Business Ethics",
       description:
-        "Don't miss tomorrow's guest lecture by Dr. Sarah Jenkins from TechCorp. Attendance is mandatory.",
+        "Don't miss tomorrow's guest lecture by Mr. Sarah Jenkins from TechCorp. Attendance is mandatory.",
       timestamp: "Yesterday",
       date: "yesterday",
-      attachment: {
-        name: "Guest_Lecture_Slides",
-        size: "1.2 MB",
-        type: "link",
-      },
+      eventDate: "Thu, Oct 28",
+      eventTime: "2:00 PM",
     },
   ];
 
-  // Group updates by date
   const groupedUpdates = updates.reduce(
     (acc, update) => {
       const dateKey = update.date;
@@ -106,7 +106,6 @@ export default function UpdatesPage({
 
   return (
     <>
-      {/* Filters & Search */}
       <div className="p-4 flex flex-col gap-3 bg-slate-100/50 mx-auto w-full">
         <SearchBar value={searchQuery} onChange={setSearchQuery} />
         <FilterChips
@@ -116,10 +115,12 @@ export default function UpdatesPage({
         />
       </div>
 
-      {/* Updates Content */}
       <div className="px-4 py-2 space-y-4 pb-8 mx-auto w-full">
         <CreateUpdateCard classId={params.classId} />
-        <UpdatesList groupedUpdates={groupedUpdates} dateLabels={dateLabels} />
+        <UpdatesList
+          groupedUpdates={groupedUpdates}
+          dateLabels={dateLabels}
+        />
       </div>
     </>
   );

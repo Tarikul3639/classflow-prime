@@ -19,6 +19,8 @@ export interface Update {
   };
   timestamp: string;
   date: string;
+  eventDate?: string;
+  eventTime?: string;
   image?: string;
   attachment?: {
     name: string;

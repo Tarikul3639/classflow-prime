@@ -23,6 +23,8 @@ interface Update {
     initials?: string;
   };
   timestamp: string;
+  eventDate?: string;
+  eventTime?: string;
   date: string;
   image?: string;
   attachment?: {
@@ -56,20 +58,25 @@ export default function UpdatesList({
           ) : null}
 
           {/* Updates */}
-          {dateUpdates.map((update) => (
-            <UpdateCard
-              key={update._id}
-              icon={update.icon}
-              iconBg={update.iconBg}
-              iconColor={update.iconColor}
-              title={update.title}
-              courseCode={update.courseCode}
-              timestamp={update.timestamp}
-              description={update.description}
-              attachment={update.attachment}
-              engagement={update.engagement}
-            />
-          ))}
+          <div className="space-y-3">
+            {dateUpdates.map((update) => (
+              <UpdateCard
+                key={update._id}
+                icon={update.icon}
+                iconBg={update.iconBg}
+                iconColor={update.iconColor}
+                title={update.title}
+                courseCode={update.courseCode}
+                courseName={update.courseName}
+                timestamp={update.timestamp}
+                eventDate={update.eventDate}
+                eventTime={update.eventTime}
+                description={update.description}
+                attachment={update.attachment}
+                engagement={update.engagement}
+              />
+            ))}
+          </div>
         </div>
       ))}
     </>
