@@ -69,7 +69,7 @@ export default function ClassLayout({ children, params }: ClassLayoutProps) {
       </header>
 
       {/* Class Info Card - Hero Style */}
-      <div className="p-4 mx-auto w-full">
+      <div className="p-2 md:p-3 lg:p-4 mx-auto w-full">
         <div className="relative h-64 w-full rounded-2xl overflow-hidden shadow-lg">
           <img
             alt="Class Background"
@@ -126,7 +126,7 @@ export default function ClassLayout({ children, params }: ClassLayoutProps) {
       </div>
 
       {/* Sticky Tabs */}
-      <div className="sticky top-16 z-20 bg-slate-50/95 backdrop-blur-md border-b border-slate-200  mx-auto w-full">
+      <div className="sticky top-16 z-20 bg-slate-100 backdrop-blur-md border-b border-slate-200  mx-auto w-full">
         <div className="flex overflow-x-auto no-scrollbar px-4 relative">
           {tabs.map((tab) => {
             const active = isActiveTab(tab.href);
@@ -135,10 +135,10 @@ export default function ClassLayout({ children, params }: ClassLayoutProps) {
               <Link
                 key={tab.id}
                 href={tab.href}
-                className={`relative flex-none px-4 py-4 text-sm font-semibold transition-colors overflow-hidden ${
+                className={`relative flex-none px-4 py-4 text-[12px] md:text-[13px] lg:text-[14px] font-semibold transition-colors overflow-hidden ${
                   active
                     ? "text-primary font-bold"
-                    : "text-slate-500 hover:text-slate-900"
+                    : "text-slate-800 hover:text-slate-900"
                 }`}
               >
                 {tab.label}

@@ -60,7 +60,7 @@ export default function FacultyPage({ params }: { params: { classId: string } })
             Help complete the faculty directory for this class
           </p>
         </div>
-        <button className="mt-2 px-6 py-2.5 rounded-xl border border-primary/30 bg-white/50 text-primary font-bold text-sm hover:bg-blue-50 transition-colors flex items-center gap-2 cursor-pointer">
+        <button className="mt-2 px-4 py-2.5 rounded-lg border border-primary/30 bg-white/50 text-primary font-bold text-[11px] md:text-[12px] lg:text-[13px] hover:bg-blue-50 transition-colors flex items-center gap-2 cursor-pointer">
           <span>Suggest Faculty</span>
         </button>
       </div>
@@ -84,37 +84,37 @@ export default function FacultyPage({ params }: { params: { classId: string } })
               {faculty.avatar ? (
                 <img
                   alt={faculty.name}
-                  className="w-16 h-16 rounded-full object-cover border-2 border-blue-100"
+                  className="w-14 md:w-15 lg:w-16 h-14 md:h-15 lg:h-16 rounded-full object-cover border-2 border-blue-100"
                   src={faculty.avatar}
                 />
               ) : (
-                <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-primary font-bold text-xl border-2 border-blue-100">
+                <div className="w-14 md:w-15 lg:w-16 h-14 md:h-15 lg:h-16 rounded-full bg-blue-100 flex items-center justify-center text-primary font-bold text-xl border-2 border-blue-100">
                   {faculty.initials}
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <h3 className="text-base font-bold text-slate-900 leading-tight truncate">
+                <h3 className="text-[14px] md:text-[15px] lg:text-[16px] font-bold text-slate-900 leading-tight truncate">
                   {faculty.name}
                 </h3>
-                <p className="text-sm font-medium text-primary truncate">{faculty.title}</p>
+                <p className="text-[13px] md:text-[14px] lg:text-[15px] font-medium text-primary truncate">{faculty.title}</p>
                 <div className="flex items-center gap-1 mt-1 text-slate-500">
-                  <MapPin size={14} />
-                  <span className="text-xs truncate">{faculty.location}</span>
+                  <MapPin size={13} />
+                  <span className="text-[11px] md:text-[12px] lg:text-[13px] truncate">{faculty.location}</span>
                 </div>
               </div>
             </div>
 
             {/* Contact Info */}
-            <div className="grid grid-cols-1 gap-2 pt-2 border-t border-slate-200">
+            <div className="grid grid-cols-1 gap-1.5 md:gap-2 pt-2 border-t border-slate-200">
               <a
-                className="flex items-center gap-3 text-sm text-slate-600 hover:text-primary transition-colors"
+                className="flex items-center gap-3 text-[13px] md:text-[14px] lg:text-[15px] text-slate-600 hover:text-primary transition-colors"
                 href={`mailto:${faculty.email}`}
               >
                 <Mail size={16} className="shrink-0" />
                 <span className="truncate">{faculty.email}</span>
               </a>
               <a
-                className="flex items-center gap-3 text-sm text-slate-600 hover:text-primary transition-colors"
+                className="flex items-center gap-3 text-[13px] md:text-[14px] lg:text-[15px] text-slate-600 hover:text-primary transition-colors"
                 href={`tel:${faculty.phone}`}
               >
                 <Phone size={16} className="shrink-0" />

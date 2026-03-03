@@ -74,7 +74,7 @@ export default function GroupsPage({
             Help your classmates by sharing relevant group links
           </p>
         </div>
-        <button className="mt-2 px-6 py-2.5 rounded-xl border border-primary/30 bg-white/50 text-primary font-bold text-sm hover:bg-blue-50 transition-colors flex items-center gap-2 cursor-pointer">
+        <button className="mt-2 px-4 py-2.5 rounded-lg border border-primary/30 bg-white/50 text-primary font-bold text-[11px] md:text-[12px] lg:text-[13px] hover:bg-blue-50 transition-colors flex items-center gap-2 cursor-pointer">
           <span>Suggest Link</span>
         </button>
       </div>
@@ -99,14 +99,14 @@ export default function GroupsPage({
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-4">
                   <div
-                    className={`w-12 h-12 rounded-xl ${group.iconBg} flex items-center justify-center shrink-0`}
+                    className={`w-11 md:w-12 h-11 md:h-12 rounded-xl ${group.iconBg} flex items-center justify-center shrink-0`}
                   >
-                    <Icon className={group.iconColor} size={28} />
+                    <Icon className={`${group.iconColor} size-5 md:size-6`} />
                   </div>
                   <div>
-                    <h4 className="font-bold text-slate-900">{group.name}</h4>
+                    <h4 className="text-[14px] md:text-[15px] lg:text-[16px] font-bold text-slate-900">{group.name}</h4>
                     <p
-                      className={`text-xs font-medium ${group.platformColor} ${group.platformBg} px-2 py-0.5 rounded-md inline-block mt-1 uppercase tracking-tight`}
+                      className={`text-[10px] md:text-[11px] lg:text-[12px] font-medium ${group.platformColor} ${group.platformBg} px-2 py-0.5 rounded-md inline-block mt-1 uppercase tracking-tight`}
                     >
                       {group.platform}
                     </p>
@@ -115,12 +115,12 @@ export default function GroupsPage({
               </div>
 
               {/* Description */}
-              <p className="text-sm text-slate-600 leading-relaxed">
+              <p className="text-[12px] md:text-[13px] lg:text-[14px] text-slate-600 leading-relaxed">
                 {group.description}
               </p>
 
               {/* Join Button */}
-              <button className="w-full bg-primary hover:bg-primary/90 text-white text-sm font-semibold py-2.5 px-4 rounded-xl transition-all shadow-md shadow-blue-200 flex items-center justify-center gap-2 cursor-pointer">
+              <button className="w-full bg-primary hover:bg-primary/90 text-white text-[12px] md:text-[13px] lg:text-[14px] font-semibold py-2.5 px-4 rounded-lg transition-all shadow-md shadow-blue-200 flex items-center justify-center gap-2 cursor-pointer">
                 Join Group
                 <ExternalLink size={18} />
               </button>

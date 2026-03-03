@@ -39,7 +39,7 @@ export const UpdateEditorHeader = ({
               />
             </button>
             <h1 className="text-lg font-bold text-slate-900">
-              {isNew ? "Create Update" : "Edit Update"}
+              {isNew ? "Create" : "Edit"}
             </h1>
           </div>
 
@@ -70,7 +70,7 @@ export const UpdateEditorHeader = ({
                 <Save className="size-3.5 md:size-4 group-hover:scale-110 transition-transform" />
               )}
               <span className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.25em]">
-                {isLoading ? "Publishing..." : "Publish Update"}
+                {isLoading ? "Publishing..." : isNew ? "Publish" : "Update"}
               </span>
             </button>
           </div>

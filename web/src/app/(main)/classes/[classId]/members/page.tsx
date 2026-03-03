@@ -163,12 +163,12 @@ export default function MembersPage({
             {administrators.map((member) => (
               <div
                 key={member.id}
-                className="group flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-200 hover:border-primary/30 transition-all shadow-sm"
+                className="group flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-200 hover:border-primary/30 transition-all shadow-sm"
               >
                 <div className="relative">
                   <img
                     alt={member.name}
-                    className="w-10 h-10 rounded-full object-cover"
+                    className="w-11 h-11 rounded-full object-cover"
                     src={member.avatar}
                   />
                   {member.verified && (
@@ -182,10 +182,10 @@ export default function MembersPage({
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-bold truncate">{member.name}</p>
+                    <p className="text-[13px] md:text-[14px] lg:text-[15px] font-bold truncate">{member.name}</p>
                     {getRoleBadge(member.role)}
                   </div>
-                  <p className="text-xs text-slate-500 truncate">
+                  <p className="text-[12px] md:text-[13px] lg:text-[14px] text-slate-500 truncate">
                     {member.email}
                   </p>
                 </div>
@@ -209,27 +209,27 @@ export default function MembersPage({
             {students.map((member) => (
               <div
                 key={member.id}
-                className="group flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-200 hover:border-primary/30 transition-all shadow-sm"
+                className="group flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-200 hover:border-primary/30 transition-all shadow-sm"
               >
                 {member.avatar ? (
                   <img
                     alt={member.name}
-                    className="w-10 h-10 rounded-full object-cover"
+                    className="w-11 h-11 rounded-full object-cover"
                     src={member.avatar}
                   />
                 ) : (
                   <div
-                    className={`w-10 h-10 rounded-full ${member.avatarBg} flex items-center justify-center ${member.avatarText} font-bold text-sm`}
+                    className={`w-11 h-11 rounded-full ${member.avatarBg} flex items-center justify-center ${member.avatarText} font-bold text-sm`}
                   >
                     {member.initials}
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-bold truncate">{member.name}</p>
+                    <p className="text-[13px] md:text-[14px] lg:text-[15px] font-bold truncate">{member.name}</p>
                     {getRoleBadge(member.role)}
                   </div>
-                  <p className="text-xs text-slate-500 truncate">
+                  <p className="text-[12px] md:text-[13px] lg:text-[14px] text-slate-500 truncate">
                     {member.email}
                   </p>
                 </div>
