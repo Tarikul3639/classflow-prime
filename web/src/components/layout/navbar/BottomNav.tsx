@@ -40,7 +40,7 @@ export const BottomNavbar: React.FC = () => {
         </Link>
         <Link
           className="flex flex-col items-center justify-center"
-          href="/add-class"
+          href="/classes/create"
         >
           <div className="-translate-y-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/40 transition-transform hover:scale-105 active:scale-95">
             <Plus size={24} />

@@ -1,5 +1,5 @@
 import { Sidebar } from "@/components/layout/sidebar/Sidebar";
-import { BottomNavbar } from "@/components/layout/navbar/bottom/BottomNav";
+import { BottomNavbar } from "@/components/layout/navbar/BottomNav";
 
 export default function MainLayout({
   children,
@@ -12,9 +12,7 @@ export default function MainLayout({
       <Sidebar />
 
       {/* Main Content */}
-      <main className="flex-1 w-full">
-        {children}
-      </main>
+      <main className="flex-1 w-full">{children}</main>
 
       {/* Mobile Bottom Navbar */}
       <BottomNavbar />

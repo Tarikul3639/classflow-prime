@@ -41,6 +41,11 @@ export default function ClassLayout({ children, params }: ClassLayoutProps) {
       label: "Groups",
       href: `/classes/${params.classId}/groups`,
     },
+    {
+      id: "settings",
+      label: "Settings",
+      href: `/classes/${params.classId}/settings`,
+    }
   ];
 
   const isActiveTab = (href: string) => pathname === href;
