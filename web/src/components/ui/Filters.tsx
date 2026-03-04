@@ -7,25 +7,25 @@ interface Filter {
   label: string;
 }
 
-interface FilterChipsProps {
+interface FiltersProps {
   filters: Filter[];
-  activeFilter: string;
-  onFilterChange: (filterId: string) => void;
+  active: string;
+  onChange: (filterId: string) => void;
 }
 
-export default function FilterChips({
+export const Filters = ({
   filters,
-  activeFilter,
-  onFilterChange,
-}: FilterChipsProps) {
+  active,
+  onChange,
+}: FiltersProps) => {
   return (
     <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
       {filters.map((filter) => (
         <button
           key={filter.id}
-          onClick={() => onFilterChange(filter.id)}
+          onClick={() => onChange(filter.id)}
           className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all whitespace-nowrap ${
-            activeFilter === filter.id
+            active === filter.id
               ? "bg-primary text-white shadow-sm shadow-primary/20"
               : "bg-slate-200 text-slate-600 border border-transparent hover:border-slate-200"
           }`}
@@ -35,4 +35,4 @@ export default function FilterChips({
       ))}
     </div>
   );
-}
+};
