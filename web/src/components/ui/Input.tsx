@@ -43,7 +43,7 @@ export const Input = ({
       </div>
 
       {/* Error & Description */}
-      <div className="min-h-4">
+      <div className="min-h-0">
         {error ? (
           <div className="flex items-center gap-1 mt-1 animate-in fade-in slide-in-from-top-1">
             <AlertCircle size={12} className="text-red-500 shrink-0" />

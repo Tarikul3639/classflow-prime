@@ -1,8 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { IUser } from "@/redux/slices/auth/types";
 import { apiClient } from "@/lib/api/axios";
-import { extractErrorMessage } from "@/lib/utils/error.utils";
-import { offlineQueue } from "@/lib/api/offlineQueue";
+import { extractErrorMessage } from "@/lib/api/error.utils";
 
 interface SignInPayload {
   email: string;
@@ -37,9 +36,6 @@ export const signInThunk = createAsyncThunk<
       localStorage.setItem("access_token", access_token);
       localStorage.setItem("user_data", JSON.stringify(user));
       localStorage.setItem("auth_status", "authenticated");
-      
-      // Process any queued offline requests
-      offlineQueue.process();
     }
 
     return { user };

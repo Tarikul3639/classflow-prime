@@ -16,6 +16,8 @@ import Link from "next/link";
 import { signInThunk } from "@/redux/slices/auth/thunks/signInThunk";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/Input";
+
 interface SignInPayload {
   email: string;
   password: string;
@@ -76,10 +78,10 @@ const SignInPage: React.FC = () => {
             <div className="mx-auto mb-5 w-16 h-16 rounded-2xl bg-[#399aef]/10 flex items-center justify-center text-[#399aef]">
               <GraduationCap size={32} />
             </div>
-            <h1 className="text-[#0f172a] text-2xl font-extrabold tracking-tight">
+            <h1 className="text-[#0f172a] text-xl md:text-2xl font-extrabold tracking-tight">
               Welcome Back
             </h1>
-            <p className="text-[#475569] text-sm font-medium mt-1.5">
+            <p className="text-slate-600 text-xs md:text-sm font-medium mt-1.5">
               Log in to continue your academic journey.
             </p>
           </div>
@@ -108,63 +110,54 @@ const SignInPage: React.FC = () => {
           <form onSubmit={handleSignIn} className="space-y-5">
             <div className="space-y-4">
               {/* Email Field */}
-              <div className="space-y-1.5">
-                <label className="text-[#0f172a] text-xsm font-bold ml-1">
-                  Email Address
-                </label>
-                <div className="relative group">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 size-4 group-focus-within:text-[#399aef] transition-colors" />
-                  <input
-                    required
-                    type="email"
-                    placeholder="name@university.edu"
-                    className="w-full h-11 pl-11 pr-4 rounded-lg border border-slate-200 bg-white text-sm text-[#0f172a] font-medium focus:ring-4 focus:ring-[#399aef]/10 focus:border-[#399aef] outline-none transition-all placeholder:text-slate-400 placeholder:font-normal"
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
+              <Input
+                required
+                label="Email Address"
+                type="email"
+                placeholder="Enter your email"
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
+                icon={Mail}
+              />
 
               {/* Password Field */}
-              <div className="space-y-1.5">
-                <div className="flex justify-between items-center px-1">
-                  <label className="text-[#0f172a] text-xsm font-bold">
-                    Password
-                  </label>
-                  <Link
-                    href="/auth/forgot-password"
-                    className="text-[#399aef] text-xxsm font-bold hover:underline transition-colors"
-                  >
-                    Forgot Password?
-                  </Link>
-                </div>
-                <div className="relative group">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 size-4 group-focus-within:text-[#399aef] transition-colors" />
-                  <input
-                    required
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
-                    className="w-full h-11 pl-11 pr-12 rounded-lg border border-slate-200 bg-white text-sm text-[#0f172a] font-medium focus:ring-4 focus:ring-[#399aef]/10 focus:border-[#399aef] outline-none transition-all placeholder:text-slate-400 placeholder:font-normal"
-                    onChange={(e) =>
-                      setFormData({ ...formData, password: e.target.value })
-                    }
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#399aef] transition-colors"
-                  >
-                    {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
-                  </button>
-                </div>
+              <div className="relative">
+                <Link
+                  href="/forgot-password"
+                  className="absolute right-0 -top-0.5 text-[#399aef] text-[11px] md:text-[12px] font-bold  tracking-[0.1px] hover:underline transition-colors"
+                >
+                  Forgot Password?
+                </Link>
+
+                <Input
+                  required
+                  label="Password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your password"
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
+                  icon={Lock}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-3 top-8.5 md:top-9 text-gray-500 hover:text-gray-700 focus:outline-none"
+                >
+                  {showPassword ? (
+                    <EyeOff className="size-4 md:size-4.5" />
+                  ) : (
+                    <Eye className="size-4 md:size-4.5" />
+                  )}
+                </button>
               </div>
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
-              className="group w-full h-11 bg-[#399aef] text-white text-[14px] font-medium rounded-xl hover:bg-[#3289d6] shadow-lg shadow-blue-100/50 active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-4 disabled:opacity-50"
+              className="w-full py-3 md:py-3 bg-[#399aef] text-white text-xs md:text-sm font-medium rounded-lg md:rounded-xl hover:bg-[#3289d6] shadow-lg shadow-blue-100 active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-7 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <>
@@ -188,7 +181,7 @@ const SignInPage: React.FC = () => {
             <p className="text-[#64748b] text-xs sm:text-xxsm font-medium">
               Don&apos;t have an account?
               <Link
-                href="/auth/sign-up"
+                href="/sign-up"
                 className="text-[#399aef] font-bold hover:underline ml-1.5"
               >
                 Create Account
