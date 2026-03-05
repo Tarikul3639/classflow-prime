@@ -1,18 +1,11 @@
 "use client";
 import React from "react";
-import {
-  LayoutDashboard,
-  GraduationCap,
-  Plus,
-  Bell,
-  User,
-  BookOpen,
-} from "lucide-react";
+import { LayoutDashboard, Plus, Bell, User, BookOpen } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 
 export const BottomNavbar: React.FC = () => {
-    const pathname = usePathname();
+  const pathname = usePathname();
   return (
     <nav className="fixed lg:hidden bottom-0 w-full bg-white border-t border-gray-200 pt-1 px-4 z-50">
       <div className="flex justify-evenly items-center ">
@@ -57,7 +50,7 @@ export const BottomNavbar: React.FC = () => {
           <Bell size={24} />
           <span className="text-[10px] font-medium">Notifications</span>
         </Link>
-        <Link 
+        <Link
           className={`flex flex-col items-center justify-center gap-1 transition-colors py-2 ${
             pathname === "/profile"
               ? "text-primary"

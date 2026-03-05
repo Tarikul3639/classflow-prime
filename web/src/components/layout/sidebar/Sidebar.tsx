@@ -56,7 +56,7 @@ export const Sidebar: React.FC = () => {
     >
       {/* Logo Header */}
       <div className="px-5 py-5 border-b border-slate-200">
-        <Link href="/dashboard" className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-3">
           {/* Icon Container */}
           <div className="relative bg-linear-to-br from-[#399aef] to-[#2b8ad8] p-2 rounded-lg text-white shadow-lg group-hover:shadow-xl group-hover:shadow-blue-500/30 transition-all duration-300">
             <GraduationCap

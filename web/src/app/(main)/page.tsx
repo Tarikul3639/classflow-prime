@@ -109,7 +109,7 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
       <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-lg border-b border-slate-200 px-4 py-3">
-        <div className="flex items-center gap-4 max-w-7xl mx-auto">
+        <div className="flex items-center gap-4 mx-auto">
           {/* Left Side: Profile & Identity */}
           <div className="flex items-center gap-3">
             <div className="relative group cursor-pointer">
@@ -170,7 +170,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 gap-4 p-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-6">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
             return (
