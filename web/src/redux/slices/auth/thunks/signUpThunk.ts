@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { IUser } from "@/redux/slices/auth/types";
 import { apiClient } from "@/lib/api/axios";
-import { extractErrorMessage } from "@/lib/utils/error.utils";
+import { extractErrorMessage } from "@/lib/api/error.utils";
 
 interface SignUpPayload {
   name: string;
