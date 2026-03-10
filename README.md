@@ -1,1 +1,2 @@
 # classflow-prime
+This repository contains the code for ClassFlow Prime, a web application for managing and sharing educational resources. The project is organized into several directories, each containing specific components of the application.
