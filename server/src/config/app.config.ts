@@ -3,4 +3,5 @@ export default () => ({
   NODE_ENV: process.env.NODE_ENV || 'development',
   CORS_ORIGIN: process.env.CORS_ORIGIN || '*',
   APP_NAME: process.env.APP_NAME || 'ClassFlow-Prime',
+  FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:3000',
 });

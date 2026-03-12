@@ -4,6 +4,9 @@ import configs from './config';
 
 // Import the DatabaseModule
 import { DatabaseModule } from './database/database.module';
+import { AuthModule } from './modules/auth/auth.module';
+// import { SeedModule } from './database/seeds/seed.module';
+import { MailModule } from './modules/mail/mail.module';
 
 @Module({
   imports: [
@@ -13,8 +16,11 @@ import { DatabaseModule } from './database/database.module';
       envFilePath: ['src/.env', '.env'], // Load .env files
     }),
     DatabaseModule,
+    AuthModule,
+    // SeedModule,
+    MailModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }

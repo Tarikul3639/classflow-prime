@@ -20,12 +20,12 @@ export interface IUser {
 
   // Email Verification
   isEmailVerified: boolean;
-  emailVerificationToken?: string;
+  emailVerificationCode?: string;
   emailVerificationExpires?: Date;
   emailVerifiedAt?: Date;
 
   // Password Reset
-  passwordResetToken?: string;
+  passwordResetCode?: string;
   passwordResetExpires?: Date;
   passwordChangedAt?: Date;
   lastPasswordResetRequestAt?: Date;
@@ -62,10 +62,10 @@ export interface IUserDocument extends IUser, Document {
   isAccountLocked(): boolean;
   incrementFailedLoginAttempts(): Promise<void>;
   resetFailedLoginAttempts(): Promise<void>;
-  createEmailVerificationToken(): string;
-  createPasswordResetToken(): string;
-  verifyEmailToken(token: string): boolean;
-  verifyResetToken(token: string): boolean;
+  createEmailVerificationCode(): string;
+  createPasswordResetCode(): string;
+  verifyEmailCode(code: string): boolean;
+  verifyResetCode(code: string): boolean;
   resetPassword(newPassword: string): Promise<void>;
   addRefreshToken(token: string): Promise<void>;
   removeRefreshToken(token: string): Promise<void>;
@@ -74,6 +74,6 @@ export interface IUserDocument extends IUser, Document {
 // ==================== User Model Interface (Static Methods) ====================
 export interface IUserModel {
   findByEmail(email: string): Promise<IUserDocument | null>;
-  findByVerificationToken(token: string): Promise<IUserDocument | null>;
-  findByResetToken(token: string): Promise<IUserDocument | null>;
+  findByVerificationCode(code: string): Promise<IUserDocument | null>;
+  findByResetCode(code: string): Promise<IUserDocument | null>;
 }

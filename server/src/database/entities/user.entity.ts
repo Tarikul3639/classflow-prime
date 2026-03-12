@@ -35,7 +35,8 @@ interface IUserJSON {
   collection: 'users',
   toJSON: {
     virtuals: true,
-    transform: (_doc: Document, ret: IUserJSON) => { // Remove form Api response not from backend 
+    transform: (_doc: Document, ret: IUserJSON) => {
+      // Remove form Api response not from backend
       delete ret.password;
       delete ret.emailVerificationToken;
       delete ret.emailVerificationExpires;
@@ -109,7 +110,7 @@ export class User implements IUser {
   isEmailVerified: boolean;
 
   @Prop({ select: false })
-  emailVerificationToken?: string;
+  emailVerificationCode?: string; // 6-digit code instead of token
 
   @Prop({ select: false })
   emailVerificationExpires?: Date;
@@ -120,7 +121,7 @@ export class User implements IUser {
   // ==================== Password Reset ====================
 
   @Prop({ select: false })
-  passwordResetToken?: string;
+  passwordResetCode?: string; // 6-digit code instead of token
 
   @Prop({ select: false })
   passwordResetExpires?: Date;
@@ -181,12 +182,8 @@ export class User implements IUser {
 export const UserSchema = SchemaFactory.createForClass(User);
 
 // ==================== Indexes ====================
-UserSchema.index({ email: 1 });
-UserSchema.index({ username: 1 });
-UserSchema.index({ role: 1 });
-UserSchema.index({ status: 1 });
 UserSchema.index({ isEmailVerified: 1 });
-UserSchema.index({ emailVerificationToken: 1 });
+UserSchema.index({ emailVerificationCode: 1 });
 UserSchema.index({ passwordResetToken: 1 });
 UserSchema.index({ createdAt: -1 });
 
@@ -226,7 +223,7 @@ UserSchema.pre<UserDocument>('save', async function (next) {
   if (this.isModified('isEmailVerified') && this.isEmailVerified) {
     this.status = UserStatus.ACTIVE;
     this.emailVerifiedAt = new Date();
-    this.emailVerificationToken = undefined;
+    this.emailVerificationCode = undefined;
     this.emailVerificationExpires = undefined;
   }
 });
@@ -282,59 +279,47 @@ UserSchema.methods.resetFailedLoginAttempts = async function (): Promise<void> {
   await this.save();
 };
 
-// Create email verification token
-UserSchema.methods.createEmailVerificationToken = function (): string {
-  const crypto = require('crypto');
-  const verificationToken = crypto.randomBytes(32).toString('hex');
+// Create email verification code (6 digits)
+UserSchema.methods.createEmailVerificationCode = function (): string {
+  const verificationCode = Math.floor(
+    100000 + Math.random() * 900000,
+  ).toString();
 
-  this.emailVerificationToken = crypto
-    .createHash('sha256')
-    .update(verificationToken)
-    .digest('hex');
+  this.emailVerificationCode = verificationCode;
 
-  // Token expires in 24 hours
-  this.emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  // Code expires in 15 minutes
+  this.emailVerificationExpires = new Date(Date.now() + 15 * 60 * 1000);
 
-  return verificationToken;
+  return verificationCode;
 };
 
-// Create password reset token
-UserSchema.methods.createPasswordResetToken = function (): string {
-  const crypto = require('crypto');
-  const resetToken = crypto.randomBytes(32).toString('hex');
+// Create password reset code (6 digits)
+UserSchema.methods.createPasswordResetCode = function (): string {
+  // Generate 6-digit code
+  const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-  this.passwordResetToken = crypto
-    .createHash('sha256')
-    .update(resetToken)
-    .digest('hex');
+  this.passwordResetCode = resetCode;
 
-  // Token expires in 1 hour
-  this.passwordResetExpires = new Date(Date.now() + 60 * 60 * 1000);
+  // Code expires in 15 minutes
+  this.passwordResetExpires = new Date(Date.now() + 15 * 60 * 1000);
   this.lastPasswordResetRequestAt = new Date();
   this.passwordResetAttempts += 1;
 
-  return resetToken;
+  return resetCode;
 };
 
-// Verify email verification token
-UserSchema.methods.verifyEmailToken = function (token: string): boolean {
-  const crypto = require('crypto');
-  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
-
+// Verify email verification code
+UserSchema.methods.verifyEmailCode = function (code: string): boolean {
   return (
-    this.emailVerificationToken === hashedToken &&
+    this.emailVerificationCode === code &&
     this.emailVerificationExpires > new Date()
   );
 };
 
-// Verify password reset token
-UserSchema.methods.verifyResetToken = function (token: string): boolean {
-  const crypto = require('crypto');
-  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
-
+// Verify password reset code
+UserSchema.methods.verifyResetCode = function (code: string): boolean {
   return (
-    this.passwordResetToken === hashedToken &&
-    this.passwordResetExpires > new Date()
+    this.passwordResetCode === code && this.passwordResetExpires > new Date()
   );
 };
 
@@ -343,7 +328,7 @@ UserSchema.methods.resetPassword = async function (
   newPassword: string,
 ): Promise<void> {
   this.password = newPassword; // Will be hashed by pre-save middleware
-  this.passwordResetToken = undefined;
+  this.passwordResetCode = undefined;
   this.passwordResetExpires = undefined;
   this.passwordResetAttempts = 0;
   this.passwordChangedAt = new Date();
@@ -375,22 +360,16 @@ UserSchema.statics.findByEmail = function (email: string) {
   return this.findOne({ email: email.toLowerCase() });
 };
 
-UserSchema.statics.findByVerificationToken = function (token: string) {
-  const crypto = require('crypto');
-  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
-
+UserSchema.statics.findByVerificationCode = function (code: string) {
   return this.findOne({
-    emailVerificationToken: hashedToken,
+    emailVerificationCode: code,
     emailVerificationExpires: { $gt: new Date() },
   });
 };
 
-UserSchema.statics.findByResetToken = function (token: string) {
-  const crypto = require('crypto');
-  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
-
+UserSchema.statics.findByResetCode = function (code: string) {
   return this.findOne({
-    passwordResetToken: hashedToken,
+    passwordResetCode: code,
     passwordResetExpires: { $gt: new Date() },
   });
 };

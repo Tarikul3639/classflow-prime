@@ -17,6 +17,7 @@ import type {
 import { SignUpDto } from '../dto/signup.dto';
 import { IAuthTokens, ISignUpResponse } from '../interfaces/auth.interface';
 import { IJwtPayload } from '../interfaces/jwt-payload.interface';
+import { MailService } from 'src/modules/mail/services/mail.service'; // Assuming you have a MailService for sending emails
 
 /**
  * AuthService
@@ -35,7 +36,7 @@ export class AuthService {
     @InjectModel('User') private userModel: Model<IUserDocument> & IUserModel,
     private jwtService: JwtService,
     private configService: ConfigService,
-    // private mailService: MailService, // Assuming you have a MailService for sending emails
+    private mailService: MailService, // Assuming you have a MailService for sending emails
   ) {}
 
   // ==================== SIGNUP (User Registration) ====================
@@ -74,8 +75,8 @@ export class AuthService {
       avatarUrl,
     });
 
-    // Generate email verification token
-    const verificationToken = newUser.createEmailVerificationToken();
+    // Generate email verification code
+    const verificationCode = newUser.createEmailVerificationCode();
 
     // Save user to database
     await newUser.save();
@@ -86,13 +87,13 @@ export class AuthService {
     );
 
     // Send verification email (non-blocking)
-    // this.mailService
-    //   .sendVerificationEmail(newUser.email, newUser.firstName, verificationToken)
-    //   .catch((error) => {
-    //     this.logger.error(
-    //       `Failed to send verification email to ${newUser.email}: ${error.message}`,
-    //     );
-    //   });
+    this.mailService
+      .sendVerificationEmail(newUser.email, newUser.firstName, verificationCode)
+      .catch((error) => {
+        this.logger.error(
+          `Failed to send verification email to ${newUser.email}: ${error.message}`,
+        );
+      });
 
     // Generate authentication tokens
     const tokens = await this.generateTokens(newUser);
