@@ -7,6 +7,8 @@ import { ISignOutResponse } from '../interfaces/auth.interface';
 /**
  * SignOutService
  * Handles user sign-out logic
+ * - Removes specific refresh token OR
+ * - Removes all refresh tokens (sign out from all devices)
  */
 @Injectable()
 export class SignOutService {
@@ -21,7 +23,10 @@ export class SignOutService {
    * @returns Confirmation message
    * @throws NotFoundException if user does not exist
    */
-  async execute(userId: string, refreshToken?: string): Promise<ISignOutResponse> {
+  async execute(
+    userId: string,
+    refreshToken?: string,
+  ): Promise<ISignOutResponse> {
     this.logger.log(`Sign out request for user: ${userId}`);
 
     const user = await this.userModel.findById(userId).exec();
@@ -32,12 +37,18 @@ export class SignOutService {
     }
 
     if (refreshToken) {
+      // Remove specific refresh token
       await user.removeRefreshToken(refreshToken);
-      this.logger.log(`Refresh token removed for user: ${userId}`);
+      this.logger.log(
+        `Specific refresh token removed for user: ${userId}`,
+      );
     } else {
+      // Remove all refresh tokens (sign out from all devices)
       user.refreshTokens = [];
       await user.save();
-      this.logger.log(`All refresh tokens removed for user: ${userId}`);
+      this.logger.log(
+        `All refresh tokens removed for user: ${userId} (signed out from all devices)`,
+      );
     }
 
     return {

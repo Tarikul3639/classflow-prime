@@ -40,6 +40,9 @@ import { User, UserSchema } from 'src/database/entities/user.entity';
 // -------------------- MODULE DEFINITION ----------------
 // ------------------------------------------------------
 import { MailModule } from 'src/modules/mail/mail.module';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { LocalStrategy } from './strategies/local.strategy';
+import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 
 @Module({
     imports: [
@@ -72,6 +75,10 @@ import { MailModule } from 'src/modules/mail/mail.module';
         SignOutService,
         CurrentUserService,
         ValidateUserService,
+
+        JwtStrategy,
+        LocalStrategy,
+        JwtRefreshStrategy,
     ],
     exports: [AuthService],
 })

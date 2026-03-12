@@ -13,8 +13,8 @@ import { UserSanitizerService } from './user-sanitizer.service';
 
 /**
  * VerifyEmailService
- * Handles email verification with 6-digit code
- * - Validates verification code
+ * Handles email verification with email + 6-digit code
+ * - Validates email and verification code together
  * - Marks email as verified
  * - Activates user account
  * - Sends welcome email
@@ -27,27 +27,32 @@ export class VerifyEmailService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private mailService: MailService,
     private userSanitizer: UserSanitizerService,
-  ) {}
+  ) { }
 
   /**
-   * Verify user's email with 6-digit code
-   * @param verifyEmailDto - Contains 6-digit verification code
+   * Verify user's email with email + 6-digit code
+   * @param verifyEmailDto - Contains email and 6-digit verification code
    * @returns Success message and sanitized user data
    * @throws BadRequestException if code is invalid, expired, or already verified
    */
   async execute(verifyEmailDto: VerifyEmailDto): Promise<IVerifyEmailResponse> {
-    this.logger.log(`Email verification attempt with code: ${verifyEmailDto.code}`);
+    this.logger.log(
+      `Email verification attempt for: ${verifyEmailDto.email} with code: ${verifyEmailDto.code}`,
+    );
 
-    const { code } = verifyEmailDto;
+    const { email, code } = verifyEmailDto;
 
-    // 1. Find user by verification code (must not be expired)
+    // 1. Find user by email AND verification code (must not be expired)
     const user = await this.userModel.findOne({
+      email: email.toLowerCase(),
       emailVerificationCode: code,
       emailVerificationExpires: { $gt: new Date() },
     });
 
     if (!user) {
-      this.logger.warn(`Email verification failed: Invalid or expired code - ${code}`);
+      this.logger.warn(
+        `Email verification failed: Invalid or expired code for ${email} - Code: ${code}`,
+      );
       throw new BadRequestException(
         'Invalid or expired verification code. Please request a new one.',
       );
@@ -55,7 +60,9 @@ export class VerifyEmailService {
 
     // 2. Check if email is already verified
     if (user.isEmailVerified) {
-      this.logger.warn(`Email verification failed: Already verified - ${user.email}`);
+      this.logger.warn(
+        `Email verification failed: Already verified - ${user.email}`,
+      );
       throw new BadRequestException('Email is already verified');
     }
 
@@ -67,7 +74,9 @@ export class VerifyEmailService {
     user.emailVerificationExpires = undefined;
     await user.save();
 
-    this.logger.log(`Email verified successfully: ${user.email} (ID: ${user._id})`);
+    this.logger.log(
+      `Email verified successfully: ${user.email} (ID: ${user._id})`,
+    );
 
     // 4. Send welcome email (non-blocking, failure is OK)
     this.mailService

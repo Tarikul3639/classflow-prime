@@ -5,6 +5,10 @@ import { User, UserDocument } from '../../../database/entities/user.entity';
 import { ICurrentUserResponse } from '../interfaces/auth.interface';
 import { UserSanitizerService } from './user-sanitizer.service';
 
+/**
+ * CurrentUserService
+ * Retrieves current authenticated user's profile
+ */
 @Injectable()
 export class CurrentUserService {
   constructor(
@@ -13,7 +17,9 @@ export class CurrentUserService {
   ) {}
 
   /**
-   * Get current user by userId
+   * Get current user by ID
+   * @param userId - User's MongoDB ID
+   * @returns Sanitized user data
    */
   async execute(userId: string): Promise<ICurrentUserResponse> {
     const user = await this.userModel

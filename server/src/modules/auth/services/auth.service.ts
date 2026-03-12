@@ -42,6 +42,7 @@ export class AuthService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private signupService: SignUpService,
     private signinService: SignInService,
+    private signoutService: SignOutService,
     private verifyEmailService: VerifyEmailService,
     private resendVerificationService: ResendVerificationService,
     private currentUserService: CurrentUserService,
@@ -77,8 +78,7 @@ export class AuthService {
     userId: string,
     refreshToken?: string,
   ): Promise<ISignOutResponse> {
-    const signOutService = new SignOutService(this.userModel);
-    return signOutService.execute(userId, refreshToken);
+    return this.signoutService.execute(userId, refreshToken);
   }
 
   async getCurrentUser(userId: string): Promise<ICurrentUserResponse> {
