@@ -50,9 +50,9 @@ export interface IResendVerificationResponse {
 }
 
 /**
- * Logout response
+ * Sign out response
  */
-export interface ILogoutResponse {
+export interface ISignOutResponse {
   message: string;
 }
 

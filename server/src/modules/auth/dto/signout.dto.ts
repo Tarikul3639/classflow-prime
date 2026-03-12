@@ -3,15 +3,16 @@ import { IsString, IsOptional } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 /**
- * DTO for logout request
+ * DTO for sign out request
  * Refresh token is optional - if not provided, all tokens will be revoked
  */
-export class LogoutDto {
+export class SignOutDto {
   /**
    * Refresh token to revoke (optional)
    * If not provided, all refresh tokens will be revoked (logout from all devices)
    * @example eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
    */
+  
   @ApiPropertyOptional({
     description:
       'Refresh token to revoke. If not provided, logs out from all devices.',
