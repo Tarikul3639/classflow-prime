@@ -1,25 +1,21 @@
-import { IsString, IsNotEmpty, MinLength, Matches, Length } from 'class-validator';
+import { IsString, IsNotEmpty, MinLength, Matches } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 /**
- * DTO for password reset with 6-digit code
+ * DTO for changing password (logged-in users)
  */
-export class ResetPasswordDto {
+export class ChangePasswordDto {
   /**
-   * 6-digit password reset code sent to email
-   * @example 123456
+   * Current password
+   * @example CurrentP@ssw0rd
    */
   @ApiProperty({
-    example: '123456',
-    description: '6-digit password reset code',
-    minLength: 6,
-    maxLength: 6,
+    example: 'CurrentP@ssw0rd',
+    description: 'Current password',
   })
-  @IsString({ message: 'Reset code must be a string' })
-  @IsNotEmpty({ message: 'Reset code is required' })
-  @Length(6, 6, { message: 'Reset code must be exactly 6 digits' })
-  @Matches(/^\d{6}$/, { message: 'Reset code must be 6 digits' })
-  code: string;
+  @IsString({ message: 'Current password must be a string' })
+  @IsNotEmpty({ message: 'Current password is required' })
+  currentPassword: string;
 
   /**
    * New password

@@ -3,7 +3,17 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { join } from 'path';
+import { existsSync } from 'fs';
 import { MailService } from './services/mail.service';
+
+function resolveTemplateDir(): string {
+  const distPath = join(__dirname, 'templates');
+  const srcPath = join(process.cwd(), 'src', 'modules', 'mail', 'templates');
+  const distVerificationTemplate = join(distPath, 'verification.hbs');
+
+  // Prefer dist only when template files are actually present.
+  return existsSync(distVerificationTemplate) ? distPath : srcPath;
+}
 
 /**
  * MailModule
@@ -38,7 +48,7 @@ import { MailService } from './services/mail.service';
 
         // Template configuration
         template: {
-          dir: join(__dirname, 'templates'), // Template directory
+          dir: resolveTemplateDir(), // Works for both start:dev and dist builds
           adapter: new HandlebarsAdapter(), // Template engine
           options: {
             strict: true,

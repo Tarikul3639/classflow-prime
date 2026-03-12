@@ -68,8 +68,8 @@ export class User implements IUser {
   @Prop({ required: true, trim: true })
   firstName: string;
 
-  @Prop({ required: true, trim: true })
-  lastName: string;
+  @Prop({ required: false, trim: true })
+  lastName?: string;
 
   @Prop({ unique: true, sparse: true, trim: true })
   username?: string;
@@ -201,7 +201,7 @@ UserSchema.virtual('fullName').get(function (this: UserDocument) {
 });
 
 UserSchema.virtual('initials').get(function (this: UserDocument) {
-  return `${this.firstName.charAt(0)}${this.lastName.charAt(0)}`.toUpperCase();
+  return `${this.firstName.charAt(0)}${this.lastName?.charAt(0)}`.toUpperCase();
 });
 
 // ==================== Pre-save Middleware ====================

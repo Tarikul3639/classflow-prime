@@ -51,7 +51,7 @@ export class MailService {
             await this.mailerService.sendMail({
                 to: email,
                 subject: `Your Verification Code - ${this.appName}`,
-                template: './verification', // Uses templates/verification.hbs
+                template: 'verification',
                 context: {
                     name,
                     code, // Send 6-digit code
@@ -80,7 +80,7 @@ export class MailService {
             await this.mailerService.sendMail({
                 to: email,
                 subject: `Welcome to ${this.appName}!`,
-                template: './welcome', // Uses templates/welcome.hbs
+                template: 'welcome',
                 context: {
                     name,
                     dashboardUrl,
@@ -113,7 +113,7 @@ export class MailService {
             await this.mailerService.sendMail({
                 to: email,
                 subject: `Your Password Reset Code - ${this.appName}`,
-                template: './password-reset',
+                template: 'password-reset',
                 context: {
                     name,
                     code, // Send 6-digit code
@@ -147,7 +147,7 @@ export class MailService {
             await this.mailerService.sendMail({
                 to: email,
                 subject: `Your Password Has Been Changed - ${this.appName}`,
-                template: './password-changed',
+                template: '../templates/password-changed.hbs',
                 context: {
                     name,
                     appName: this.appName,
@@ -186,7 +186,7 @@ export class MailService {
             await this.mailerService.sendMail({
                 to,
                 subject,
-                template: `./${template}`,
+                template: `../templates/${template}.hbs`,
                 context: {
                     ...context,
                     appName: this.appName,

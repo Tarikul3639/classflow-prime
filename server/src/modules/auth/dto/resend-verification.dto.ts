@@ -3,16 +3,16 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 
 /**
- * DTO for forgot password request
+ * DTO for resending verification code
  */
-export class ForgotPasswordDto {
+export class ResendVerificationDto {
   /**
-   * Email address to send reset code
+   * Email address to resend verification code
    * @example john.doe@example.com
    */
   @ApiProperty({
     example: 'john.doe@example.com',
-    description: 'Email address to send reset code',
+    description: 'Email address to resend verification code',
   })
   @IsEmail({}, { message: 'Please provide a valid email address' })
   @IsNotEmpty({ message: 'Email is required' })

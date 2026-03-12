@@ -4,6 +4,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { PassportModule } from "@nestjs/passport";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { AuthService } from "./services/auth.service";
+import { AuthController } from "./controllers/auth.controller";
 import { User, UserSchema } from "src/database/entities/user.entity";
 import { MailModule } from "src/modules/mail/mail.module";
 
@@ -21,6 +22,7 @@ import { MailModule } from "src/modules/mail/mail.module";
             }),
         }),
     ],
+    controllers: [AuthController],
     providers: [AuthService],
     exports: [AuthService],
 })

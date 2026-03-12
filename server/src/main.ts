@@ -1,4 +1,4 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -6,6 +6,7 @@ import { AppModule } from './app.module';
 import helmet from 'helmet';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
+import { JwtAuthGuard } from './core/guards/jwt-auth.guard';
 
 async function bootstrap() {
   // const app = await NestFactory.create(AppModule);
@@ -54,6 +55,10 @@ async function bootstrap() {
       },
     }),
   );
+
+  // Apply JWT guard globally (routes need @Public() to bypass)
+  const reflector = app.get(Reflector);
+  app.useGlobalGuards(new JwtAuthGuard(reflector));
 
   // Swagger API Documentation (only in development)
   if (nodeEnv === 'development') {

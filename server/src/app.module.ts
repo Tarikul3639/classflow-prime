@@ -5,8 +5,10 @@ import configs from './config';
 // Import the DatabaseModule
 import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './modules/auth/auth.module';
-// import { SeedModule } from './database/seeds/seed.module';
+import { SeedModule } from './database/seeds/seed.module';
 import { MailModule } from './modules/mail/mail.module';
+import { NotificationModule } from './modules/notification/notification.module';
+import { ClassModule } from './modules/class/class.module';
 
 @Module({
   imports: [
@@ -17,8 +19,10 @@ import { MailModule } from './modules/mail/mail.module';
     }),
     DatabaseModule,
     AuthModule,
-    // SeedModule,
+    SeedModule,
     MailModule,
+    NotificationModule,
+    ClassModule,
   ],
   controllers: [],
   providers: [],
