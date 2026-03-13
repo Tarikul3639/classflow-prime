@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
-import { Mail, ArrowRight, Loader2, ArrowLeft } from "lucide-react";
+import React from "react";
+import { Mail, ArrowRight, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { sendPasswordResetOTPThunk } from "@/redux/slices/auth/thunks/sendPasswordResetOTPThunk";
 import ErrorMessage from "./Error";
 import AuthFooter from "./AuthFooter";
+import { sendSignupVerificationThunk } from "@/redux/slices/auth/thunks/sendSignupVerificationThunk";
 
 interface StepEmailInputProps {
   email: string;
@@ -21,17 +21,15 @@ export const EmailInputStep: React.FC<StepEmailInputProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const { loading: isLoading, error } = useAppSelector(
-    (state) => state.auth?.requestStatus?.sendPasswordResetOTP || {},
+    (state) => state.auth?.requestStatus?.sendSignupVerification || {},
   );
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(sendPasswordResetOTPThunk({ email }))
-      .unwrap()
-      .then(() => {
-        onNext();
-      })
-      .catch(() => {});
+    const result = await dispatch(sendSignupVerificationThunk({ email }));
+    if (sendSignupVerificationThunk.fulfilled.match(result)) {
+      onNext();
+    }
   };
 
   return (
@@ -56,12 +54,13 @@ export const EmailInputStep: React.FC<StepEmailInputProps> = ({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           icon={Mail}
+          disabled={isLoading}
         />
 
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full py-3 md:py-3 bg-[#399aef] text-white text-xs md:text-sm font-medium rounded-lg md:rounded-xl hover:bg-[#3289d6] shadow-lg shadow-blue-100 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-3 bg-[#399aef] text-white text-xs md:text-sm font-medium rounded-lg hover:bg-[#3289d6] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
         >
           {isLoading ? (
             <>
@@ -70,7 +69,7 @@ export const EmailInputStep: React.FC<StepEmailInputProps> = ({
             </>
           ) : (
             <>
-              Send email <ArrowRight className="size-4 md:size-4.5" />
+              Continue <ArrowRight className="size-4 md:size-4.5" />
             </>
           )}
         </button>

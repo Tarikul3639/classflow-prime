@@ -26,8 +26,8 @@ interface IUserJSON {
   role?: UserRole;
   status?: UserStatus;
   isActive?: boolean;
-  avatar?: string;
-  [key: string]: unknown; // Allow additional properties for virtuals and transformations
+  avatarUrl?: string;
+  [key: string]: unknown;
 }
 
 @Schema({
@@ -35,21 +35,33 @@ interface IUserJSON {
   collection: 'users',
   toJSON: {
     virtuals: true,
-    transform: (_doc: Document, ret: IUserJSON) => {
-      // Remove form Api response not from backend
+    transform: (_doc: Document, ret: IUserJSON & Record<string, any>) => {
+      // Remove sensitive fields from API responses
       delete ret.password;
-      delete ret.emailVerificationToken;
-      delete ret.emailVerificationExpires;
-      delete ret.passwordResetToken;
-      delete ret.passwordResetExpires;
+      delete ret.refreshTokens;
+
+      // Email verification (code-based)
+      delete ret.emailVerificationCode;
+      delete ret.emailVerificationExpiresAt;
+      delete ret.emailVerificationLastSentAt;
+
+      // Password reset (token-based)
+      delete ret.passwordResetCode;
+      delete ret.passwordResetExpiresAt;
+
+      // Password reset (code-based)
+      delete ret.passwordResetCode;
+      delete ret.passwordResetExpiresAt;
+
+      // Security / internal
+      delete ret.failedLoginAttempts;
+      delete ret.accountLockedUntil;
+      delete ret.lastLoginIp;
+
       return ret;
     },
   },
 })
-
-// =============================================================
-// ==================== User Schema ============================
-// =============================================================
 export class User implements IUser {
   // ==================== Basic Information ====================
 
@@ -110,21 +122,24 @@ export class User implements IUser {
   isEmailVerified: boolean;
 
   @Prop({ select: false })
-  emailVerificationCode?: string; // 6-digit code instead of token
+  emailVerificationCode?: string;
 
   @Prop({ select: false })
-  emailVerificationExpires?: Date;
+  emailVerificationExpiresAt?: Date;
 
   @Prop()
   emailVerifiedAt?: Date;
 
+  @Prop()
+  emailVerificationLastSentAt?: Date;
+
   // ==================== Password Reset ====================
 
   @Prop({ select: false })
-  passwordResetCode?: string; // 6-digit code instead of token
+  passwordResetCode?: string;
 
   @Prop({ select: false })
-  passwordResetExpires?: Date;
+  passwordResetExpiresAt?: Date;
 
   @Prop()
   passwordChangedAt?: Date;
@@ -143,8 +158,9 @@ export class User implements IUser {
   @Prop()
   lastLoginIp?: string;
 
+  // ✅ Make it non-optional to avoid runtime crashes in instance methods
   @Prop({ type: [String], default: [] })
-  refreshTokens?: string[];
+  refreshTokens: string[];
 
   @Prop({ default: 0 })
   failedLoginAttempts: number;
@@ -178,13 +194,12 @@ export class User implements IUser {
   deletedAt?: Date;
 }
 
-// ==================== Create Schema ====================
 export const UserSchema = SchemaFactory.createForClass(User);
 
 // ==================== Indexes ====================
 UserSchema.index({ isEmailVerified: 1 });
 UserSchema.index({ emailVerificationCode: 1 });
-UserSchema.index({ passwordResetToken: 1 });
+UserSchema.index({ passwordResetCode: 1 }); // ✅ fixed (was passwordResetToken)
 UserSchema.index({ createdAt: -1 });
 
 // Text search
@@ -197,11 +212,13 @@ UserSchema.index({
 
 // ==================== Virtual Properties ====================
 UserSchema.virtual('fullName').get(function (this: UserDocument) {
-  return `${this.firstName} ${this.lastName}`;
+  return [this.firstName, this.lastName].filter(Boolean).join(' ');
 });
 
 UserSchema.virtual('initials').get(function (this: UserDocument) {
-  return `${this.firstName.charAt(0)}${this.lastName?.charAt(0)}`.toUpperCase();
+  const a = this.firstName?.charAt(0) ?? '';
+  const b = this.lastName?.charAt(0) ?? '';
+  return (`${a}${b}`.toUpperCase() || 'CF').slice(0, 2);
 });
 
 // ==================== Pre-save Middleware ====================
@@ -224,31 +241,27 @@ UserSchema.pre<UserDocument>('save', async function (next) {
     this.status = UserStatus.ACTIVE;
     this.emailVerifiedAt = new Date();
     this.emailVerificationCode = undefined;
-    this.emailVerificationExpires = undefined;
+    this.emailVerificationExpiresAt = undefined;
   }
 });
 
 // ==================== Instance Methods ====================
 
-// Compare password
+// Compare password (NOTE: when querying user for login, use .select('+password'))
 UserSchema.methods.comparePassword = async function (
   candidatePassword: string,
 ): Promise<boolean> {
   try {
     return await bcrypt.compare(candidatePassword, this.password);
-  } catch (error) {
+  } catch (_error) {
     return false;
   }
 };
 
 // Check if password was changed after JWT was issued
-UserSchema.methods.changedPasswordAfter = function (
-  JWTTimestamp: number,
-): boolean {
+UserSchema.methods.changedPasswordAfter = function (JWTTimestamp: number): boolean {
   if (this.passwordChangedAt) {
-    const changedTimestamp = Math.floor(
-      this.passwordChangedAt.getTime() / 1000,
-    );
+    const changedTimestamp = Math.floor(this.passwordChangedAt.getTime() / 1000);
     return JWTTimestamp < changedTimestamp;
   }
   return false;
@@ -256,21 +269,20 @@ UserSchema.methods.changedPasswordAfter = function (
 
 // Check if account is locked
 UserSchema.methods.isAccountLocked = function (): boolean {
-  return this.accountLockedUntil && this.accountLockedUntil > new Date();
+  return !!(this.accountLockedUntil && this.accountLockedUntil > new Date());
 };
 
 // Increment failed login attempts
-UserSchema.methods.incrementFailedLoginAttempts =
-  async function (): Promise<void> {
-    this.failedLoginAttempts += 1;
+UserSchema.methods.incrementFailedLoginAttempts = async function (): Promise<void> {
+  this.failedLoginAttempts += 1;
 
-    // Lock account after 5 failed attempts for 30 minutes
-    if (this.failedLoginAttempts >= 5) {
-      this.accountLockedUntil = new Date(Date.now() + 30 * 60 * 1000);
-    }
+  // Lock account after 5 failed attempts for 30 minutes
+  if (this.failedLoginAttempts >= 5) {
+    this.accountLockedUntil = new Date(Date.now() + 30 * 60 * 1000);
+  }
 
-    await this.save();
-  };
+  await this.save();
+};
 
 // Reset failed login attempts
 UserSchema.methods.resetFailedLoginAttempts = async function (): Promise<void> {
@@ -281,27 +293,21 @@ UserSchema.methods.resetFailedLoginAttempts = async function (): Promise<void> {
 
 // Create email verification code (6 digits)
 UserSchema.methods.createEmailVerificationCode = function (): string {
-  const verificationCode = Math.floor(
-    100000 + Math.random() * 900000,
-  ).toString();
+  const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
 
   this.emailVerificationCode = verificationCode;
-
-  // Code expires in 15 minutes
-  this.emailVerificationExpires = new Date(Date.now() + 15 * 60 * 1000);
+  this.emailVerificationExpiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
   return verificationCode;
 };
 
 // Create password reset code (6 digits)
 UserSchema.methods.createPasswordResetCode = function (): string {
-  // Generate 6-digit code
   const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
 
   this.passwordResetCode = resetCode;
+  this.passwordResetExpiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
-  // Code expires in 15 minutes
-  this.passwordResetExpires = new Date(Date.now() + 15 * 60 * 1000);
   this.lastPasswordResetRequestAt = new Date();
   this.passwordResetAttempts += 1;
 
@@ -312,33 +318,34 @@ UserSchema.methods.createPasswordResetCode = function (): string {
 UserSchema.methods.verifyEmailCode = function (code: string): boolean {
   return (
     this.emailVerificationCode === code &&
-    this.emailVerificationExpires > new Date()
+    !!this.emailVerificationExpiresAt &&
+    this.emailVerificationExpiresAt > new Date()
   );
 };
 
 // Verify password reset code
 UserSchema.methods.verifyResetCode = function (code: string): boolean {
   return (
-    this.passwordResetCode === code && this.passwordResetExpires > new Date()
+    this.passwordResetCode === code &&
+    !!this.passwordResetExpiresAt &&
+    this.passwordResetExpiresAt > new Date()
   );
 };
 
 // Reset password
-UserSchema.methods.resetPassword = async function (
-  newPassword: string,
-): Promise<void> {
-  this.password = newPassword; // Will be hashed by pre-save middleware
+UserSchema.methods.resetPassword = async function (newPassword: string): Promise<void> {
+  this.password = newPassword; // hashed by pre-save middleware
   this.passwordResetCode = undefined;
-  this.passwordResetExpires = undefined;
+  this.passwordResetExpiresAt = undefined;
   this.passwordResetAttempts = 0;
   this.passwordChangedAt = new Date();
   await this.save();
 };
 
 // Add refresh token
-UserSchema.methods.addRefreshToken = async function (
-  token: string,
-): Promise<void> {
+UserSchema.methods.addRefreshToken = async function (token: string): Promise<void> {
+  if (!Array.isArray(this.refreshTokens)) this.refreshTokens = [];
+
   if (this.refreshTokens.length >= 5) {
     this.refreshTokens.shift();
   }
@@ -347,9 +354,8 @@ UserSchema.methods.addRefreshToken = async function (
 };
 
 // Remove refresh token
-UserSchema.methods.removeRefreshToken = async function (
-  token: string,
-): Promise<void> {
+UserSchema.methods.removeRefreshToken = async function (token: string): Promise<void> {
+  if (!Array.isArray(this.refreshTokens)) this.refreshTokens = [];
   this.refreshTokens = this.refreshTokens.filter((t) => t !== token);
   await this.save();
 };
@@ -363,13 +369,13 @@ UserSchema.statics.findByEmail = function (email: string) {
 UserSchema.statics.findByVerificationCode = function (code: string) {
   return this.findOne({
     emailVerificationCode: code,
-    emailVerificationExpires: { $gt: new Date() },
+    emailVerificationExpiresAt: { $gt: new Date() },
   });
 };
 
 UserSchema.statics.findByResetCode = function (code: string) {
   return this.findOne({
     passwordResetCode: code,
-    passwordResetExpires: { $gt: new Date() },
+    passwordResetExpiresAt: { $gt: new Date() },
   });
 };

@@ -79,7 +79,7 @@ async function bootstrap() {
       )
       .addTag(
         'Auth',
-        'Authentication endpoints (signup, signin, forgot password)',
+        'Authentication endpoints (signup, signin, signout, forgot password)',
       )
       .addTag('Users', 'User management endpoints')
       .addTag('Dashboard', 'Dashboard statistics endpoints')

@@ -17,13 +17,14 @@ interface SignUpFormData {
   name: string;
   email: string;
   password: string;
+  verificationCode: string;
   avatarUrl?: string;
 }
 
 const RegisterPage: React.FC = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const [currentStep, setCurrentStep] = useState<SignUpStepsType>("otp");
+  const [currentStep, setCurrentStep] = useState<SignUpStepsType>("email");
   const { loading: isLoading, error } = useAppSelector(
     (state) => state.auth?.requestStatus?.signUp || {},
   );
@@ -32,6 +33,7 @@ const RegisterPage: React.FC = () => {
     name: "",
     email: "",
     password: "",
+    verificationCode: "",
     avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${Math.random()
       .toString(36)
       .substring(7)}`,
@@ -55,13 +57,14 @@ const RegisterPage: React.FC = () => {
       case "info":
         return (
           <InfoStep
+            email={formData.email} 
             name={formData.name}
             setName={(name) => setFormData({ ...formData, name })}
             password={formData.password}
             setPassword={(password) => setFormData({ ...formData, password })}
             avatarUrl={formData.avatarUrl || ""}
             setAvatarUrl={(url) => setFormData({ ...formData, avatarUrl: url })}
-            onNext={() => handleNextStep("otp")}
+            onNext={() => handleNextStep("otp")} //
             onBack={() => handleNextStep("email")}
           />
         );

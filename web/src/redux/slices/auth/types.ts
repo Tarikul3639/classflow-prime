@@ -42,6 +42,7 @@ export interface IAuthState {
     resendPasswordResetOTP: IRequestStatus;
     resetPassword: IRequestStatus;
     verifyPasswordResetOTP: IRequestStatus;
+    sendSignupVerification: IRequestStatus;
   };
 }
 

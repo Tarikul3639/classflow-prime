@@ -21,12 +21,13 @@ export interface IUser {
   // Email Verification
   isEmailVerified: boolean;
   emailVerificationCode?: string;
-  emailVerificationExpires?: Date;
+  emailVerificationExpiresAt?: Date;
   emailVerifiedAt?: Date;
+  emailVerificationLastSentAt?: Date;
 
   // Password Reset
   passwordResetCode?: string;
-  passwordResetExpires?: Date;
+  passwordResetExpiresAt?: Date;
   passwordChangedAt?: Date;
   lastPasswordResetRequestAt?: Date;
   passwordResetAttempts: number;

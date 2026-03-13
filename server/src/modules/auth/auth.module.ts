@@ -7,31 +7,36 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 // -----------------------------------------------------
 // -------------------- CONTROLLERS --------------------
 // -----------------------------------------------------
-import { AuthController } from './controllers/auth.controller';
-import { PasswordController } from './controllers/password.controller';
+import { SigninController } from './controllers/signin.controller';
+import { MeController } from './controllers/me.controller';
+import { SignoutController } from './controllers/signout.controller';
+import { SignupController } from './controllers/signup.controller';
+import { PasswordResetController } from './controllers/password-reset.controller';
 
 // --------------------------------------------------
 // -------------------- SERVICES --------------------
 // --------------------------------------------------
 
-// Main orchestrator service
-import { AuthService } from './services/auth.service';
-import { PasswordService } from './services/password.service';
+// Reusable helpers
+import { OtpService } from './services/otp/otp.service';
+import { TokenService } from './services/token/token.service';
+import { UserSanitizerService } from './services/sanitizer/user-sanitizer.service';
 
-// Authentication related services
-import { SignUpService } from './services/signup.service';
-import { SignInService } from './services/signin.service';
-import { SignOutService } from './services/signout.service';
+// Feature services
+import { SignInService } from './services/signin/signin.service';
+import { GetCurrentUserService } from './services/me/get-current-user.service';
+import { SignOutService } from './services/signout/signout.service';
 
-// User validation and retrieval
-import { CurrentUserService } from './services/current-user.service';
-import { ValidateUserService } from './services/validate-user.service';
+import { SignUpService } from './services/signup/signup.service';
+import { VerifySignupEmailService } from './services/signup/verify-signup-email.service';
+import { ResendSignupVerificationService } from './services/signup/resend-signup-verification.service';
 
-// Email and verification
-import { VerifyEmailService } from './services/verify-email.service';
-import { ResendVerificationService } from './services/resend-verification.service';
-import { UserSanitizerService } from './services/user-sanitizer.service';
-import { TokenService } from './services/token.service';
+import { RequestPasswordResetService } from './services/password-reset/request-password-reset.service';
+import { VerifyPasswordResetService } from './services/password-reset/verify-password-reset.service';
+import { ResendPasswordResetService } from './services/password-reset/resend-password-reset.service';
+import { ConfirmPasswordResetService } from './services/password-reset/confirm-password-reset.service';
+
+import { ValidateUserService } from './services/users/validate-user.service';
 
 // ------------------------------------------------------
 // -------------------- ENTITIES ------------------------
@@ -39,51 +44,80 @@ import { TokenService } from './services/token.service';
 import { User, UserSchema } from 'src/database/entities/user.entity';
 
 // ------------------------------------------------------
-// -------------------- MODULE DEFINITION ----------------
+// -------------------- MODULES -------------------------
 // ------------------------------------------------------
 import { MailModule } from 'src/modules/mail/mail.module';
+
+// ------------------------------------------------------
+// -------------------- STRATEGIES ----------------------
+// ------------------------------------------------------
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 
 @Module({
-    imports: [
-        MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-        MailModule,
-        PassportModule,
-        JwtModule.registerAsync({
-            imports: [ConfigModule],
-            inject: [ConfigService],
-            useFactory: async (configService: ConfigService) => ({
-                secret: configService.get<string>('jwt.accessToken.secret'),
-                signOptions: {
-                    expiresIn: parseInt(
-                        configService.get<string>('jwt.accessToken.expiresIn', '3600'),
-                        10,
-                    ),
-                },
-            }),
-        }),
-    ],
-    controllers: [AuthController, PasswordController],
-    providers: [
-        AuthService,
-        PasswordService,
-        
-        SignUpService,
-        SignInService,
-        VerifyEmailService,
-        ResendVerificationService,
-        UserSanitizerService,
-        TokenService,
-        SignOutService,
-        CurrentUserService,
-        ValidateUserService,
+  imports: [
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MailModule,
+    PassportModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('jwt.accessToken.secret'),
+        signOptions: {
+          expiresIn: parseInt(
+            configService.get<string>('jwt.accessToken.expiresIn', '3600'),
+            10,
+          ),
+        },
+      }),
+    }),
+  ],
+  controllers: [
+    // core auth
+    SigninController,
+    MeController,
+    SignoutController,
 
-        JwtStrategy,
-        LocalStrategy,
-        JwtRefreshStrategy,
-    ],
-    exports: [AuthService],
+    // feature groups
+    SignupController,
+    PasswordResetController,
+  ],
+  providers: [
+    // reusable core helpers
+    OtpService,
+    TokenService,
+    UserSanitizerService,
+
+    // core auth features
+    SignInService,
+    GetCurrentUserService,
+    SignOutService,
+
+    // signup flow
+    SignUpService,
+    VerifySignupEmailService,
+    ResendSignupVerificationService,
+
+    // password reset flow
+    RequestPasswordResetService,
+    VerifyPasswordResetService,
+    ResendPasswordResetService,
+    ConfirmPasswordResetService,
+
+    // strategies (if you are still using them)
+    JwtStrategy,
+    LocalStrategy,
+    JwtRefreshStrategy,
+
+    // user validation (used by strategies)
+    ValidateUserService,
+  ],
+  exports: [
+    // Export what other modules might need
+    TokenService,
+    UserSanitizerService,
+  ],
 })
-export class AuthModule { }
+export class AuthModule {}

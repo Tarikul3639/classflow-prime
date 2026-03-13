@@ -27,6 +27,7 @@ const initialState: IAuthState = {
     resendPasswordResetOTP: { loading: false, error: null, message: null },
     verifyPasswordResetOTP: { loading: false, error: null, message: null },
     resetPassword: { loading: false, error: null, message: null },
+    sendSignupVerification: { loading: false, error: null, message: null },
   },
 };
 
