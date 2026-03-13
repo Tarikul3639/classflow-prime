@@ -1,11 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
-// import authReducer from "./slices/auth/slice";
-// import classroomReducer from "./slices/classroom/slice";
-// import notificationReducer from "./slices/notifications/notificationSlice";
+import authReducer from './slices/auth/authSlice';
+
 
 export const store = configureStore({
   reducer: {
-    // auth: authReducer,
+    auth: authReducer,
     // classroom: classroomReducer,
     // notifications: notificationReducer,
   },

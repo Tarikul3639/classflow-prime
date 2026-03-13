@@ -13,10 +13,14 @@ export type ForgotPasswordStep = "email" | "otp" | "password" | "success";
 
 const ForgotPasswordPage: React.FC = () => {
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState<ForgotPasswordStep>("password");
+  const [currentStep, setCurrentStep] = useState<ForgotPasswordStep>("email");
   const [email, setEmail] = useState("");
+  const [verifiedCode, setVerifiedCode] = useState(""); // ✅ Store verified code
 
-  const handleNextStep = (step: ForgotPasswordStep) => {
+  const handleNextStep = (step: ForgotPasswordStep, code?: string) => {
+    if (code) {
+      setVerifiedCode(code); // ✅ Save code when moving from OTP to password step
+    }
     setCurrentStep(step);
   };
 
@@ -34,7 +38,7 @@ const ForgotPasswordPage: React.FC = () => {
         return (
           <StepOTPVerification
             email={email}
-            onNext={() => handleNextStep("password")}
+            onNext={(code) => handleNextStep("password", code)} // ✅ Pass code
             onBack={() => handleNextStep("email")}
           />
         );
@@ -42,12 +46,13 @@ const ForgotPasswordPage: React.FC = () => {
         return (
           <StepNewPassword
             email={email}
+            code={verifiedCode} // ✅ Pass verified code
             onNext={() => handleNextStep("success")}
             onBack={() => handleNextStep("otp")}
           />
         );
       case "success":
-        return <StepSuccess onGoToLogin={() => router.push("/sign-in")} />;
+        return <StepSuccess onGoToLogin={() => router.push("/signin")} />;
       default:
         return null;
     }
@@ -70,7 +75,7 @@ const ForgotPasswordPage: React.FC = () => {
       </main>
 
       <footer className="py-6 text-center text-[#64748b] text-xs">
-        © 2026 ClassFlow Academic Tracker. All rights reserved.
+        © {new Date().getFullYear()} ClassFlow Academic Tracker. All rights reserved.
       </footer>
     </div>
   );

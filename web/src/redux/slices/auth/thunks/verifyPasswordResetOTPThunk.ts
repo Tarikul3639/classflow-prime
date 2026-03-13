@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import { apiClient } from "@/lib/api/axios";
+import { extractErrorMessage } from "@/lib/api/error.utils";
 
 interface VerifyPasswordResetOTPPayload {
   email: string;
@@ -7,23 +8,27 @@ interface VerifyPasswordResetOTPPayload {
 }
 
 interface VerifyPasswordResetOTPResponse {
-  success: boolean;
   message: string;
 }
 
 export const verifyPasswordResetOTPThunk = createAsyncThunk<
   VerifyPasswordResetOTPResponse,
-  VerifyPasswordResetOTPPayload
->(
-  "auth/verifyPasswordResetOTP",
-  async (payload, { rejectWithValue }) => {
-    try {
-      const response = await axios.post("/api/auth/forgot-password/verify-otp", payload);
-      return response.data;
-    } catch (error: any) {
-      return rejectWithValue(
-        error.response?.data?.message || "Invalid or expired verification code"
-      );
-    }
+  VerifyPasswordResetOTPPayload,
+  { rejectValue: string }
+>("auth/verifyPasswordResetOTP", async (payload, { rejectWithValue }) => {
+  try {
+    console.log("🔍 Verifying password reset OTP");
+
+    const response = await apiClient.post<VerifyPasswordResetOTPResponse>(
+      "/auth/forgot-password/verify-otp",
+      payload,
+    );
+
+    console.log("✅ OTP verified successfully");
+
+    return response.data;
+  } catch (error: any) {
+    console.error("❌ Verify OTP error:", error);
+    return rejectWithValue(extractErrorMessage(error));
   }
-);
+});

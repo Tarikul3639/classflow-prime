@@ -1,10 +1,25 @@
-import { IsString, IsNotEmpty, MinLength, Matches, Length } from 'class-validator';
+import { IsString, IsNotEmpty, MinLength, Matches, Length, IsEmail } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 
 /**
  * DTO for password reset with 6-digit code
  */
 export class ResetPasswordDto {
+  /**
+   * User email address
+   * @example john.doe@example.com
+   * Must be a valid email format
+   * Will be transformed to lowercase and trimmed
+   * */
+  @ApiProperty({
+    example: 'john.doe@example.com',
+    description: 'User email address',
+  })
+  @IsEmail({}, { message: 'Please provide a valid email address' })
+  @Transform(({ value }) => value?.toLowerCase().trim())
+  email: string;
+
   /**
    * 6-digit password reset code sent to email
    * @example 123456

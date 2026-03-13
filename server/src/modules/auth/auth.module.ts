@@ -8,6 +8,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 // -------------------- CONTROLLERS --------------------
 // -----------------------------------------------------
 import { AuthController } from './controllers/auth.controller';
+import { PasswordController } from './controllers/password.controller';
 
 // --------------------------------------------------
 // -------------------- SERVICES --------------------
@@ -15,6 +16,7 @@ import { AuthController } from './controllers/auth.controller';
 
 // Main orchestrator service
 import { AuthService } from './services/auth.service';
+import { PasswordService } from './services/password.service';
 
 // Authentication related services
 import { SignUpService } from './services/signup.service';
@@ -63,9 +65,11 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
             }),
         }),
     ],
-    controllers: [AuthController],
+    controllers: [AuthController, PasswordController],
     providers: [
         AuthService,
+        PasswordService,
+        
         SignUpService,
         SignInService,
         VerifyEmailService,

@@ -1,26 +1,163 @@
-<html lang='en'>
-
+<!DOCTYPE html>
+<html>
 <head>
-  <meta charset='UTF-8' />
-  <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Welcome</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      padding: 50px 30px;
+      text-align: center;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 32px;
+      font-weight: 700;
+    }
+    .emoji {
+      font-size: 60px;
+      margin-bottom: 10px;
+    }
+    .content {
+      padding: 40px 30px;
+    }
+    .greeting {
+      font-size: 18px;
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 20px;
+    }
+    .message {
+      font-size: 15px;
+      color: #64748b;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    .cta-button {
+      display: inline-block;
+      background: #399aef;
+      color: white;
+      padding: 14px 30px;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 15px;
+      margin: 20px 0;
+      transition: background 0.3s;
+    }
+    .cta-button:hover {
+      background: #3289d6;
+    }
+    .features {
+      margin: 30px 0;
+    }
+    .feature {
+      display: flex;
+      align-items: start;
+      margin: 15px 0;
+    }
+    .feature-icon {
+      font-size: 24px;
+      margin-right: 15px;
+    }
+    .feature-text {
+      flex: 1;
+    }
+    .feature-title {
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 5px;
+    }
+    .feature-desc {
+      font-size: 14px;
+      color: #64748b;
+    }
+    .footer {
+      background: #f8fafc;
+      padding: 30px;
+      text-align: center;
+      border-top: 1px solid #e2e8f0;
+    }
+    .footer p {
+      margin: 5px 0;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+  </style>
 </head>
-
-<body style='font-family: Arial, sans-serif; background: #f7f7f9; margin: 0; padding: 24px; color: #1f2937;'>
-  <table role='presentation' width='100%' cellspacing='0' cellpadding='0'
-    style='max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; padding: 24px;'>
-    <tr>
-      <td>
-        <h2 style='margin: 0 0 12px 0;'>Welcome to {{appName}}, {{name}}!</h2>
-        <p style='margin: 0 0 12px 0;'>Your account is now verified and ready
-          to use.</p>
-        <p style='margin: 0 0 20px 0;'>Go to your dashboard to get started.</p>
-        <a href='{{dashboardUrl}}'
-          style='display: inline-block; padding: 10px 16px; background: #2563eb; color: #ffffff; text-decoration: none; border-radius: 6px;'>Open
-          Dashboard</a>
-      </td>
-    </tr>
-  </table>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="emoji">🎉</div>
+      <h1>Welcome to {{appName}}!</h1>
+    </div>
+    
+    <div class="content">
+      <div class="greeting">Hi {{name}},</div>
+      
+      <p class="message">
+        Congratulations! Your email has been verified successfully. You're now ready to explore everything {{appName}} has to offer.
+      </p>
+      
+      <div style="text-align: center;">
+        <a href="{{dashboardUrl}}" class="cta-button">Go to Dashboard →</a>
+      </div>
+      
+      <div class="features">
+        <p class="message"><strong>Here's what you can do:</strong></p>
+        
+        <div class="feature">
+          <div class="feature-icon">📚</div>
+          <div class="feature-text">
+            <div class="feature-title">Manage Classes</div>
+            <div class="feature-desc">Create and join classes effortlessly</div>
+          </div>
+        </div>
+        
+        <div class="feature">
+          <div class="feature-icon">📝</div>
+          <div class="feature-text">
+            <div class="feature-title">Track Assignments</div>
+            <div class="feature-desc">Stay on top of your coursework</div>
+          </div>
+        </div>
+        
+        <div class="feature">
+          <div class="feature-icon">💬</div>
+          <div class="feature-text">
+            <div class="feature-title">Collaborate</div>
+            <div class="feature-desc">Connect with classmates and teachers</div>
+          </div>
+        </div>
+      </div>
+      
+      <p class="message">
+        If you have any questions or need help getting started, our support team is here for you!
+      </p>
+    </div>
+    
+    <div class="footer">
+      <p><strong>{{appName}}</strong></p>
+      <p>© {{year}} {{appName}}. All rights reserved.</p>
+    </div>
+  </div>
 </body>
-
 </html>

@@ -1,28 +1,33 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import { apiClient } from '@/lib/api/axios';
+import { extractErrorMessage } from '@/lib/api/error.utils';
 
 interface ResendPasswordResetOTPPayload {
   email: string;
 }
 
 interface ResendPasswordResetOTPResponse {
-  success: boolean;
   message: string;
 }
 
 export const resendPasswordResetOTPThunk = createAsyncThunk<
   ResendPasswordResetOTPResponse,
-  ResendPasswordResetOTPPayload
->(
-  "auth/resendPasswordResetOTP",
-  async (payload, { rejectWithValue }) => {
-    try {
-      const response = await axios.post("/api/auth/forgot-password/resend-otp", payload);
-      return response.data;
-    } catch (error: any) {
-      return rejectWithValue(
-        error.response?.data?.message || "Failed to resend verification code"
-      );
-    }
+  ResendPasswordResetOTPPayload,
+  { rejectValue: string }
+>('auth/resendPasswordResetOTP', async (payload, { rejectWithValue }) => {
+  try {
+    console.log('📧 Resending password reset OTP');
+
+    const response = await apiClient.post<ResendPasswordResetOTPResponse>(
+      '/auth/forgot-password',
+      payload
+    );
+
+    console.log('✅ OTP resent successfully');
+
+    return response.data;
+  } catch (error: any) {
+    console.error('❌ Resend OTP error:', error);
+    return rejectWithValue(extractErrorMessage(error));
   }
-);
+});

@@ -5,13 +5,14 @@ import { ArrowLeft } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { verifyPasswordResetOTPThunk } from "@/redux/slices/auth/thunks/verifyPasswordResetOTPThunk";
 import { resendPasswordResetOTPThunk } from "@/redux/slices/auth/thunks/resendPasswordResetOTPThunk";
+import { clearError } from "@/redux/slices/auth/authSlice";
 import ErrorMessage from "./Error";
 import OTPInputForm from "./OTPInputForm";
 import ResendOTPSection from "./ResendOTPSection";
 
 interface StepOTPVerificationProps {
   email: string;
-  onNext: () => void;
+  onNext: (code: string) => void; // ✅ Return verified code
   onBack: () => void;
 }
 
@@ -21,14 +22,25 @@ const StepOTPVerification: React.FC<StepOTPVerificationProps> = ({
   onBack,
 }) => {
   const dispatch = useAppDispatch();
-  const { loading: isLoading, error } = useAppSelector(
-    (state) => state.auth?.requestStatus?.verifyPasswordResetOTP || {}
+  const verifyStatus = useAppSelector(
+    (state) => state.auth?.requestStatus?.verifyPasswordResetOTP
+  );
+  const resendStatus = useAppSelector(
+    (state) => state.auth?.requestStatus?.sendPasswordResetOTP
   );
 
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
-  const [timer, setTimer] = useState(60);
+  const [timer, setTimer] = useState(120); // 2 minutes
   const [canResend, setCanResend] = useState(false);
 
+  // Clear error on unmount
+  useEffect(() => {
+    return () => {
+      dispatch(clearError("verifyPasswordResetOTP"));
+    };
+  }, [dispatch]);
+
+  // Timer countdown
   useEffect(() => {
     if (timer > 0) {
       const interval = setInterval(() => {
@@ -40,31 +52,32 @@ const StepOTPVerification: React.FC<StepOTPVerificationProps> = ({
     }
   }, [timer]);
 
-  const handleVerifyOTP = (e: React.FormEvent) => {
+  const handleVerifyOTP = async (e: React.FormEvent) => {
     e.preventDefault();
     const otpCode = otp.join("");
 
     if (otpCode.length !== 6) return;
 
-    dispatch(verifyPasswordResetOTPThunk({ email, otp: otpCode }))
-      .unwrap()
-      .then(() => {
-        onNext();
-      })
-      .catch(() => {});
+    const result = await dispatch(
+      verifyPasswordResetOTPThunk({ email, otp: otpCode })
+    );
+
+    if (verifyPasswordResetOTPThunk.fulfilled.match(result)) {
+      console.log("✅ OTP verified, moving to password reset");
+      onNext(otpCode); // ✅ Pass verified code to parent
+    }
   };
 
-  const handleResendOTP = () => {
+  const handleResendOTP = async () => {
     if (!canResend) return;
 
-    dispatch(resendPasswordResetOTPThunk({ email }))
-      .unwrap()
-      .then(() => {
-        setTimer(60);
-        setCanResend(false);
-        setOtp(["", "", "", "", "", ""]);
-      })
-      .catch(() => {});
+    const result = await dispatch(resendPasswordResetOTPThunk({ email }));
+
+    if (resendPasswordResetOTPThunk.fulfilled.match(result)) {
+      setTimer(120);
+      setCanResend(false);
+      setOtp(["", "", "", "", "", ""]);
+    }
   };
 
   return (
@@ -80,25 +93,27 @@ const StepOTPVerification: React.FC<StepOTPVerificationProps> = ({
         </p>
       </div>
 
-      <ErrorMessage error={error} />
+      <ErrorMessage error={verifyStatus.error} />
 
       <OTPInputForm
         otp={otp}
         setOtp={setOtp}
         onSubmit={handleVerifyOTP}
-        isLoading={isLoading}
+        isLoading={verifyStatus.loading}
       />
 
       <ResendOTPSection
         timer={timer}
         canResend={canResend}
         onResend={handleResendOTP}
+        isLoading={resendStatus.loading}
       />
 
       <div className="mt-4 pt-4 border-t border-slate-100 text-center">
         <button
           onClick={onBack}
-          className="inline-flex items-center gap-2 text-slate-500 hover:text-[#399aef] text-xs md:text-sm font-bold transition-all group"
+          disabled={verifyStatus.loading}
+          className="inline-flex items-center gap-2 text-slate-500 hover:text-[#399aef] text-xs md:text-sm font-bold transition-all group disabled:opacity-50"
         >
           <ArrowLeft
             size={16}

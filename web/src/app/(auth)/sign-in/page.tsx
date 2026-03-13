@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Lock,
   ArrowRight,
@@ -13,9 +13,10 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { signInThunk } from "@/redux/slices/auth/thunks/signInThunk";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useRouter } from "next/navigation";
+import { signInThunk } from "@/redux/slices/auth/thunks/signInThunk";
+import { clearError } from "@/redux/slices/auth/authSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { Input } from "@/components/ui/Input";
 
 interface SignInPayload {
@@ -27,12 +28,11 @@ const SignInPage: React.FC = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
 
-  const isLoading = useAppSelector(
-    (state) => state.auth?.requestStatus.signIn?.loading,
+  // Select auth state
+  const { user, isAuthenticated, requestStatus } = useAppSelector(
+    (state) => state.auth,
   );
-  const error = useAppSelector(
-    (state) => state.auth?.requestStatus?.signIn?.error || state.auth?.error,
-  );
+  const { loading, error } = requestStatus.signIn;
 
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState<SignInPayload>({
@@ -40,28 +40,42 @@ const SignInPage: React.FC = () => {
     password: "",
   });
 
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      if (user.isEmailVerified) {
+        router.push("/dashboard");
+      } else {
+        router.push("/verify-email");
+      }
+    }
+  }, [isAuthenticated, user, router]);
+
+  // Clear error on unmount
+  useEffect(() => {
+    return () => {
+      dispatch(clearError("signIn"));
+    };
+  }, [dispatch]);
+
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      const data = await dispatch(signInThunk(formData)).unwrap();
+      const resultAction = await dispatch(signInThunk(formData));
 
-      console.log("🎯 Sign-in response:", data);
+      if (signInThunk.fulfilled.match(resultAction)) {
+        const user = resultAction.payload;
 
-      // Set client-side auth marker cookie for middleware
-      document.cookie = "cf_auth=1; path=/; max-age=604800; SameSite=Lax";
+        console.log("🎯 Sign-in successful:", user);
+      } else {
+        // ❌ Error - stays on page and shows error
+        console.error("❌ Sign-in failed:", resultAction.payload);
 
-      console.log("✅ Auth data stored in localStorage");
-
-      if (data.user) {
-        if (data.user.classrooms.length > 0) {
-          router.push(`/classroom/${data.user.classrooms[0]}`);
-        } else {
-          router.push("/classroom");
-        }
+        // Error is already in Redux state, will be displayed
       }
     } catch (err) {
-      console.error("Sign in failed:", err);
+      console.error("❌ Unexpected error during sign-in:", err);
     }
   };
 
@@ -71,6 +85,7 @@ const SignInPage: React.FC = () => {
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
           className="w-full max-w-md bg-white rounded-2xl shadow-xl shadow-blue-100/50 p-6 sm:p-8 border border-slate-200"
         >
           {/* Header Section */}
@@ -93,6 +108,7 @@ const SignInPage: React.FC = () => {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
                 className="overflow-hidden mb-6"
               >
                 <div className="flex items-center gap-2.5 py-3 px-4 rounded-xl bg-red-50 border border-red-100">
@@ -100,7 +116,7 @@ const SignInPage: React.FC = () => {
                   <p className="text-red-700 text-xs font-bold leading-tight">
                     {typeof error === "string"
                       ? error
-                      : "Authentication failed."}
+                      : "Authentication failed. Please try again."}
                   </p>
                 </div>
               </motion.div>
@@ -115,17 +131,19 @@ const SignInPage: React.FC = () => {
                 label="Email Address"
                 type="email"
                 placeholder="Enter your email"
+                value={formData.email}
                 onChange={(e) =>
                   setFormData({ ...formData, email: e.target.value })
                 }
                 icon={Mail}
+                disabled={loading}
               />
 
               {/* Password Field */}
               <div className="relative">
                 <Link
                   href="/forgot-password"
-                  className="absolute right-0 -top-0.5 text-[#399aef] text-[11px] md:text-[12px] font-bold  tracking-[0.1px] hover:underline transition-colors"
+                  className="absolute right-0 -top-0.5 text-[#399aef] text-[11px] md:text-[12px] font-bold tracking-[0.1px] hover:underline transition-colors z-10"
                 >
                   Forgot Password?
                 </Link>
@@ -135,15 +153,19 @@ const SignInPage: React.FC = () => {
                   label="Password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
+                  value={formData.password}
                   onChange={(e) =>
                     setFormData({ ...formData, password: e.target.value })
                   }
                   icon={Lock}
+                  disabled={loading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute right-3 top-8.5 md:top-9 text-gray-500 hover:text-gray-700 focus:outline-none"
+                  disabled={loading}
+                  className="absolute right-3 top-8.5 md:top-9 text-gray-500 hover:text-gray-700 focus:outline-none disabled:opacity-50"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? (
                     <EyeOff className="size-4 md:size-4.5" />
@@ -156,17 +178,17 @@ const SignInPage: React.FC = () => {
 
             <button
               type="submit"
-              disabled={isLoading}
-              className="w-full py-3 md:py-3 bg-[#399aef] text-white text-xs md:text-sm font-medium rounded-lg md:rounded-xl hover:bg-[#3289d6] shadow-lg shadow-blue-100 active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-7 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={loading}
+              className="w-full py-3 md:py-3 bg-[#399aef] text-white text-xs md:text-sm font-medium rounded-lg md:rounded-xl hover:bg-[#3289d6] shadow-lg shadow-blue-100 active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-7 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#399aef]"
             >
-              {isLoading ? (
+              {loading ? (
                 <>
                   <Loader2 className="animate-spin size-5" />
                   Signing In...
                 </>
               ) : (
                 <>
-                  Sign In{" "}
+                  Sign In
                   <ArrowRight
                     size={18}
                     className="group-hover:translate-x-1 transition-transform"

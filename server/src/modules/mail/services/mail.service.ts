@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
-import e from 'express';
 
 /**
  * MailService
@@ -26,9 +25,9 @@ export class MailService {
             'FRONTEND_URL',
             'http://localhost:3000',
         );
-        this.appName = this.configService.get('APP_NAME', 'ClassFlow-Prime');
+        this.appName = this.configService.get('APP_NAME', 'ClassFlow Prime');
         this.expiresInMinutes = parseInt(
-            this.configService.get('mail.expiresIn', '15'),
+            this.configService.get('MAIL_EXPIRES_IN', '15'),
             10,
         );
     }
@@ -36,12 +35,7 @@ export class MailService {
     /**
      * Send email verification code (6 digits)
      * Called after user registration
-     *
-     * @param email - User's email address
-     * @param name - User's first name
-     * @param code - 6-digit verification code
      */
-
     async sendVerificationEmail(
         email: string,
         name: string,
@@ -54,9 +48,10 @@ export class MailService {
                 template: 'verification',
                 context: {
                     name,
-                    code, // Send 6-digit code
+                    code,
                     appName: this.appName,
-                    expirationMinutes: this.expiresInMinutes, // Code expires in configured minutes
+                    expirationMinutes: this.expiresInMinutes,
+                    year: new Date().getFullYear(),
                 },
             });
             this.logger.log(`✅ Verification email sent to ${email} (Code: ${code})`);
@@ -70,9 +65,6 @@ export class MailService {
 
     /**
      * Send welcome email after successful email verification
-     *
-     * @param email - User's email address
-     * @param name - User's first name
      */
     async sendWelcomeEmail(email: string, name: string): Promise<void> {
         const dashboardUrl = `${this.frontendUrl}/dashboard`;
@@ -85,6 +77,7 @@ export class MailService {
                     name,
                     dashboardUrl,
                     appName: this.appName,
+                    year: new Date().getFullYear(),
                 },
             });
             this.logger.log(`✅ Welcome email sent to ${email}`);
@@ -92,17 +85,12 @@ export class MailService {
             this.logger.error(
                 `❌ Failed to send welcome email to ${email}: ${error.message}`,
             );
-            throw new Error('Failed to send welcome email');
+            // Don't throw - welcome email failure shouldn't break the flow
         }
     }
 
     /**
      * Send password reset code (6 digits)
-     * Called when user requests password reset
-     *
-     * @param email - User's email address
-     * @param name - User's first name
-     * @param code - 6-digit password reset code
      */
     async sendPasswordResetEmail(
         email: string,
@@ -116,12 +104,12 @@ export class MailService {
                 template: 'password-reset',
                 context: {
                     name,
-                    code, // Send 6-digit code
+                    code,
                     appName: this.appName,
-                    expirationMinutes: 15,
+                    expirationMinutes: this.expiresInMinutes,
+                    year: new Date().getFullYear(),
                 },
             });
-
             this.logger.log(
                 `✅ Password reset email sent to ${email} (Code: ${code})`,
             );
@@ -135,30 +123,28 @@ export class MailService {
 
     /**
      * Send password changed confirmation email
-     * Called after successful password change/reset
-     *
-     * @param email - User's email address
-     * @param name - User's first name
      */
     async sendPasswordChangedEmail(email: string, name: string): Promise<void> {
         const supportUrl = `${this.frontendUrl}/support`;
+        const signinUrl = `${this.frontendUrl}/signin`;
 
         try {
             await this.mailerService.sendMail({
                 to: email,
                 subject: `Your Password Has Been Changed - ${this.appName}`,
-                template: '../templates/password-changed.hbs',
+                template: 'password-changed',
                 context: {
                     name,
                     appName: this.appName,
                     supportUrl,
+                    signinUrl,
                     changedAt: new Date().toLocaleString('en-US', {
                         dateStyle: 'full',
                         timeStyle: 'short',
                     }),
+                    year: new Date().getFullYear(),
                 },
             });
-
             this.logger.log(`✅ Password changed email sent to ${email}`);
         } catch (error) {
             this.logger.error(
@@ -170,11 +156,6 @@ export class MailService {
 
     /**
      * Send generic email (for custom use cases)
-     *
-     * @param to - Recipient email
-     * @param subject - Email subject
-     * @param template - Template name (without .hbs extension)
-     * @param context - Template variables
      */
     async sendEmail(
         to: string,
@@ -186,13 +167,13 @@ export class MailService {
             await this.mailerService.sendMail({
                 to,
                 subject,
-                template: `../templates/${template}.hbs`,
+                template,
                 context: {
                     ...context,
                     appName: this.appName,
+                    year: new Date().getFullYear(),
                 },
             });
-
             this.logger.log(`✅ Email sent to ${to} (template: ${template})`);
         } catch (error) {
             this.logger.error(`❌ Failed to send email to ${to}: ${error.message}`);
@@ -200,5 +181,3 @@ export class MailService {
         }
     }
 }
-
-export class MailModule {}
