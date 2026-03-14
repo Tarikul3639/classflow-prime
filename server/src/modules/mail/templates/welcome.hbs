@@ -1,261 +1,177 @@
+<!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset='utf-8' />
     <meta name='viewport' content='width=device-width, initial-scale=1.0' />
     <title>Welcome to Classflow</title>
     <style>
-      body {
-        font-family: 'Roboto', Helvetica, Arial, sans-serif;
-        background-color: #ffffff;
-        margin: 0;
-        padding: 0;
-      }
-      .wrapper {
-        display: flex;
-        justify-content: center;
-        padding: 40px 10px;
-      }
-      .main-container {
-        max-width: 520px;
-        margin: 40px auto;
-        border: 1px solid #dadce0;
-        border-radius: 8px;
-        padding: 40px;
-        text-align: center; /* Sobkuchu center korar jonno */
-      }
-      /* Logo logic optimized for Emails */
-      .logo {
-        font-size: 25px;
-        font-weight: 600;
-        margin-bottom: 20px;
-        text-align: center; /* Force center align */
-        display: block;
-        width: 100%;
-      }
-      /* Letter spacing jate span gulo eksathe thake */
-      .logo span {
-        display: inline-block;
-        margin: 0 1px;
-      }
-      /* Google style colors */
-      .logo span:nth-child(1) {
-        color: #4285f4;
-      }
-      .logo span:nth-child(2) {
-        color: #ea4335;
-      }
-      .logo span:nth-child(3) {
-        color: #fbbc05;
-      }
-      .logo span:nth-child(4) {
-        color: #4285f4;
-      }
-      .logo span:nth-child(5) {
-        color: #34a853;
-      }
-      .logo span:nth-child(6) {
-        color: #ea4335;
-      }
-      .logo span:nth-child(7) {
-        color: #fbbc05;
-      }
-      .logo span:nth-child(8) {
-        color: #4285f4;
-      }
-      .logo span:nth-child(9) {
-        color: #34a853;
-      }
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
 
-      h1 {
-        color: #202124;
-        font-size: 24px;
-        font-weight: 400;
-        margin: 0 0 20px 0;
-        text-align: center;
-      }
-      .divider {
-        height: 1px;
-        background-color: #dadce0;
-        margin-bottom: 30px;
-      }
-      .hero-svg {
-        text-align: center;
-        margin-bottom: 30px;
-      }
-      .greeting {
-        font-size: 16px;
-        color: #202124;
-        font-weight: 500;
-        margin-bottom: 15px;
-      }
-      .message {
-        font-size: 14px;
-        color: #3c4043;
-        line-height: 1.6;
-        margin-bottom: 25px;
-      }
-      .feature-list {
-        margin: 30px 0;
-      }
-      .feature-item {
-        display: table;
-        width: 100%;
-        margin-bottom: 24px;
-      }
-      .feature-icon-cell {
-        display: table-cell;
-        vertical-align: top;
-        width: 48px;
-      }
-      .feature-content-cell {
-        display: table-cell;
-        vertical-align: top;
-        padding-left: 16px;
-      }
-      .feature-title {
-        font-size: 15px;
-        font-weight: 500;
-        color: #202124;
-        margin-bottom: 4px;
-      }
-      .feature-desc {
-        font-size: 13px;
-        color: #5f6368;
-        line-height: 1.4;
-      }
-      .btn-container {
-        text-align: center;
-        margin: 40px 0;
-      }
-      .cta-button {
-        background-color: #1a73e8;
-        color: #ffffff !important;
-        padding: 10px 24px;
-        text-decoration: none;
-        border-radius: 4px;
-        font-size: 14px;
-        font-weight: 500;
-        display: inline-block;
-      }
-      .footer {
-        border-top: 1px solid #f1f3f4;
-        padding-top: 25px;
-        margin-top: 40px;
-        font-size: 12px;
-        color: #70757a;
-        text-align: center;
-        line-height: 1.5;
-      }
-      /* Icons-er specifc coloring based on Google UI elements */
-      svg.icon-academic {
-        fill: #fbbc05;
-      }
-      svg.icon-join {
-        fill: #34a853;
-      }
-      svg.icon-profile {
-        fill: #ea4335;
-      }
+        .wrapper {
+            width: 100%;
+            background-color: #ffffff;
+            padding-bottom: 40px;
+        }
+
+        .container {
+            max-width: 520px;
+            width: 95%;
+            margin: 40px auto;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            text-align: center;
+            display: block;
+        }
+
+        .logo span { display: inline-block; margin: 0 1px; }
+        .logo span:nth-child(1) { color: #4285f4; }
+        .logo span:nth-child(2) { color: #ea4335; }
+        .logo span:nth-child(3) { color: #fbbc05; }
+        .logo span:nth-child(4) { color: #4285f4; }
+        .logo span:nth-child(5) { color: #34a853; }
+        .logo span:nth-child(6) { color: #ea4335; }
+        .logo span:nth-child(7) { color: #fbbc05; }
+        .logo span:nth-child(8) { color: #4285f4; }
+        .logo span:nth-child(9) { color: #34a853; }
+
+        h1 {
+            color: #202124;
+            font-size: 24px;
+            font-weight: 400;
+            margin: 0 0 20px 0;
+            text-align: center;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: #dadce0;
+            margin-bottom: 30px;
+        }
+
+        .greeting {
+            font-size: 16px;
+            color: #202124;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        .message {
+            font-size: 14px;
+            color: #3c4043;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        /* Feature Points List */
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 30px 0;
+        }
+
+        .feature-item {
+            margin-bottom: 20px;
+            padding-left: 20px;
+            border-left: 3px solid #4285f4; /* Nexion/Google Blue Accent */
+        }
+
+        .feature-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: #202124;
+            margin-bottom: 4px;
+        }
+
+        .feature-desc {
+            font-size: 13px;
+            color: #5f6368;
+            line-height: 1.4;
+        }
+
+        .btn-container {
+            text-align: center;
+            margin: 35px 0;
+        }
+
+        .cta-button {
+            background-color: #1a73e8;
+            color: #ffffff !important;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #f1f3f4;
+            font-size: 12px;
+            color: #70757a;
+            text-align: center;
+            line-height: 1.5;
+        }
     </style>
-  </head>
-  <body>
-    <div class='wrapper'>
-      <div class='container'>
-        <div class='logo'>
-          <span>C</span><span>l</span><span>a</span><span>s</span><span
-          >s</span><span>f</span><span>l</span><span>o</span><span>w</span>
-        </div>
-
-        <div class='hero-svg'>
-          <svg width='64' height='64' viewBox='0 0 24 24' fill='#3f97e4'>
-            <path
-              d='M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z'
-            />
-          </svg>
-        </div>
-
-        <h1>Welcome to Classflow</h1>
-
-        <div class='divider'></div>
-
-        <div class='greeting'>Hi {{name}},</div>
-
-        <div class='message'>
-          Your account is all set. You can now use
-          <strong>Classflow</strong>
-          to manage academic info, join classrooms, and stay updated with your
-          classmates.
-        </div>
-
-        <div class='feature-list'>
-          <div class='feature-item'>
-            <div class='feature-icon-cell'>
-              <svg
-                class='icon-academic'
-                width='28'
-                height='28'
-                viewBox='0 0 24 24'
-              ><path
-                  d='M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z'
-                /></svg>
+</head>
+<body>
+    <div class="wrapper">
+        <div class='container'>
+            <div class='logo'>
+                <span>C</span><span>l</span><span>a</span><span>s</span><span>s</span><span>f</span><span>l</span><span>o</span><span>w</span>
             </div>
-            <div class='feature-content-cell'>
-              <div class='feature-title'>Academic Hub</div>
-              <div class='feature-desc'>Access exam dates, viva schedules, and
-                CT updates in one place.</div>
-            </div>
-          </div>
 
-          <div class='feature-item'>
-            <div class='feature-icon-cell'>
-              <svg
-                class='icon-join'
-                width='28'
-                height='28'
-                viewBox='0 0 24 24'
-              ><path
-                  d='M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z'
-                /></svg>
-            </div>
-            <div class='feature-content-cell'>
-              <div class='feature-title'>Quick Join</div>
-              <div class='feature-desc'>Use easy join codes to enter your
-                teachers' classrooms instantly.</div>
-            </div>
-          </div>
+            <h1>Welcome to Classflow</h1>
 
-          <div class='feature-item'>
-            <div class='feature-icon-cell'>
-              <svg
-                class='icon-profile'
-                width='28'
-                height='28'
-                viewBox='0 0 24 24'
-              ><path
-                  d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'
-                /></svg>
+            <div class='divider'></div>
+
+            <div class='greeting'>Hi {{name}},</div>
+
+            <div class='message'>
+                Your account is all set! You can now use <strong>Classflow</strong> to manage academic info, join classrooms, and stay updated with your classmates.
             </div>
-            <div class='feature-content-cell'>
-              <div class='feature-title'>Smart Profiles</div>
-              <div class='feature-desc'>Manage your student or teacher profile
-                and connect with groups.</div>
+
+            <div class="feature-list">
+                <div class="feature-item" style="border-left-color: #fbbc05;">
+                    <div class="feature-title">Academic Hub</div>
+                    <div class="feature-desc">Access exam dates, viva schedules, and CT updates in one place.</div>
+                </div>
+
+                <div class="feature-item" style="border-left-color: #34a853;">
+                    <div class="feature-title">Quick Join</div>
+                    <div class="feature-desc">Use easy join codes to enter your teachers' classrooms instantly.</div>
+                </div>
+
+                <div class="feature-item" style="border-left-color: #4285f4;">
+                    <div class="feature-title">Smart Profiles</div>
+                    <div class="feature-desc">Manage your student or teacher profile and connect with groups.</div>
+                </div>
             </div>
-          </div>
+
+            <div class='btn-container'>
+                <a href='{{dashboardUrl}}' class='cta-button'>Get Started</a>
+            </div>
+
+            <div class='footer'>
+                You received this email because you recently signed up for a Classflow Account.
+                <br /><br />
+                © {{year}} {{appName}} Inc.
+            </div>
         </div>
-
-        <div class='btn-container'>
-          <a href='{{dashboardUrl}}' class='cta-button'>Get Started</a>
-        </div>
-
-        <div class='footer'>
-          You received this email because you recently signed up for a Classflow
-          Account.
-          <br /><br />
-          ©
-          {{year}}
-          Classflow. All rights reserved.
-        </div>
-      </div>
     </div>
-  </body>
+</body>
 </html>

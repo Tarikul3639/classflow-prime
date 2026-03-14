@@ -92,7 +92,7 @@ const SignUpPage: React.FC = () => {
         );
 
       case "success":
-        return <StepSuccess onGoToLogin={() => router.push("/auth/sign-in")} />;
+        return <StepSuccess onGoToLogin={() => router.push("/sign-in")} />;
 
       default:
         return null;

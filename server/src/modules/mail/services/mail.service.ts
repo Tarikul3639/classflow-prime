@@ -35,7 +35,7 @@ export class MailService {
   }
 
   async sendVerificationEmail(email: string, name: string, code: string) {
-    const subject = 'Verify your email - ClassFlow';
+    const subject = 'Verify your email address';
     try {
       await this.mailerService.sendMail({
         to: email,
@@ -66,7 +66,7 @@ export class MailService {
   }
 
   async sendPasswordResetEmail(email: string, name: string, code: string) {
-    const subject = 'Reset your password - ClassFlow';
+    const subject = 'Reset your password';
     try {
       await this.mailerService.sendMail({
         to: email,
