@@ -9,6 +9,8 @@ import { InfoStep } from "./_components/InfoStep";
 import { OTPVerificationStep } from "./_components/OtpStep";
 import { StepSuccess } from "./_components/SuccessStep";
 import SignUpSteps from "./_components/SignUpSteps";
+import { clearSignupStatus } from "@/redux/slices/auth/reducers/signup.reducer";
+import { useAppDispatch } from "@/redux/hooks";
 
 type SignUpStepsType = "email" | "info" | "otp" | "success";
 
@@ -21,6 +23,7 @@ interface SignUpFormData {
 
 const SignUpPage: React.FC = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const [currentStep, setCurrentStep] = useState<SignUpStepsType>("email");
 
   const [formData, setFormData] = useState<SignUpFormData>(() => ({
@@ -41,7 +44,10 @@ const SignUpPage: React.FC = () => {
           <EmailInputStep
             email={formData.email}
             setEmail={(email) => setFormData((prev) => ({ ...prev, email }))}
-            onNext={() => handleNextStep("info")} // Email -> Info (no API call)
+            onNext={() => {
+              dispatch(clearSignupStatus());
+              handleNextStep("info");
+            }} // Email -> Info (no API call)
           />
         );
 
@@ -52,11 +58,21 @@ const SignUpPage: React.FC = () => {
             name={formData.name}
             setName={(name) => setFormData((prev) => ({ ...prev, name }))}
             password={formData.password}
-            setPassword={(password) => setFormData((prev) => ({ ...prev, password }))}
+            setPassword={(password) =>
+              setFormData((prev) => ({ ...prev, password }))
+            }
             avatarUrl={formData.avatarUrl}
-            setAvatarUrl={(avatarUrl) => setFormData((prev) => ({ ...prev, avatarUrl }))}
-            onNext={() => handleNextStep("otp")} // signupThunk success -> OTP
-            onBack={() => handleNextStep("email")}
+            setAvatarUrl={(avatarUrl) =>
+              setFormData((prev) => ({ ...prev, avatarUrl }))
+            }
+            onNext={() => {
+              dispatch(clearSignupStatus());
+              handleNextStep("otp");
+            }} // signupThunk success -> OTP
+            onBack={() => {
+              dispatch(clearSignupStatus());
+              handleNextStep("email");
+            }} // Back to email step
           />
         );
 
@@ -64,8 +80,14 @@ const SignUpPage: React.FC = () => {
         return (
           <OTPVerificationStep
             email={formData.email}
-            onNext={() => handleNextStep("success")}
-            onBack={() => handleNextStep("info")}
+            onNext={() => {
+              dispatch(clearSignupStatus());
+              handleNextStep("success");
+            }}
+            onBack={() => {
+              dispatch(clearSignupStatus());
+              handleNextStep("info");
+            }}
           />
         );
 

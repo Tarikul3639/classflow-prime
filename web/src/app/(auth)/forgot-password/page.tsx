@@ -8,11 +8,15 @@ import StepEmailInput from "./_components/StepEmailInput";
 import StepOTPVerification from "./_components/StepOTPVerification";
 import StepNewPassword from "./_components/StepNewPassword";
 import StepSuccess from "./_components/StepSuccess";
+import { clearPasswordResetStatus } from "@/redux/slices/auth/reducers/password-reset.reducer";
+import { useAppDispatch } from "@/redux/hooks";
 
 export type ForgotPasswordStep = "email" | "otp" | "password" | "success";
 
 const ForgotPasswordPage: React.FC = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+
   const [currentStep, setCurrentStep] = useState<ForgotPasswordStep>("email");
   const [email, setEmail] = useState("");
   const [verifiedCode, setVerifiedCode] = useState(""); // Store verified code
@@ -31,15 +35,24 @@ const ForgotPasswordPage: React.FC = () => {
           <StepEmailInput
             email={email}
             setEmail={setEmail}
-            onNext={() => handleNextStep("otp")}
+            onNext={() => {
+              dispatch(clearPasswordResetStatus());
+              handleNextStep("otp");
+            }}
           />
         );
       case "otp":
         return (
           <StepOTPVerification
             email={email}
-            onNext={(code) => handleNextStep("password", code)} // Pass code
-            onBack={() => handleNextStep("email")}
+            onNext={(code) => {
+              dispatch(clearPasswordResetStatus());
+              handleNextStep("password", code);
+            }} // Pass code
+            onBack={() => {
+              dispatch(clearPasswordResetStatus());
+              handleNextStep("email");
+            }}
           />
         );
       case "password":
@@ -47,12 +60,18 @@ const ForgotPasswordPage: React.FC = () => {
           <StepNewPassword
             email={email}
             code={verifiedCode} // Pass verified code
-            onNext={() => handleNextStep("success")}
-            onBack={() => handleNextStep("otp")}
+            onNext={() => {
+              dispatch(clearPasswordResetStatus());
+              handleNextStep("success");
+            }}
+            onBack={() => {
+              dispatch(clearPasswordResetStatus());
+              handleNextStep("otp");
+            }}
           />
         );
       case "success":
-        return <StepSuccess onGoToLogin={() => router.push("/signin")} />;
+        return <StepSuccess onGoToLogin={() => router.push("/sign-in")} />;
       default:
         return null;
     }

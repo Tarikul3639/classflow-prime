@@ -15,7 +15,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { SignInThunk } from "@/redux/slices/auth/thunks/signin.thunks";
-import { clearAuthError } from "@/redux/slices/auth/authSlice";
+import { clearSessionStatus } from "@/redux/slices/auth/reducers/session.reducer";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { Input } from "@/components/ui/Input";
 
@@ -29,8 +29,8 @@ const SignInPage: React.FC = () => {
   const dispatch = useAppDispatch();
 
   // Select auth state
-  const { user, isAuthenticated, loading, error  } = useAppSelector(
-    (state) => state.auth,
+  const { loading, error  } = useAppSelector(
+    (state) => state.auth.session.signIn,
   );
 
   const [showPassword, setShowPassword] = useState(false);
@@ -42,7 +42,7 @@ const SignInPage: React.FC = () => {
   // Clear error on unmount
   useEffect(() => {
     return () => {
-      dispatch(clearAuthError());
+      dispatch(clearSessionStatus());
     };
   }, [dispatch]);
 

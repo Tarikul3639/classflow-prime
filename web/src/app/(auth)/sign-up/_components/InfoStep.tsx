@@ -18,7 +18,7 @@ import ErrorMessage from "./Error";
 
 // Thunk + types
 import { signupThunk } from "@/redux/slices/auth/thunks/signup.thunk";
-import type { SignUpRequest } from "@/redux/slices/auth/types";
+import type { ISignUpRequest } from "@/redux/slices/auth/thunks/signup.thunk";
 
 interface InfoStepProps {
   name: string;
@@ -56,7 +56,7 @@ export const InfoStep: React.FC<InfoStepProps> = ({
 
   // If you use the new authSlice I provided earlier:
   const { loading: isLoading, error } = useAppSelector(
-    (state) => state.auth.signup,
+    (state) => state.auth.signup.signup,
   );
 
   const regenerateAvatar = useCallback(() => {
@@ -88,7 +88,7 @@ export const InfoStep: React.FC<InfoStepProps> = ({
 
     const { firstName, lastName } = splitName(name);
 
-    const payload: SignUpRequest = {
+    const payload: ISignUpRequest = {
       email: email.trim().toLowerCase(),
       password,
       firstName,

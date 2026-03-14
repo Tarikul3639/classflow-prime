@@ -1,6 +1,5 @@
 "use client";
 
-import React, { useState } from "react";
 import { Mail, ArrowRight, Loader2, ArrowLeft } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import Link from "next/link";
@@ -21,7 +20,7 @@ const StepEmailInput: React.FC<StepEmailInputProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const { loading: isLoading, error } = useAppSelector(
-    (state) => state.auth.passwordReset
+    (state) => state.auth.passwordReset.requestPasswordReset
   );
 
   const handleSubmit = (e: React.FormEvent) => {

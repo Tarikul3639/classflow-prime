@@ -44,7 +44,10 @@ export class MailService {
         context: {
           ...this.baseContext(),
           name,
+          username: name,
+          email,
           code,
+          title: 'Verify your email',
           expirationMinutes: this.codeExpiryMinutes,
           supportEmail: 'support@classflow.com',
         },
@@ -68,11 +71,14 @@ export class MailService {
       await this.mailerService.sendMail({
         to: email,
         subject,
-        template: './password-reset', // templates/password-reset.hbs
+        template: './verification', // templates/password-reset.hbs
         context: {
           ...this.baseContext(),
+          email,
           name,
+          username: name,
           code,
+          title: 'Reset your password',
           expirationMinutes: this.codeExpiryMinutes,
           supportEmail: 'support@classflow.com',
         },
@@ -127,7 +133,7 @@ export class MailService {
           ...this.baseContext(),
           name,
           changedAt: new Date().toLocaleString(),
-          signinUrl: this.buildAppUrl('/auth/login'),
+          signinUrl: this.buildAppUrl('/sign-in'),
           supportUrl: this.buildAppUrl('/support'),
           supportEmail: 'support@classflow.com',
         },

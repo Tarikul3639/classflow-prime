@@ -5,7 +5,7 @@ import { Lock, Eye, EyeOff, ArrowRight, Loader2, ArrowLeft } from "lucide-react"
 import { Input } from "@/components/ui/Input";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { confirmNewPasswordPasswordResetThunk } from "@/redux/slices/auth/thunks/password-reset.thunk";
-import { clearAuthError } from "@/redux/slices/auth/authSlice";
+import { clearPasswordResetStatus } from "@/redux/slices/auth/reducers/password-reset.reducer";
 import ErrorMessage from "./Error";
 
 interface StepNewPasswordProps {
@@ -23,7 +23,7 @@ const StepNewPassword: React.FC<StepNewPasswordProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector(
-    (state) => state.auth?.passwordReset
+    (state) => state.auth.passwordReset.confirmNewPasswordPasswordReset
   );
 
   const [password, setPassword] = useState("");
@@ -35,7 +35,7 @@ const StepNewPassword: React.FC<StepNewPasswordProps> = ({
   // Clear error on unmount
   useEffect(() => {
     return () => {
-      dispatch(clearAuthError());
+      dispatch(clearPasswordResetStatus());
     };
   }, [dispatch]);
 

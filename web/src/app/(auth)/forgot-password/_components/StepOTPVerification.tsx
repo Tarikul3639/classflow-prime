@@ -5,7 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { verifyCodePasswordResetThunk } from "@/redux/slices/auth/thunks/password-reset.thunk";
 import { resendCodePasswordResetThunk } from "@/redux/slices/auth/thunks/password-reset.thunk";
-import { clearAuthError } from "@/redux/slices/auth/authSlice";
+import { clearPasswordResetStatus } from "@/redux/slices/auth/reducers/password-reset.reducer";
 import ErrorMessage from "./Error";
 import OTPInputForm from "./OTPInputForm";
 import ResendOTPSection from "./ResendOTPSection";
@@ -22,7 +22,17 @@ const StepOTPVerification: React.FC<StepOTPVerificationProps> = ({
   onBack,
 }) => {
   const dispatch = useAppDispatch();
-  const status = useAppSelector((state) => state.auth?.passwordReset);
+    const isVerifying = useAppSelector(
+      (s) => s.auth.passwordReset.verifyCodePasswordReset.loading,
+    );
+    const isResending = useAppSelector(
+      (s) => s.auth.passwordReset.resendCodePasswordReset.loading,
+    );
+    const error = useAppSelector(
+      (s) =>
+        s.auth.passwordReset.verifyCodePasswordReset.error ||
+        s.auth.passwordReset.resendCodePasswordReset.error,
+    );
 
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
   const [timer, setTimer] = useState(120); // 2 minutes
@@ -31,7 +41,7 @@ const StepOTPVerification: React.FC<StepOTPVerificationProps> = ({
   // Clear error on unmount
   useEffect(() => {
     return () => {
-      dispatch(clearAuthError());
+      dispatch(clearPasswordResetStatus());
     };
   }, [dispatch]);
 
@@ -88,26 +98,26 @@ const StepOTPVerification: React.FC<StepOTPVerificationProps> = ({
         </p>
       </div>
 
-      <ErrorMessage error={status.error} />
+      <ErrorMessage error={error} />
 
       <OTPInputForm
         otp={otp}
         setOtp={setOtp}
         onSubmit={handleVerifyOTP}
-        isLoading={status.loading}
+        isLoading={isVerifying}
       />
 
       <ResendOTPSection
         timer={timer}
         canResend={canResend}
         onResend={handleResendOTP}
-        isLoading={status.loading}
+        isLoading={isResending}
       />
 
       <div className="mt-4 pt-4 border-t border-slate-100 text-center">
         <button
           onClick={onBack}
-          disabled={status.loading}
+          disabled={isVerifying || isResending}
           className="inline-flex items-center gap-2 text-slate-500 hover:text-[#399aef] text-xs md:text-sm font-bold transition-all group disabled:opacity-50"
         >
           <ArrowLeft

@@ -1,129 +1,190 @@
-<!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Email Verification</title>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      line-height: 1.6;
-      color: #333;
-      margin: 0;
-      padding: 0;
-      background-color: #f4f4f4;
-    }
-    .container {
-      max-width: 600px;
-      margin: 40px auto;
-      background: white;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .header {
-      background: linear-gradient(135deg, #399aef 0%, #3289d6 100%);
-      color: white;
-      padding: 40px 30px;
-      text-align: center;
-    }
-    .header h1 {
-      margin: 0;
-      font-size: 28px;
-      font-weight: 700;
-    }
-    .content {
-      padding: 40px 30px;
-    }
-    .greeting {
-      font-size: 18px;
-      font-weight: 600;
-      color: #0f172a;
-      margin-bottom: 20px;
-    }
-    .message {
-      font-size: 15px;
-      color: #64748b;
-      margin-bottom: 30px;
-      line-height: 1.6;
-    }
-    .code-container {
-      background: #f8fafc;
-      border: 2px dashed #399aef;
-      border-radius: 10px;
-      padding: 30px;
-      text-align: center;
-      margin: 30px 0;
-    }
-    .code {
-      font-size: 42px;
-      font-weight: 700;
-      color: #399aef;
-      letter-spacing: 8px;
-      font-family: 'Courier New', monospace;
-    }
-    .expiry {
-      font-size: 13px;
-      color: #94a3b8;
-      margin-top: 15px;
-    }
-    .warning {
-      background: #fef2f2;
-      border-left: 4px solid #ef4444;
-      padding: 15px;
-      margin: 30px 0;
-      border-radius: 6px;
-    }
-    .warning p {
-      margin: 0;
-      font-size: 14px;
-      color: #991b1b;
-    }
-    .footer {
-      background: #f8fafc;
-      padding: 30px;
-      text-align: center;
-      border-top: 1px solid #e2e8f0;
-    }
-    .footer p {
-      margin: 5px 0;
-      font-size: 13px;
-      color: #94a3b8;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h1>🎓 {{appName}}</h1>
-    </div>
-    
-    <div class="content">
-      <div class="greeting">Hi {{name}},</div>
-      
-      <p class="message">
-        Welcome to {{appName}}! To complete your registration and verify your email address, 
-        please use the verification code below:
-      </p>
-      
-      <div class="code-container">
-        <div class="code">{{code}}</div>
-        <div class="expiry">⏱️ This code will expire in {{expirationMinutes}} minutes</div>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>Password Reset Request</title>
+    <style>
+      body {
+        font-family: 'Google Sans', Roboto, Arial, sans-serif;
+        background-color: #ffffff;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+      }
+
+      .container {
+        max-width: 520px;
+        width: 95%;
+        margin: 40px auto;
+        border: 1px solid #dadce0;
+        border-radius: 8px;
+        padding: 40px;
+      }
+
+      /* Logo logic optimized for Emails */
+      .logo {
+        font-size: 25px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        text-align: center;
+        /* Force center align */
+        display: block;
+        width: 100%;
+      }
+
+      /* Letter spacing jate span gulo eksathe thake */
+      .logo span {
+        display: inline-block;
+        margin: 0 1px;
+      }
+
+      /* Google style colors */
+      .logo span:nth-child(1) {
+        color: #4285f4;
+      }
+
+      .logo span:nth-child(2) {
+        color: #ea4335;
+      }
+
+      .logo span:nth-child(3) {
+        color: #fbbc05;
+      }
+
+      .logo span:nth-child(4) {
+        color: #4285f4;
+      }
+
+      .logo span:nth-child(5) {
+        color: #34a853;
+      }
+
+      .logo span:nth-child(6) {
+        color: #ea4335;
+      }
+
+      .logo span:nth-child(7) {
+        color: #fbbc05;
+      }
+
+      .logo span:nth-child(8) {
+        color: #4285f4;
+      }
+
+      .logo span:nth-child(9) {
+        color: #34a853;
+      }
+
+      h1 {
+        color: #202124;
+        font-size: 24px;
+        font-weight: 400;
+        line-height: 1.3;
+        margin: 0 0 24px 0;
+        text-align: center;
+      }
+
+      .divider {
+        height: 1px;
+        background-color: #dadce0;
+        margin-bottom: 30px;
+      }
+
+      .message {
+        font-size: 14px;
+        color: #3c4043;
+        text-align: left;
+        line-height: 1.5;
+        margin-bottom: 25px;
+      }
+
+      .text-body {
+        font-size: 14px;
+        color: #3c4043;
+        line-height: 1.6;
+        margin-bottom: 20px;
+      }
+
+      .code-box {
+        font-size: 36px;
+        font-weight: 500;
+        color: #202124;
+        text-align: center;
+        margin: 30px 0;
+        letter-spacing: 4px;
+        padding: 10px;
+        background: #f8fafc;
+        border-radius: 4px;
+      }
+
+      .security-note {
+        font-size: 13px;
+        color: #70757a;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #f1f3f4;
+      }
+
+      .footer {
+        margin-top: 30px;
+        font-size: 12px;
+        color: #70757a;
+        text-align: center;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class='container'>
+      <div class='logo'>
+        <span>C</span><span>l</span><span>a</span><span>s</span><span
+        >s</span><span>f</span><span>l</span><span>o</span><span>w</span>
       </div>
-      
-      <p class="message">
-        Simply enter this code on the verification page to activate your account and start your journey with us.
-      </p>
-      
-      <div class="warning">
-        <p><strong>⚠️ Important:</strong> If you didn't create an account with {{appName}}, please ignore this email or contact our support team.</p>
+
+      <h1>{{title}}</h1>
+
+      <div class='divider'></div>
+
+      <div class='text-body'>
+        Hi
+        {{name}},
+      </div>
+
+      <div class='message'>
+        {{appName}}
+        received a request to use
+        <strong>{{email}}</strong>
+        as a verification email for the account
+        <strong>{{username}}</strong>.
+      </div>
+
+      <div class='code-box'>
+        {{code}}
+      </div>
+
+      <div class='text-body'>
+        This code will expire in
+        <strong>{{expirationMinutes}} minutes</strong>.
+      </div>
+
+      <div class='security-note'>
+        <strong>Didn't request this?</strong><br />
+        If you didn't make this request, someone else may be trying to access
+        your account. You can safely ignore this email; no changes will be made
+        without this code.
+      </div>
+
+      <div class='footer'>
+        ©
+        {{year}}
+        {{appName}}
+        Inc.
+        <br />
+        This email was sent to notify you about important security changes.
       </div>
     </div>
-    
-    <div class="footer">
-      <p><strong>{{appName}}</strong></p>
-      <p>© {{year}} {{appName}}. All rights reserved.</p>
-    </div>
-  </div>
-</body>
+  </body>
+
 </html>

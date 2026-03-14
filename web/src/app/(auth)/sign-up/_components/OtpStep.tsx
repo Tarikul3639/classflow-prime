@@ -67,11 +67,17 @@ export const OTPVerificationStep: React.FC<StepOTPVerificationProps> = ({
 }) => {
   const dispatch = useAppDispatch();
 
-  // If you use the new authSlice I provided earlier:
-  const { loading, error, lastAction } = useAppSelector((s) => s.auth.);
-
-  const isVerifying = loading && lastAction === "verify";
-  const isResending = loading && lastAction === "resend";
+  const isVerifying = useAppSelector(
+    (s) => s.auth.signup.verifySignupEmail.loading,
+  );
+  const isResending = useAppSelector(
+    (s) => s.auth.signup.resendSignupVerification.loading,
+  );
+  const error = useAppSelector(
+    (s) =>
+      s.auth.signup.verifySignupEmail.error ||
+      s.auth.signup.resendSignupVerification.error,
+  );
 
   const [otp, setOtp] = useState<string[]>(
     Array.from({ length: OTP_LEN }, () => ""),
