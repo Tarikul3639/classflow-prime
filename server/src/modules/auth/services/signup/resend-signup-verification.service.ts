@@ -10,6 +10,7 @@ import type { Model } from 'mongoose';
 import { ResendSignupVerificationDto } from '../../dto/signup/resend-signup-verification.dto';
 import { User, UserDocument } from '../../../../database/entities/user.entity';
 import { MailService } from '../../../../modules/mail/services/mail.service';
+import { EmailValidator } from 'src/shared/utils/email-validator.util';
 
 @Injectable()
 export class ResendSignupVerificationService {
@@ -19,10 +20,18 @@ export class ResendSignupVerificationService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     private readonly mailService: MailService,
-  ) {}
+  ) { }
 
   async execute(dto: ResendSignupVerificationDto) {
     const email = dto.email.toLowerCase().trim();
+
+    // 1) basic format check (so user gets clean message)
+    if (!EmailValidator.isValidFormat(dto.email)) {
+      throw new BadRequestException('Invalid email format');
+    }
+
+    // 2) disposable / temporary email block (this throws your message)
+    EmailValidator.validateOrThrow(dto.email);
 
     const user = await this.userModel
       .findOne({ email })
@@ -33,10 +42,10 @@ export class ResendSignupVerificationService {
     if (user.isEmailVerified) {
       throw new BadRequestException('Email already verified');
     }
- 
+
     // Check cooldown using entity method (throws if still in cooldown)
     user.assertEmailVerificationCooldown(this.resendCooldownSeconds);
-    
+
     // Create new code and update timestamp using entity method
     const code = user.createEmailVerificationCode(this.otpExpiryMinutes);
     user.emailVerificationLastSentAt = new Date();
@@ -46,7 +55,7 @@ export class ResendSignupVerificationService {
     try {
       await this.mailService.sendVerificationEmail(
         user.email,
-        (user as { fullName: string}).fullName || user.firstName,
+        (user as { fullName: string }).fullName || user.firstName,
         code,
       );
     } catch (_err) {

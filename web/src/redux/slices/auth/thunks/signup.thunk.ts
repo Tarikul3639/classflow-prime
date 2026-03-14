@@ -1,53 +1,112 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import { apiClient, getErrorMessage } from '@/lib/api/axios';
-import { SignUpRequest } from '../types';
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import { apiClient, getErrorMessage } from "@/lib/api/axios";
+import { IUser } from "../auth.types";
 
-export const signupThunk = createAsyncThunk<any, SignUpRequest>(
-  'auth/signup',
-  async (payload, { rejectWithValue }) => {
-    // client-side validation inside thunk
-    if (payload.firstName.trim().length < 2) {
-      return rejectWithValue("First name must be at least 2 characters");
-    }
+/**
+ * Signup thunk with client-side validation. Adjust validation rules as needed.
+ * Note: Client-side validation is for better UX, but always validate on the server as well for security.
+ * The payload includes firstName, lastName (optional), avatarUrl (optional) to allow for richer user profiles.
+ * Adjust the payload and response types based on your backend API.
+ */
 
-    if (!payload.password || payload.password.length < 6) {
-      return rejectWithValue("Password must be at least 6 characters");
-    }
+export interface ISignUpResponse {
+  message: string;
+  user: IUser;
+}
 
-    if (!payload.email || !/\S+@\S+\.\S+/.test(payload.email)) {
-      return rejectWithValue("Invalid email address");
-    }
+export type ISignUpRequest = {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName?: string;
+  avatarUrl?: string;
+};
 
-    try {
-      const { data } = await apiClient.post('/auth/signup', payload);
-      return data;
-    } catch (error) {
-      return rejectWithValue(getErrorMessage(error));
-    }
-  },
-);
+export const signupThunk = createAsyncThunk<
+  ISignUpResponse,
+  ISignUpRequest,
+  { rejectValue: string }
+>("auth/signup", async (payload, { rejectWithValue }) => {
+  // client-side validation inside thunk
+  if (payload.firstName.trim().length < 2) {
+    return rejectWithValue("First name must be at least 2 characters");
+  }
 
-export const verifySignupEmailThunk = createAsyncThunk<any, { email: string; code: string }>(
-  'auth/signupVerify',
-  async (payload, { rejectWithValue }) => {
-    try {
-      console.log(payload);
-      const { data } = await apiClient.post('/auth/signup/verify', payload);
-      return data;
-    } catch (error) {
-      return rejectWithValue(getErrorMessage(error));
-    }
-  },
-);
+  if (!payload.password || payload.password.length < 6) {
+    return rejectWithValue("Password must be at least 6 characters");
+  }
 
-export const resendSignupVerificationThunk = createAsyncThunk<any, { email: string }>(
-  'auth/signupResend',
-  async (payload, { rejectWithValue }) => {
-    try {
-      const { data } = await apiClient.post('/auth/signup/resend', payload);
-      return data;
-    } catch (error) {
-      return rejectWithValue(getErrorMessage(error));
-    }
-  },
-);
+  if (!payload.email || !/\S+@\S+\.\S+/.test(payload.email)) {
+    return rejectWithValue("Invalid email address");
+  }
+
+  try {
+    const { data } = await apiClient.post<ISignUpResponse>(
+      "/auth/signup",
+      payload,
+    );
+    return data;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+/**
+ * Additional thunks for email verification and resending verification code.
+ * Adjust endpoints and payloads as needed based on your backend API.
+ * Note: For security, the backend should handle verification and resending logic carefully to prevent abuse (e.g., rate limiting, not revealing if an email is registered or not, etc.).
+ */
+
+export interface IEmailVerifyRequest {
+  email: string;
+  code: string;
+}
+export interface IEmailVerifyResponse {
+  message: string;
+  user?: IUser;
+}
+
+export const verifySignupEmailThunk = createAsyncThunk<
+  IEmailVerifyResponse,
+  IEmailVerifyRequest,
+  { rejectValue: string }
+>("auth/signupVerify", async (payload, { rejectWithValue }) => {
+  try {
+    console.log(payload);
+    const { data } = await apiClient.post<IEmailVerifyResponse>(
+      "/auth/signup/verify",
+      payload,
+    );
+    return data;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});
+
+/**
+ * Resend verification code thunk. Adjust endpoint and payload as needed.
+ * Note: For security, you might want to implement rate limiting on the backend for this endpoint.
+ * The payload only requires the email, and the backend should handle sending the code if the email exists and is not already verified.
+ * */
+export interface IResendVerificationRequest {
+  email: string;
+}
+export interface IResendVerificationResponse {
+  message: string;
+}
+
+export const resendSignupVerificationThunk = createAsyncThunk<
+  IResendVerificationResponse,
+  IResendVerificationRequest,
+  { rejectValue: string }
+>("auth/signupResend", async (payload, { rejectWithValue }) => {
+  try {
+    const { data } = await apiClient.post<IResendVerificationResponse>(
+      "/auth/signup/resend",
+      payload,
+    );
+    return data;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error));
+  }
+});

@@ -1,14 +1,20 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import { apiClient, getErrorMessage } from '@/lib/api/axios';
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import { apiClient, getErrorMessage } from "@/lib/api/axios";
+import type { IUser } from "../auth.types";
 
-export const meThunk = createAsyncThunk<any>(
-    'auth/me',
-    async (_, { rejectWithValue }) => {
-        try {
-            const { data } = await apiClient.get('/auth/me');
-            return data;
-        } catch (error) {
-            return rejectWithValue(getErrorMessage(error));
-        }
-    },
-);
+/**
+ * Fetch current authenticated user.
+ * Backend: GET /auth/me
+ */
+export const meThunk = createAsyncThunk<
+    IUser,
+    void,
+    { rejectValue: string }
+>("auth/me", async (_: void, { rejectWithValue }) => {
+    try {
+        const { data } = await apiClient.get<IUser>("/auth/me");
+        return data;
+    } catch (error) {
+        return rejectWithValue(getErrorMessage(error));
+    }
+});

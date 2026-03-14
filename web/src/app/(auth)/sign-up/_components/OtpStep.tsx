@@ -21,9 +21,9 @@ import {
 } from "@/redux/slices/auth/thunks/signup.thunk";
 
 import type {
-  ResendSignupVerificationRequest,
-  VerifySignupEmailRequest,
-} from "@/redux/slices/auth/types";
+  IResendVerificationRequest,
+  IEmailVerifyRequest,
+} from "@/redux/slices/auth/thunks/signup.thunk";
 
 interface StepOTPVerificationProps {
   email: string;
@@ -68,7 +68,7 @@ export const OTPVerificationStep: React.FC<StepOTPVerificationProps> = ({
   const dispatch = useAppDispatch();
 
   // If you use the new authSlice I provided earlier:
-  const { loading, error, lastAction } = useAppSelector((s) => s.auth.signup);
+  const { loading, error, lastAction } = useAppSelector((s) => s.auth.);
 
   const isVerifying = loading && lastAction === "verify";
   const isResending = loading && lastAction === "resend";
@@ -135,7 +135,7 @@ export const OTPVerificationStep: React.FC<StepOTPVerificationProps> = ({
     const code = otp.join("");
     if (code.length !== OTP_LEN) return;
 
-    const payload: VerifySignupEmailRequest = { email, code };
+    const payload: IEmailVerifyRequest = { email, code };
     const resultAction = await dispatch(verifySignupEmailThunk(payload));
 
     if (verifySignupEmailThunk.fulfilled.match(resultAction)) {
@@ -146,7 +146,7 @@ export const OTPVerificationStep: React.FC<StepOTPVerificationProps> = ({
   const handleResendOTP = async () => {
     if (!canResend || isResending) return;
 
-    const payload: ResendSignupVerificationRequest = { email };
+    const payload: IResendVerificationRequest = { email };
     const resultAction = await dispatch(resendSignupVerificationThunk(payload));
 
     if (resendSignupVerificationThunk.fulfilled.match(resultAction)) {

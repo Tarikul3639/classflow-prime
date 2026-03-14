@@ -1,4 +1,5 @@
 import { BadRequestException, Logger } from '@nestjs/common';
+import { DISPOSABLE_EMAIL_DOMAINS } from './disposable-email-domains';
 
 /**
  * Email Validation Utility
@@ -11,61 +12,7 @@ export class EmailValidator {
   private static readonly logger = new Logger(EmailValidator.name);
 
   // List of disposable/temporary email domains
-  private static readonly DISPOSABLE_DOMAINS = [
-    '10minutemail.com',
-    'guerrillamail.com',
-    'tempmail.com',
-    'temp-mail.org',
-    'throwaway.email',
-    'maildrop.cc',
-    'mailinator.com',
-    'yopmail.com',
-    'trashmail.com',
-    'fakeinbox.com',
-    'getairmail.com',
-    'getnada.com',
-    'dispostable.com',
-    'mohmal.com',
-    'sharklasers.com',
-    'grr.la',
-    'guerrillamailblock.com',
-    'pokemail.net',
-    'spam4.me',
-    'tmpeml.info',
-    'emailondeck.com',
-    'mintemail.com',
-    'mytemp.email',
-    'temp-mail.io',
-    'tempail.com',
-    'throwawaymail.com',
-    'guerrillamail.biz',
-    'guerrillamail.de',
-    'spamgourmet.com',
-    'mailnesia.com',
-    '33mail.com',
-    'mailcatch.com',
-    'burnermail.io',
-    'cock.li',
-    'anonymousemail.me',
-    'tempmail.org',
-    'indevgo.com',
-    'ozsaip.com',
-    'denipl.net',
-    'sharklasers.com',      
-    'getnada.com',        
-    'moakt.com',           
-    'dispostable.com',
-    'mailnesia.com',
-    'mail-temp.com',
-    'tempmailaddress.com',
-    'anonymousemail.me',
-    'protonmail.com.de',  
-    'tuta.io',            
-    'temp-mail.io',      
-    'minuteinbox.com',
-    'crazymailing.com',
-    '0121.com'
-  ];
+  private static readonly DISPOSABLE_DOMAINS = [...DISPOSABLE_EMAIL_DOMAINS];
 
   /**
    * Extract domain from email address

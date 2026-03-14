@@ -6,6 +6,7 @@ import { VerifySignupEmailDto } from '../../dto/signup/verify-signup-email.dto';
 import { User, UserDocument } from '../../../../database/entities/user.entity';
 import { MailService } from '../../../../modules/mail/services/mail.service';
 import { UserSanitizerService } from '../sanitizer/user-sanitizer.service';
+import { EmailValidator } from 'src/shared/utils/email-validator.util';
 
 @Injectable()
 export class VerifySignupEmailService {
@@ -16,6 +17,14 @@ export class VerifySignupEmailService {
     ) { }
 
     async execute(dto: VerifySignupEmailDto) {
+
+        // 1) basic format check (so user gets clean message)
+        if (!EmailValidator.isValidFormat(dto.email)) {
+            throw new BadRequestException('Invalid email format');
+        }
+
+        // 2) disposable / temporary email block (this throws your message)
+        EmailValidator.validateOrThrow(dto.email);
 
         // MUST select hidden fields for verification
         const user = await this.userModel
