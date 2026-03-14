@@ -1,24 +1,45 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { Lock, User, ArrowRight, Loader2, ArrowLeft, RefreshCw } from "lucide-react";
+import React, { useCallback } from "react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Loader2,
+  Lock,
+  RefreshCw,
+  User,
+} from "lucide-react";
+
 import { Input } from "@/components/ui/Input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { signUpThunk } from "@/redux/slices/auth/thunks/signUpThunk";
+
 import ErrorMessage from "./Error";
+
+// Thunk + types
+import { signupThunk } from "@/redux/slices/auth/thunks/signup.thunk";
+import type { SignUpRequest } from "@/redux/slices/auth/types";
 
 interface InfoStepProps {
   name: string;
   setName: (name: string) => void;
+
   password: string;
   setPassword: (password: string) => void;
+
   avatarUrl: string;
   setAvatarUrl: (url: string) => void;
+
   onNext: () => void;
   onBack: () => void;
-  email: string; 
+
+  email: string;
 }
+
+type SplitNameResult = {
+  firstName: string;
+  lastName?: string;
+};
 
 export const InfoStep: React.FC<InfoStepProps> = ({
   name,
@@ -32,8 +53,10 @@ export const InfoStep: React.FC<InfoStepProps> = ({
   email,
 }) => {
   const dispatch = useAppDispatch();
+
+  // If you use the new authSlice I provided earlier:
   const { loading: isLoading, error } = useAppSelector(
-    (state) => state.auth?.requestStatus?.signUp || {},
+    (state) => state.auth.signup,
   );
 
   const regenerateAvatar = useCallback(() => {
@@ -41,29 +64,45 @@ export const InfoStep: React.FC<InfoStepProps> = ({
     setAvatarUrl(`https://api.dicebear.com/7.x/avataaars/svg?seed=${newSeed}`);
   }, [setAvatarUrl]);
 
-  const getInitials = (n: string) =>
-    n
-      ? n.split(" ").map((x) => x[0]).join("").toUpperCase().slice(0, 2)
-      : "CF";
+  const getInitials = (n: string): string => {
+    if (!n?.trim()) return "CF";
+    return n
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .map((x) => x[0]?.toUpperCase() ?? "")
+      .join("")
+      .slice(0, 2);
+  };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const splitName = (full: string): SplitNameResult => {
+    const parts = full.trim().split(/\s+/).filter(Boolean);
+    return {
+      firstName: parts[0] ?? "",
+      lastName: parts.slice(1).join(" ") || undefined,
+    };
+  };
+
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
 
-    // basic validation
-    if (!email) return;
-    if (password.length < 6) return;
+    // basic validation (UI-level; backend will validate too)
+    if (!email?.trim()) return;
+    if (password.trim().length < 6) return;
 
-    const result = await dispatch(
-      signUpThunk({
-        name,
-        email,
-        password,
-        avatarUrl,
-      } as any),
-    );
+    const { firstName, lastName } = splitName(name);
 
-    if (signUpThunk.fulfilled.match(result)) {
-      // backend signup -> sends verification code
+    const payload: SignUpRequest = {
+      email: email.trim().toLowerCase(),
+      password,
+      firstName,
+      lastName,
+      avatarUrl,
+    };
+
+    const resultAction = await dispatch(signupThunk(payload));
+
+    if (signupThunk.fulfilled.match(resultAction)) {
       onNext(); // go to OTP
     }
   };
@@ -72,12 +111,13 @@ export const InfoStep: React.FC<InfoStepProps> = ({
     <form onSubmit={handleSubmit} className="space-y-2">
       <div className="flex flex-col items-center md:mb-2">
         <div className="relative">
-          <Avatar className="w-16 md:w-20 h-16 md:h-20 border-4 border-[#399aef]/10 shadow-sm ring-1 ring-blue-200">
+          <Avatar className="w-16 h-16 md:w-20 md:h-20 border-4 border-[#399aef]/10 shadow-sm ring-1 ring-blue-200">
             <AvatarImage src={avatarUrl} alt="Avatar" />
             <AvatarFallback className="bg-[#399aef] text-white font-bold">
               {getInitials(name)}
             </AvatarFallback>
           </Avatar>
+
           <button
             type="button"
             onClick={regenerateAvatar}
@@ -134,7 +174,7 @@ export const InfoStep: React.FC<InfoStepProps> = ({
           </>
         ) : (
           <>
-            Create & Send Code <ArrowRight className="size-4 md:size-4.5" />
+            Create &amp; Send Code <ArrowRight className="size-4 md:size-4.5" />
           </>
         )}
       </button>
@@ -146,7 +186,10 @@ export const InfoStep: React.FC<InfoStepProps> = ({
           disabled={isLoading}
           className="inline-flex items-center gap-2 text-slate-500 hover:text-[#399aef] text-xs md:text-sm font-bold transition-all group disabled:opacity-50"
         >
-          <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+          <ArrowLeft
+            size={16}
+            className="group-hover:-translate-x-1 transition-transform"
+          />
           Change Email
         </button>
       </div>

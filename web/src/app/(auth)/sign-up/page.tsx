@@ -2,9 +2,8 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useRouter } from "next/navigation";
-import { signUpThunk } from "@/redux/slices/auth/thunks/signUpThunk";
+
 import { EmailInputStep } from "./_components/EmailStep";
 import { InfoStep } from "./_components/InfoStep";
 import { OTPVerificationStep } from "./_components/OtpStep";
@@ -17,31 +16,23 @@ interface SignUpFormData {
   name: string;
   email: string;
   password: string;
-  verificationCode: string;
-  avatarUrl?: string;
+  avatarUrl: string;
 }
 
-const RegisterPage: React.FC = () => {
+const SignUpPage: React.FC = () => {
   const router = useRouter();
-  const dispatch = useAppDispatch();
   const [currentStep, setCurrentStep] = useState<SignUpStepsType>("email");
-  const { loading: isLoading, error } = useAppSelector(
-    (state) => state.auth?.requestStatus?.signUp || {},
-  );
 
   const [formData, setFormData] = useState<SignUpFormData>(() => ({
     name: "",
     email: "",
     password: "",
-    verificationCode: "",
     avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${Math.random()
       .toString(36)
       .substring(7)}`,
   }));
 
-  const handleNextStep = (step: SignUpStepsType) => {
-    setCurrentStep(step);
-  };
+  const handleNextStep = (step: SignUpStepsType) => setCurrentStep(step);
 
   const renderStep = () => {
     switch (currentStep) {
@@ -49,22 +40,22 @@ const RegisterPage: React.FC = () => {
         return (
           <EmailInputStep
             email={formData.email}
-            setEmail={(email) => setFormData({ ...formData, email })}
-            onNext={() => handleNextStep("otp")}
+            setEmail={(email) => setFormData((prev) => ({ ...prev, email }))}
+            onNext={() => handleNextStep("info")} // Email -> Info (no API call)
           />
         );
 
       case "info":
         return (
           <InfoStep
-            email={formData.email} 
+            email={formData.email}
             name={formData.name}
-            setName={(name) => setFormData({ ...formData, name })}
+            setName={(name) => setFormData((prev) => ({ ...prev, name }))}
             password={formData.password}
-            setPassword={(password) => setFormData({ ...formData, password })}
-            avatarUrl={formData.avatarUrl || ""}
-            setAvatarUrl={(url) => setFormData({ ...formData, avatarUrl: url })}
-            onNext={() => handleNextStep("otp")} //
+            setPassword={(password) => setFormData((prev) => ({ ...prev, password }))}
+            avatarUrl={formData.avatarUrl}
+            setAvatarUrl={(avatarUrl) => setFormData((prev) => ({ ...prev, avatarUrl }))}
+            onNext={() => handleNextStep("otp")} // signupThunk success -> OTP
             onBack={() => handleNextStep("email")}
           />
         );
@@ -79,7 +70,8 @@ const RegisterPage: React.FC = () => {
         );
 
       case "success":
-        return <StepSuccess onGoToLogin={() => router.push("/login")} />;
+        return <StepSuccess onGoToLogin={() => router.push("/auth/sign-in")} />;
+
       default:
         return null;
     }
@@ -103,11 +95,11 @@ const RegisterPage: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           className="bg-white rounded-2xl shadow-xl shadow-blue-100/50 p-6 sm:p-8 border border-slate-200"
         >
-          <div>{renderStep()}</div>
+          {renderStep()}
         </motion.div>
       </div>
     </div>
   );
 };
 
-export default RegisterPage;
+export default SignUpPage;

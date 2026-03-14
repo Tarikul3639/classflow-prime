@@ -1,12 +1,9 @@
 "use client";
 
 import React from "react";
-import { Mail, ArrowRight, Loader2 } from "lucide-react";
+import { Mail, ArrowRight } from "lucide-react";
 import { Input } from "@/components/ui/Input";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import ErrorMessage from "./Error";
 import AuthFooter from "./AuthFooter";
-import { sendSignupVerificationThunk } from "@/redux/slices/auth/thunks/sendSignupVerificationThunk";
 
 interface StepEmailInputProps {
   email: string;
@@ -19,17 +16,10 @@ export const EmailInputStep: React.FC<StepEmailInputProps> = ({
   setEmail,
   onNext,
 }) => {
-  const dispatch = useAppDispatch();
-  const { loading: isLoading, error } = useAppSelector(
-    (state) => state.auth?.requestStatus?.sendSignupVerification || {},
-  );
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const result = await dispatch(sendSignupVerificationThunk({ email }));
-    if (sendSignupVerificationThunk.fulfilled.match(result)) {
-      onNext();
-    }
+    if (!email) return;
+    onNext();
   };
 
   return (
@@ -43,8 +33,6 @@ export const EmailInputStep: React.FC<StepEmailInputProps> = ({
         </p>
       </div>
 
-      <ErrorMessage error={error} />
-
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input
           required
@@ -54,24 +42,13 @@ export const EmailInputStep: React.FC<StepEmailInputProps> = ({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           icon={Mail}
-          disabled={isLoading}
         />
 
         <button
           type="submit"
-          disabled={isLoading}
-          className="w-full py-3 bg-[#399aef] text-white text-xs md:text-sm font-medium rounded-lg hover:bg-[#3289d6] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+          className="w-full py-3 bg-[#399aef] text-white text-xs md:text-sm font-medium rounded-lg hover:bg-[#3289d6] transition-all flex items-center justify-center gap-2"
         >
-          {isLoading ? (
-            <>
-              <Loader2 className="animate-spin size-5" />
-              Sending...
-            </>
-          ) : (
-            <>
-              Continue <ArrowRight className="size-4 md:size-4.5" />
-            </>
-          )}
+          Continue <ArrowRight className="size-4 md:size-4.5" />
         </button>
       </form>
 

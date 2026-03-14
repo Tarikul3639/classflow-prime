@@ -1,10 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import type { Model } from 'mongoose';
 
 import { RequestPasswordResetDto } from '../../dto/password-reset/request-password-reset.dto';
 import { User, UserDocument } from '../../../../database/entities/user.entity';
-import { OtpService } from '../otp/otp.service';
 import { MailService } from '../../../../modules/mail/services/mail.service';
 
 @Injectable()
@@ -14,24 +13,31 @@ export class ResendPasswordResetService {
 
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-    private readonly otpService: OtpService,
     private readonly mailService: MailService,
   ) {}
 
   async execute(dto: RequestPasswordResetDto) {
-    const user = await this.userModel.findOne({ email: dto.email.toLowerCase() });
+    const email = dto.email.toLowerCase().trim();
+
+    // passwordResetCode/passwordResetExpiresAt are select:false, but we don't need to read them here.
+    const user = await this.userModel.findOne({ email });
     if (!user) throw new NotFoundException('User not found');
 
-    this.otpService.enforceCooldown(user.lastPasswordResetRequestAt, this.cooldownSeconds);
+    // no OtpService: entity cooldown helper
+    // (uses lastPasswordResetRequestAt internally)
+    user.assertPasswordResetCooldown(this.cooldownSeconds);
 
-    const { code, expiresAt } = this.otpService.createCode(this.otpExpiryMinutes);
+    // no OtpService: entity generates code + sets expiresAt internally
+    const code = user.createPasswordResetCode(this.otpExpiryMinutes);
 
-    user.passwordResetCode = code;
-    user.passwordResetExpiresAt = expiresAt;
     user.lastPasswordResetRequestAt = new Date();
     await user.save();
 
-    await this.mailService.sendPasswordResetEmail(user.email, user.fullName || user.firstName, code);
+    await this.mailService.sendPasswordResetEmail(
+      user.email,
+      (user as { fullName : string}).fullName || user.firstName,
+      code,
+    );
 
     return { message: 'Password reset code resent successfully' };
   }

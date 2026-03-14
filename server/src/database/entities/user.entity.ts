@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { IUser, IUserDocument } from '../interface/user.interface';
+import { BadRequestException } from '@nestjs/common/exceptions/bad-request.exception';
 
 export type UserDocument = User & IUserDocument;
 
@@ -158,7 +159,7 @@ export class User implements IUser {
   @Prop()
   lastLoginIp?: string;
 
-  // ✅ Make it non-optional to avoid runtime crashes in instance methods
+  // Make it non-optional to avoid runtime crashes in instance methods
   @Prop({ type: [String], default: [] })
   refreshTokens: string[];
 
@@ -198,7 +199,6 @@ export const UserSchema = SchemaFactory.createForClass(User);
 
 // ==================== Indexes ====================
 UserSchema.index({ isEmailVerified: 1 });
-UserSchema.index({ emailVerificationCode: 1 });
 UserSchema.index({ passwordResetCode: 1 }); // ✅ fixed (was passwordResetToken)
 UserSchema.index({ createdAt: -1 });
 
@@ -222,7 +222,7 @@ UserSchema.virtual('initials').get(function (this: UserDocument) {
 });
 
 // ==================== Pre-save Middleware ====================
-UserSchema.pre<UserDocument>('save', async function (next) {
+UserSchema.pre<UserDocument>('save', async function () {
   // Hash password if modified
   if (this.isModified('password')) {
     const salt = await bcrypt.genSalt(10);
@@ -259,9 +259,13 @@ UserSchema.methods.comparePassword = async function (
 };
 
 // Check if password was changed after JWT was issued
-UserSchema.methods.changedPasswordAfter = function (JWTTimestamp: number): boolean {
+UserSchema.methods.changedPasswordAfter = function (
+  JWTTimestamp: number,
+): boolean {
   if (this.passwordChangedAt) {
-    const changedTimestamp = Math.floor(this.passwordChangedAt.getTime() / 1000);
+    const changedTimestamp = Math.floor(
+      this.passwordChangedAt.getTime() / 1000,
+    );
     return JWTTimestamp < changedTimestamp;
   }
   return false;
@@ -273,16 +277,17 @@ UserSchema.methods.isAccountLocked = function (): boolean {
 };
 
 // Increment failed login attempts
-UserSchema.methods.incrementFailedLoginAttempts = async function (): Promise<void> {
-  this.failedLoginAttempts += 1;
+UserSchema.methods.incrementFailedLoginAttempts =
+  async function (): Promise<void> {
+    this.failedLoginAttempts += 1;
 
-  // Lock account after 5 failed attempts for 30 minutes
-  if (this.failedLoginAttempts >= 5) {
-    this.accountLockedUntil = new Date(Date.now() + 30 * 60 * 1000);
-  }
+    // Lock account after 5 failed attempts for 30 minutes
+    if (this.failedLoginAttempts >= 5) {
+      this.accountLockedUntil = new Date(Date.now() + 30 * 60 * 1000);
+    }
 
-  await this.save();
-};
+    await this.save();
+  };
 
 // Reset failed login attempts
 UserSchema.methods.resetFailedLoginAttempts = async function (): Promise<void> {
@@ -292,21 +297,31 @@ UserSchema.methods.resetFailedLoginAttempts = async function (): Promise<void> {
 };
 
 // Create email verification code (6 digits)
-UserSchema.methods.createEmailVerificationCode = function (): string {
-  const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+UserSchema.methods.createEmailVerificationCode = function (
+  expiresInMinutes: number = 15,
+): string {
+  const verificationCode = Math.floor(
+    100000 + Math.random() * 900000,
+  ).toString();
 
   this.emailVerificationCode = verificationCode;
-  this.emailVerificationExpiresAt = new Date(Date.now() + 15 * 60 * 1000);
+  this.emailVerificationExpiresAt = new Date(
+    Date.now() + expiresInMinutes * 60 * 1000,
+  );
 
   return verificationCode;
 };
 
 // Create password reset code (6 digits)
-UserSchema.methods.createPasswordResetCode = function (): string {
+UserSchema.methods.createPasswordResetCode = function (
+  expiresInMinutes: number = 15,
+): string {
   const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
 
   this.passwordResetCode = resetCode;
-  this.passwordResetExpiresAt = new Date(Date.now() + 15 * 60 * 1000);
+  this.passwordResetExpiresAt = new Date(
+    Date.now() + expiresInMinutes * 60 * 1000,
+  );
 
   this.lastPasswordResetRequestAt = new Date();
   this.passwordResetAttempts += 1;
@@ -316,24 +331,68 @@ UserSchema.methods.createPasswordResetCode = function (): string {
 
 // Verify email verification code
 UserSchema.methods.verifyEmailCode = function (code: string): boolean {
-  return (
-    this.emailVerificationCode === code &&
-    !!this.emailVerificationExpiresAt &&
-    this.emailVerificationExpiresAt > new Date()
-  );
+  if (!this.emailVerificationCode || !this.emailVerificationExpiresAt) {
+    throw new BadRequestException(
+      'No verification code found. Please request a new one.',
+    );
+  }
+
+  if (this.emailVerificationExpiresAt.getTime() < Date.now()) {
+    throw new BadRequestException('Code expired. Please request a new one.');
+  }
+
+  if (this.emailVerificationCode !== code) {
+    throw new BadRequestException('Invalid code.');
+  }
+
+  return true;
+};
+
+/**
+ * Cooldown check for resending email verification code
+ * - cooldownSeconds is optional
+ * - default cooldown = 60 seconds
+ */
+UserSchema.methods.assertEmailVerificationCooldown = function (
+  cooldownSeconds: number = 60,
+): void {
+  const lastSentAt: Date | undefined | null = this.emailVerificationLastSentAt;
+
+  if (!lastSentAt) return;
+
+  const nextAllowedAt = new Date(lastSentAt.getTime() + cooldownSeconds * 1000);
+
+  if (nextAllowedAt > new Date()) {
+    const remaining = Math.ceil((nextAllowedAt.getTime() - Date.now()) / 1000);
+    throw new BadRequestException(
+      `Please wait ${remaining}s before requesting a new code.`,
+    );
+  }
 };
 
 // Verify password reset code
 UserSchema.methods.verifyResetCode = function (code: string): boolean {
-  return (
-    this.passwordResetCode === code &&
-    !!this.passwordResetExpiresAt &&
-    this.passwordResetExpiresAt > new Date()
-  );
+  if (!this.passwordResetCode || !this.passwordResetExpiresAt) {
+    throw new BadRequestException(
+      'No reset code found. Please request a new one.',
+    );
+  }
+
+  if (this.passwordResetExpiresAt.getTime() < Date.now()) {
+    throw new BadRequestException('Code expired. Please request a new one.');
+  }
+
+  if (this.passwordResetCode !== code) {
+    throw new BadRequestException('Invalid code.');
+  }
+
+  return true;
 };
 
 // Reset password
-UserSchema.methods.resetPassword = async function (newPassword: string): Promise<void> {
+UserSchema.methods.resetPassword = async function (
+  newPassword: string,
+): Promise<void> {
   this.password = newPassword; // hashed by pre-save middleware
   this.passwordResetCode = undefined;
   this.passwordResetExpiresAt = undefined;
@@ -342,8 +401,32 @@ UserSchema.methods.resetPassword = async function (newPassword: string): Promise
   await this.save();
 };
 
+/**
+ * Cooldown check for password reset email verification code
+ * - cooldownSeconds is optional
+ * - default cooldown = 60 seconds
+ */
+UserSchema.methods.assertPasswordResetCooldown = function (
+  cooldownSeconds: number = 60,
+): void {
+  const lastSentAt: Date | undefined | null = this.lastPasswordResetRequestAt;
+
+  if (!lastSentAt) return;
+
+  const nextAllowedAt = new Date(lastSentAt.getTime() + cooldownSeconds * 1000);
+
+  if (nextAllowedAt > new Date()) {
+    const remaining = Math.ceil((nextAllowedAt.getTime() - Date.now()) / 1000);
+    throw new BadRequestException(
+      `Please wait ${remaining}s before requesting a new reset code.`,
+    );
+  }
+};
+
 // Add refresh token
-UserSchema.methods.addRefreshToken = async function (token: string): Promise<void> {
+UserSchema.methods.addRefreshToken = async function (
+  token: string,
+): Promise<void> {
   if (!Array.isArray(this.refreshTokens)) this.refreshTokens = [];
 
   if (this.refreshTokens.length >= 5) {
@@ -354,7 +437,9 @@ UserSchema.methods.addRefreshToken = async function (token: string): Promise<voi
 };
 
 // Remove refresh token
-UserSchema.methods.removeRefreshToken = async function (token: string): Promise<void> {
+UserSchema.methods.removeRefreshToken = async function (
+  token: string,
+): Promise<void> {
   if (!Array.isArray(this.refreshTokens)) this.refreshTokens = [];
   this.refreshTokens = this.refreshTokens.filter((t) => t !== token);
   await this.save();

@@ -1,46 +1,51 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import type { Model } from 'mongoose';
 
 import { ResetPasswordDto } from '../../dto/password-reset/reset-password.dto';
 import { User, UserDocument } from '../../../../database/entities/user.entity';
-import { OtpService } from '../otp/otp.service';
 import { MailService } from '../../../../modules/mail/services/mail.service';
 
 @Injectable()
 export class ConfirmPasswordResetService {
-  constructor(
-    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-    private readonly otpService: OtpService,
-    private readonly mailService: MailService,
-  ) {}
+    constructor(
+        @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+        private readonly mailService: MailService,
+    ) { }
 
-  async execute(dto: ResetPasswordDto) {
-    const user = await this.userModel.findOne({ email: dto.email.toLowerCase() });
-    if (!user) throw new NotFoundException('User not found');
+    async execute(dto: ResetPasswordDto) {
+        const email = dto.email.toLowerCase().trim();
 
-    this.otpService.assertValidCode({
-      expectedCode: user.passwordResetCode,
-      expectedExpiresAt: user.passwordResetExpiresAt,
-      providedCode: dto.code,
-      purpose: 'PASSWORD_RESET',
-    });
+        // must select hidden reset fields
+        const user = await this.userModel.findOne({ email });
 
-    user.password = await bcrypt.hash(dto.newPassword, 10);
+        if (!user) throw new NotFoundException('User not found');
 
-    // clear reset fields
-    user.passwordResetCode = undefined;
-    user.passwordResetExpiresAt = undefined;
+        // use entity method (no OtpService)
+        user.verifyResetCode(dto.code);
 
-    // invalidate sessions
-    user.refreshTokens = [];
+        // IMPORTANT: do NOT bcrypt.hash here because pre-save already hashes when password modified
+        user.password = dto.newPassword;
 
-    await user.save();
+        // clear reset fields
+        user.passwordResetCode = undefined;
+        user.passwordResetExpiresAt = undefined;
+        user.passwordResetAttempts = 0;
+        user.lastPasswordResetRequestAt = undefined;
 
-    // optional: send security email
-    await this.mailService.sendPasswordChangedEmail(user.email, user.fullName || user.firstName);
+        // invalidate sessions
+        user.refreshTokens = [];
 
-    return { message: 'Password reset successfully' };
-  }
+        await user.save();
+
+        // optional: do not fail reset if mail fails
+        try {
+            await this.mailService.sendPasswordChangedEmail(
+                user.email,
+                (user as { fullName: string }).fullName || user.firstName,
+            );
+        } catch { }
+
+        return { message: 'Password reset successfully' };
+    }
 }

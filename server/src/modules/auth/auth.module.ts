@@ -18,7 +18,6 @@ import { PasswordResetController } from './controllers/password-reset.controller
 // --------------------------------------------------
 
 // Reusable helpers
-import { OtpService } from './services/otp/otp.service';
 import { TokenService } from './services/token/token.service';
 import { UserSanitizerService } from './services/sanitizer/user-sanitizer.service';
 
@@ -86,7 +85,6 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
   ],
   providers: [
     // reusable core helpers
-    OtpService,
     TokenService,
     UserSanitizerService,
 

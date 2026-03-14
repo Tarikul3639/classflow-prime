@@ -9,6 +9,7 @@ interface BaseEmailContext {
 @Injectable()
 export class MailService {
   private readonly logger = new Logger(MailService.name);
+  private readonly codeExpiryMinutes = 15;
 
   constructor(private readonly mailerService: MailerService) {}
 
@@ -30,6 +31,7 @@ export class MailService {
           ...this.baseContext(),
           name,
           code,
+          expirationMinutes: this.codeExpiryMinutes,
           supportEmail: 'support@classflow.com',
         },
       });
@@ -57,6 +59,7 @@ export class MailService {
           ...this.baseContext(),
           name,
           code,
+          expirationMinutes: this.codeExpiryMinutes,
           supportEmail: 'support@classflow.com',
         },
       });

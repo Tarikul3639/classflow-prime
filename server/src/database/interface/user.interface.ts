@@ -57,17 +57,31 @@ export interface IUser {
 
 // ==================== User Document Interface (Mongoose) ====================
 export interface IUserDocument extends IUser, Document {
-  // Instance Methods
+  // ==================== Instance Methods ====================
+
   comparePassword(candidatePassword: string): Promise<boolean>;
   changedPasswordAfter(JWTTimestamp: number): boolean;
   isAccountLocked(): boolean;
+
   incrementFailedLoginAttempts(): Promise<void>;
   resetFailedLoginAttempts(): Promise<void>;
-  createEmailVerificationCode(): string;
-  createPasswordResetCode(): string;
+
+  // OTP helpers
+  createEmailVerificationCode(expiresInMinutes?: number): string;
+  createPasswordResetCode(expiresInMinutes?: number): string;
+
   verifyEmailCode(code: string): boolean;
+
+  // Cooldown helper (default 60s in implementation)
+  assertEmailVerificationCooldown(cooldownSeconds?: number): void;
+
   verifyResetCode(code: string): boolean;
+
   resetPassword(newPassword: string): Promise<void>;
+
+  // Cooldown helper (default 60s in implementation)
+  assertPasswordResetCooldown(cooldownSeconds?: number): void;
+
   addRefreshToken(token: string): Promise<void>;
   removeRefreshToken(token: string): Promise<void>;
 }

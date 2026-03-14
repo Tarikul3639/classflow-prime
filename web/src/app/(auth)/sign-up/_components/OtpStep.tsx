@@ -1,19 +1,29 @@
 "use client";
 
 import React, {
-  useEffect,
-  useRef,
-  useState,
-  KeyboardEvent,
   ClipboardEvent,
   forwardRef,
   InputHTMLAttributes,
+  KeyboardEvent,
+  useEffect,
+  useRef,
+  useState,
 } from "react";
-import { ArrowLeft, RefreshCw, Clock, ArrowRight, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Clock, Loader2, RefreshCw } from "lucide-react";
+
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { verifyEmailThunk } from "@/redux/slices/auth/thunks/verifyEmailThunk";
-import { resendVerificationThunk } from "@/redux/slices/auth/thunks/resendVerificationThunk";
 import ErrorMessage from "./Error";
+
+// Updated thunks (server flow match)
+import {
+  resendSignupVerificationThunk,
+  verifySignupEmailThunk,
+} from "@/redux/slices/auth/thunks/signup.thunk";
+
+import type {
+  ResendSignupVerificationRequest,
+  VerifySignupEmailRequest,
+} from "@/redux/slices/auth/types";
 
 interface StepOTPVerificationProps {
   email: string;
@@ -47,70 +57,103 @@ const OTPInput = forwardRef<HTMLInputElement, OTPInputProps>(
 );
 OTPInput.displayName = "OTPInput";
 
+const OTP_LEN = 6;
+const RESEND_COOLDOWN_SECONDS = 60;
+
 export const OTPVerificationStep: React.FC<StepOTPVerificationProps> = ({
   email,
   onNext,
   onBack,
 }) => {
   const dispatch = useAppDispatch();
-  const verifyStatus = useAppSelector(
-    (s) => s.auth?.requestStatus?.verifyEmail || {},
-  );
-  const resendStatus = useAppSelector(
-    (s) => s.auth?.requestStatus?.resendVerification || {},
-  );
 
-  const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
-  const [timer, setTimer] = useState(60);
-  const [canResend, setCanResend] = useState(false);
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  // If you use the new authSlice I provided earlier:
+  const { loading, error, lastAction } = useAppSelector((s) => s.auth.signup);
+
+  const isVerifying = loading && lastAction === "verify";
+  const isResending = loading && lastAction === "resend";
+
+  const [otp, setOtp] = useState<string[]>(
+    Array.from({ length: OTP_LEN }, () => ""),
+  );
+  const [timer, setTimer] = useState<number>(RESEND_COOLDOWN_SECONDS);
+  const [canResend, setCanResend] = useState<boolean>(false);
+
+  const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
   useEffect(() => {
-    if (timer > 0) {
-      const i = setInterval(() => setTimer((p) => p - 1), 1000);
-      return () => clearInterval(i);
+    if (timer <= 0) {
+      setCanResend(true);
+      return;
     }
-    setCanResend(true);
+
+    const id = setInterval(() => setTimer((p) => p - 1), 1000);
+    return () => clearInterval(id);
   }, [timer]);
 
   const handleChange = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return;
+
     const next = [...otp];
-    next[index] = value.slice(-1);
+    next[index] = value.slice(-1); // only last digit
     setOtp(next);
-    if (value && index < 5) inputRefs.current[index + 1]?.focus();
+
+    if (value && index < OTP_LEN - 1) {
+      inputRefs.current[index + 1]?.focus();
+    }
   };
 
   const handleKeyDown = (index: number, e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Backspace" && !otp[index] && index > 0)
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
+    }
   };
 
   const handlePaste = (e: ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const pasted = e.clipboardData.getData("text").slice(0, 6);
+
+    const pasted = e.clipboardData
+      .getData("text")
+      .replace(/\s/g, "")
+      .slice(0, OTP_LEN);
     if (!/^\d+$/.test(pasted)) return;
-    const next = pasted.split("").concat(Array(6).fill("")).slice(0, 6);
+
+    const next = pasted
+      .split("")
+      .concat(Array(OTP_LEN).fill(""))
+      .slice(0, OTP_LEN);
     setOtp(next);
-    inputRefs.current[Math.min(pasted.length - 1, 5)]?.focus();
+
+    inputRefs.current[Math.min(pasted.length - 1, OTP_LEN - 1)]?.focus();
   };
 
-  const handleVerifyOTP = async (e: React.FormEvent) => {
+  const handleVerifyOTP: React.FormEventHandler<HTMLFormElement> = async (
+    e,
+  ) => {
     e.preventDefault();
-    const code = otp.join("");
-    if (code.length !== 6) return;
 
-    const result = await dispatch(verifyEmailThunk({ email, code } as any));
-    if (verifyEmailThunk.fulfilled.match(result)) onNext();
+    const code = otp.join("");
+    if (code.length !== OTP_LEN) return;
+
+    const payload: VerifySignupEmailRequest = { email, code };
+    const resultAction = await dispatch(verifySignupEmailThunk(payload));
+
+    if (verifySignupEmailThunk.fulfilled.match(resultAction)) {
+      onNext();
+    }
   };
 
   const handleResendOTP = async () => {
-    if (!canResend) return;
-    const result = await dispatch(resendVerificationThunk({ email } as any));
-    if (resendVerificationThunk.fulfilled.match(result)) {
-      setTimer(60);
+    if (!canResend || isResending) return;
+
+    const payload: ResendSignupVerificationRequest = { email };
+    const resultAction = await dispatch(resendSignupVerificationThunk(payload));
+
+    if (resendSignupVerificationThunk.fulfilled.match(resultAction)) {
+      setTimer(RESEND_COOLDOWN_SECONDS);
       setCanResend(false);
-      setOtp(["", "", "", "", "", ""]);
+      setOtp(Array.from({ length: OTP_LEN }, () => ""));
+      inputRefs.current[0]?.focus();
     }
   };
 
@@ -127,7 +170,7 @@ export const OTPVerificationStep: React.FC<StepOTPVerificationProps> = ({
         </p>
       </div>
 
-      <ErrorMessage error={verifyStatus.error} />
+      <ErrorMessage error={error} />
 
       <form onSubmit={handleVerifyOTP} className="space-y-6">
         <div className="flex justify-center gap-2 md:gap-3">
@@ -142,24 +185,27 @@ export const OTPVerificationStep: React.FC<StepOTPVerificationProps> = ({
                 inputRefs.current[index] = el;
               }}
               autoFocus={index === 0}
-              disabled={verifyStatus.loading}
+              disabled={isVerifying || isResending}
             />
           ))}
         </div>
 
         <button
           type="submit"
-          disabled={verifyStatus.loading || otp.join("").length !== 6}
+          disabled={
+            isVerifying || isResending || otp.join("").length !== OTP_LEN
+          }
           className="w-full py-3 bg-[#399aef] text-white text-xs md:text-sm font-medium rounded-lg hover:bg-[#3289d6] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
         >
-          {verifyStatus.loading ? (
+          {isVerifying ? (
             <>
               <Loader2 className="animate-spin size-5" />
               Verifying...
             </>
           ) : (
             <>
-              Verify & Continue <ArrowRight className="size-4 md:size-4.5" />
+              Verify &amp; Continue{" "}
+              <ArrowRight className="size-4 md:size-4.5" />
             </>
           )}
         </button>
@@ -179,11 +225,11 @@ export const OTPVerificationStep: React.FC<StepOTPVerificationProps> = ({
             <button
               type="button"
               onClick={handleResendOTP}
-              disabled={resendStatus.loading}
+              disabled={isResending}
               className="inline-flex items-center gap-2 text-[#399aef] hover:text-[#3289d6] text-xs md:text-sm font-bold transition-colors disabled:opacity-50"
             >
               <RefreshCw size={16} />
-              Resend Verification Code
+              {isResending ? "Resending..." : "Resend Verification Code"}
             </button>
           )}
         </div>
@@ -193,7 +239,7 @@ export const OTPVerificationStep: React.FC<StepOTPVerificationProps> = ({
         <button
           type="button"
           onClick={onBack}
-          disabled={verifyStatus.loading}
+          disabled={isVerifying || isResending}
           className="inline-flex items-center gap-2 text-slate-500 hover:text-[#399aef] text-xs md:text-sm font-bold transition-all group disabled:opacity-50"
         >
           <ArrowLeft

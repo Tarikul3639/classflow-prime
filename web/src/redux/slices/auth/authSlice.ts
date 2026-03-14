@@ -1,197 +1,309 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { tokenManager } from "@/lib/api/token-manager";
-import type { IAuthState } from "./types";
-import { signInThunk } from "./thunks/signInThunk";
-import { signUpThunk } from "./thunks/signUpThunk";
-import { signOutThunk } from "./thunks/signOutThunk";
-import { getCurrentUserThunk } from "./thunks/getCurrentUserThunk";
-import { verifyEmailThunk } from "./thunks/verifyEmailThunk";
-import { resendVerificationThunk } from "./thunks/resendVerificationThunk";
-import { sendPasswordResetOTPThunk } from "./thunks/sendPasswordResetOTPThunk";
-import { verifyPasswordResetOTPThunk } from "./thunks/verifyPasswordResetOTPThunk";
-import { resendPasswordResetOTPThunk } from "./thunks/resendPasswordResetOTPThunk"; 
-import { resetPasswordThunk } from "./thunks/resetPasswordThunk";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-// Initial State
-const initialState: IAuthState = {
+import type { User } from './types';
+
+import { signinThunk } from './thunks/signin.thunks';
+import { meThunk } from './thunks/me.thunk';
+import { signoutAllThunk, signoutCurrentThunk } from './thunks/signout.thunk';
+
+import {
+  signupThunk,
+  verifySignupEmailThunk,
+  resendSignupVerificationThunk,
+} from './thunks/signup.thunk';
+
+import {
+  requestPasswordResetThunk,
+  verifyPasswordResetThunk,
+  resendPasswordResetThunk,
+  confirmPasswordResetThunk,
+} from './thunks/password-reset.thunk';
+
+type AuthState = {
+  user: User | null;
+  isAuthenticated: boolean;
+
+  loading: boolean;
+  error: string | null;
+
+  // flows
+  signup: {
+    loading: boolean;
+    error: string | null;
+    emailForVerification: string | null;
+    lastAction: 'idle' | 'signup' | 'verify' | 'resend';
+  };
+
+  passwordReset: {
+    loading: boolean;
+    error: string | null;
+    emailForReset: string | null;
+    isCodeVerified: boolean;
+    lastAction: 'idle' | 'request' | 'verify' | 'resend' | 'confirm';
+  };
+};
+
+const initialState: AuthState = {
   user: null,
   isAuthenticated: false,
-  requestStatus: {
-    signIn: { loading: false, error: null, message: null },
-    signUp: { loading: false, error: null, message: null },
-    signOut: { loading: false, error: null, message: null },
-    getCurrentUser: { loading: false, error: null, message: null },
-    verifyEmail: { loading: false, error: null, message: null },
-    resendVerification: { loading: false, error: null, message: null },
-    sendPasswordResetOTP: { loading: false, error: null, message: null },
-    resendPasswordResetOTP: { loading: false, error: null, message: null },
-    verifyPasswordResetOTP: { loading: false, error: null, message: null },
-    resetPassword: { loading: false, error: null, message: null },
-    sendSignupVerification: { loading: false, error: null, message: null },
+
+  loading: false,
+  error: null,
+
+  signup: {
+    loading: false,
+    error: null,
+    emailForVerification: null,
+    lastAction: 'idle',
+  },
+
+  passwordReset: {
+    loading: false,
+    error: null,
+    emailForReset: null,
+    isCodeVerified: false,
+    lastAction: 'idle',
   },
 };
 
-const authSlice = createSlice({
-  name: "auth",
+export const authSlice = createSlice({
+  name: 'auth',
   initialState,
   reducers: {
-    clearError(state, action: { payload: keyof IAuthState["requestStatus"] }) {
-      state.requestStatus[action.payload].error = null;
+    clearAuthError(state) {
+      state.error = null;
     },
-    clearAllErrors(state) {
-      Object.keys(state.requestStatus).forEach((key) => {
-        state.requestStatus[key as keyof typeof state.requestStatus].error = null;
-      });
+    clearSignupState(state) {
+      state.signup.loading = false;
+      state.signup.error = null;
+      state.signup.emailForVerification = null;
+      state.signup.lastAction = 'idle';
     },
-    signOut(state) {
+    clearPasswordResetState(state) {
+      state.passwordReset.loading = false;
+      state.passwordReset.error = null;
+      state.passwordReset.emailForReset = null;
+      state.passwordReset.isCodeVerified = false;
+      state.passwordReset.lastAction = 'idle';
+    },
+    hardResetAuth(state) {
       state.user = null;
       state.isAuthenticated = false;
-      tokenManager.clearTokens();
+
+      state.loading = false;
+      state.error = null;
+
+      state.signup = {
+        loading: false,
+        error: null,
+        emailForVerification: null,
+        lastAction: 'idle',
+      };
+
+      state.passwordReset = {
+        loading: false,
+        error: null,
+        emailForReset: null,
+        isCodeVerified: false,
+        lastAction: 'idle',
+      };
+    },
+    setUser(state, action: PayloadAction<User | null>) {
+      state.user = action.payload;
+      state.isAuthenticated = !!action.payload;
     },
   },
   extraReducers: (builder) => {
-    // ==================== SIGN IN ====================
-    builder
-      .addCase(signInThunk.pending, (state) => {
-        state.requestStatus.signIn.loading = true;
-        state.requestStatus.signIn.error = null;
-      })
-      .addCase(signInThunk.fulfilled, (state, action) => {
-        state.requestStatus.signIn.loading = false;
-        state.requestStatus.signIn.error = null;
-        state.user = action.payload;
+    // -------------------------
+    // SIGNIN
+    // -------------------------
+    builder.addCase(signinThunk.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(signinThunk.fulfilled, (state, action: any) => {
+      state.loading = false;
+      state.user = action.payload.user;
+      state.isAuthenticated = true;
+    });
+    builder.addCase(signinThunk.rejected, (state, action: any) => {
+      state.loading = false;
+      state.error = action.payload ?? 'Sign in failed';
+      state.user = null;
+      state.isAuthenticated = false;
+    });
+
+    // -------------------------
+    // ME
+    // -------------------------
+    builder.addCase(meThunk.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(meThunk.fulfilled, (state, action: any) => {
+      state.loading = false;
+      state.user = action.payload;
+      state.isAuthenticated = true;
+    });
+    builder.addCase(meThunk.rejected, (state, action: any) => {
+      state.loading = false;
+      state.error = action.payload ?? 'Failed to load user';
+      state.user = null;
+      state.isAuthenticated = false;
+    });
+
+    // -------------------------
+    // SIGNOUT
+    // -------------------------
+    builder.addCase(signoutCurrentThunk.fulfilled, (state) => {
+      state.user = null;
+      state.isAuthenticated = false;
+      state.loading = false;
+      state.error = null;
+    });
+    builder.addCase(signoutAllThunk.fulfilled, (state) => {
+      state.user = null;
+      state.isAuthenticated = false;
+      state.loading = false;
+      state.error = null;
+    });
+
+    // -------------------------
+    // SIGNUP FLOW
+    // -------------------------
+    builder.addCase(signupThunk.pending, (state, action) => {
+      state.signup.loading = true;
+      state.signup.error = null;
+      state.signup.lastAction = 'signup';
+
+      // store email for verification screen (if present)
+      const email = (action.meta.arg as any)?.email;
+      if (typeof email === 'string') {
+        state.signup.emailForVerification = email;
+      }
+    });
+    builder.addCase(signupThunk.fulfilled, (state) => {
+      state.signup.loading = false;
+    });
+    builder.addCase(signupThunk.rejected, (state, action: any) => {
+      state.signup.loading = false;
+      state.signup.error = action.payload ?? 'Signup failed';
+    });
+
+    builder.addCase(verifySignupEmailThunk.pending, (state) => {
+      state.signup.loading = true;
+      state.signup.error = null;
+      state.signup.lastAction = 'verify';
+    });
+    builder.addCase(verifySignupEmailThunk.fulfilled, (state, action: any) => {
+      state.signup.loading = false;
+
+      // if backend returns user, set it
+      const user = action.payload?.user;
+      if (user) {
+        state.user = user;
         state.isAuthenticated = true;
-      })
-      .addCase(signInThunk.rejected, (state, action) => {
-        state.requestStatus.signIn.loading = false;
-        state.requestStatus.signIn.error = action.payload as string;
-      });
+      }
+    });
+    builder.addCase(verifySignupEmailThunk.rejected, (state, action: any) => {
+      state.signup.loading = false;
+      state.signup.error = action.payload ?? 'Verification failed';
+    });
 
-    // ==================== SIGN UP ====================
-    builder
-      .addCase(signUpThunk.pending, (state) => {
-        state.requestStatus.signUp.loading = true;
-        state.requestStatus.signUp.error = null;
-      })
-      .addCase(signUpThunk.fulfilled, (state, action) => {
-        state.requestStatus.signUp.loading = false;
-        state.user = action.payload;
-        state.isAuthenticated = true;
-        state.requestStatus.signUp.error = null;
-      })
-      .addCase(signUpThunk.rejected, (state, action) => {
-        state.requestStatus.signUp.loading = false;
-        state.requestStatus.signUp.error = action.payload as string;
-      });
+    builder.addCase(resendSignupVerificationThunk.pending, (state) => {
+      state.signup.loading = true;
+      state.signup.error = null;
+      state.signup.lastAction = 'resend';
+    });
+    builder.addCase(resendSignupVerificationThunk.fulfilled, (state) => {
+      state.signup.loading = false;
+    });
+    builder.addCase(resendSignupVerificationThunk.rejected, (state, action: any) => {
+      state.signup.loading = false;
+      state.signup.error = action.payload ?? 'Resend failed';
+    });
 
-    // ==================== SIGN OUT ====================
-    builder
-      .addCase(signOutThunk.pending, (state) => {
-        state.requestStatus.signOut.loading = true;
-        state.requestStatus.signOut.error = null;
-      })
-      .addCase(signOutThunk.fulfilled, (state) => {
-        state.requestStatus.signOut.loading = false;
-        state.user = null;
-        state.isAuthenticated = false;
-      })
-      .addCase(signOutThunk.rejected, (state, action) => {
-        state.requestStatus.signOut.loading = false;
-        state.requestStatus.signOut.error = action.payload as string;
-        state.user = null;
-        state.isAuthenticated = false;
-      });
+    // -------------------------
+    // PASSWORD RESET FLOW
+    // -------------------------
+    builder.addCase(requestPasswordResetThunk.pending, (state, action) => {
+      state.passwordReset.loading = true;
+      state.passwordReset.error = null;
+      state.passwordReset.lastAction = 'request';
 
-    // ==================== GET CURRENT USER ====================
-    builder
-      .addCase(getCurrentUserThunk.pending, (state) => {
-        state.requestStatus.getCurrentUser.loading = true;
-        state.requestStatus.getCurrentUser.error = null;
-      })
-      .addCase(getCurrentUserThunk.fulfilled, (state, action) => {
-        state.requestStatus.getCurrentUser.loading = false;
-        state.user = action.payload;
-        state.isAuthenticated = true;
-      })
-      .addCase(getCurrentUserThunk.rejected, (state, action) => {
-        state.requestStatus.getCurrentUser.loading = false;
-        state.requestStatus.getCurrentUser.error = action.payload as string;
-        state.user = null;
-        state.isAuthenticated = false;
-      });
+      const email = (action.meta.arg as any)?.email;
+      if (typeof email === 'string') {
+        state.passwordReset.emailForReset = email;
+      }
 
-    // ==================== VERIFY EMAIL ====================
-    builder
-      .addCase(verifyEmailThunk.pending, (state) => {
-        state.requestStatus.verifyEmail.loading = true;
-        state.requestStatus.verifyEmail.error = null;
-      })
-      .addCase(verifyEmailThunk.fulfilled, (state, action) => {
-        state.requestStatus.verifyEmail.loading = false;
-        state.user = action.payload;
-      })
-      .addCase(verifyEmailThunk.rejected, (state, action) => {
-        state.requestStatus.verifyEmail.loading = false;
-        state.requestStatus.verifyEmail.error = action.payload as string;
-      });
+      // reset verify flag when requesting again
+      state.passwordReset.isCodeVerified = false;
+    });
+    builder.addCase(requestPasswordResetThunk.fulfilled, (state) => {
+      state.passwordReset.loading = false;
+    });
+    builder.addCase(requestPasswordResetThunk.rejected, (state, action: any) => {
+      state.passwordReset.loading = false;
+      state.passwordReset.error = action.payload ?? 'Request failed';
+    });
 
-    // ==================== RESEND VERIFICATION ====================
-    builder
-      .addCase(resendVerificationThunk.pending, (state) => {
-        state.requestStatus.resendVerification.loading = true;
-        state.requestStatus.resendVerification.error = null;
-      })
-      .addCase(resendVerificationThunk.fulfilled, (state) => {
-        state.requestStatus.resendVerification.loading = false;
-      })
-      .addCase(resendVerificationThunk.rejected, (state, action) => {
-        state.requestStatus.resendVerification.loading = false;
-        state.requestStatus.resendVerification.error = action.payload as string;
-      });
+    builder.addCase(verifyPasswordResetThunk.pending, (state) => {
+      state.passwordReset.loading = true;
+      state.passwordReset.error = null;
+      state.passwordReset.lastAction = 'verify';
+    });
+    builder.addCase(verifyPasswordResetThunk.fulfilled, (state) => {
+      state.passwordReset.loading = false;
+      state.passwordReset.isCodeVerified = true;
+    });
+    builder.addCase(verifyPasswordResetThunk.rejected, (state, action: any) => {
+      state.passwordReset.loading = false;
+      state.passwordReset.error = action.payload ?? 'Verify failed';
+      state.passwordReset.isCodeVerified = false;
+    });
 
-    // ==================== SEND PASSWORD RESET OTP ====================
-    builder
-      .addCase(sendPasswordResetOTPThunk.pending, (state) => {
-        state.requestStatus.sendPasswordResetOTP.loading = true;
-        state.requestStatus.sendPasswordResetOTP.error = null;
-      })
-      .addCase(sendPasswordResetOTPThunk.fulfilled, (state) => {
-        state.requestStatus.sendPasswordResetOTP.loading = false;
-      })
-      .addCase(sendPasswordResetOTPThunk.rejected, (state, action) => {
-        state.requestStatus.sendPasswordResetOTP.loading = false;
-        state.requestStatus.sendPasswordResetOTP.error = action.payload as string;
-      });
+    builder.addCase(resendPasswordResetThunk.pending, (state) => {
+      state.passwordReset.loading = true;
+      state.passwordReset.error = null;
+      state.passwordReset.lastAction = 'resend';
+    });
+    builder.addCase(resendPasswordResetThunk.fulfilled, (state) => {
+      state.passwordReset.loading = false;
+    });
+    builder.addCase(resendPasswordResetThunk.rejected, (state, action: any) => {
+      state.passwordReset.loading = false;
+      state.passwordReset.error = action.payload ?? 'Resend failed';
+    });
 
-    // ==================== VERIFY PASSWORD RESET OTP ====================
-    builder
-      .addCase(verifyPasswordResetOTPThunk.pending, (state) => {
-        state.requestStatus.verifyPasswordResetOTP.loading = true;
-        state.requestStatus.verifyPasswordResetOTP.error = null;
-      })
-      .addCase(verifyPasswordResetOTPThunk.fulfilled, (state) => {
-        state.requestStatus.verifyPasswordResetOTP.loading = false;
-      })
-      .addCase(verifyPasswordResetOTPThunk.rejected, (state, action) => {
-        state.requestStatus.verifyPasswordResetOTP.loading = false;
-        state.requestStatus.verifyPasswordResetOTP.error = action.payload as string;
-      });
+    builder.addCase(confirmPasswordResetThunk.pending, (state) => {
+      state.passwordReset.loading = true;
+      state.passwordReset.error = null;
+      state.passwordReset.lastAction = 'confirm';
+    });
+    builder.addCase(confirmPasswordResetThunk.fulfilled, (state) => {
+      state.passwordReset.loading = false;
 
-    // ==================== RESET PASSWORD ====================
-    builder
-      .addCase(resetPasswordThunk.pending, (state) => {
-        state.requestStatus.resetPassword.loading = true;
-        state.requestStatus.resetPassword.error = null;
-      })
-      .addCase(resetPasswordThunk.fulfilled, (state) => {
-        state.requestStatus.resetPassword.loading = false;
-      })
-      .addCase(resetPasswordThunk.rejected, (state, action) => {
-        state.requestStatus.resetPassword.loading = false;
-        state.requestStatus.resetPassword.error = action.payload as string;
-      });
+      // After reset, user should re-login
+      state.user = null;
+      state.isAuthenticated = false;
+
+      // clear flow state
+      state.passwordReset.emailForReset = null;
+      state.passwordReset.isCodeVerified = false;
+    });
+    builder.addCase(confirmPasswordResetThunk.rejected, (state, action: any) => {
+      state.passwordReset.loading = false;
+      state.passwordReset.error = action.payload ?? 'Reset failed';
+    });
   },
 });
 
-export const { clearError, clearAllErrors, signOut } = authSlice.actions;
+export const {
+  clearAuthError,
+  clearSignupState,
+  clearPasswordResetState,
+  hardResetAuth,
+  setUser,
+} = authSlice.actions;
+
 export default authSlice.reducer;
