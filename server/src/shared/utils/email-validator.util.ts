@@ -51,6 +51,20 @@ export class EmailValidator {
     'indevgo.com',
     'ozsaip.com',
     'denipl.net',
+    'sharklasers.com',      
+    'getnada.com',        
+    'moakt.com',           
+    'dispostable.com',
+    'mailnesia.com',
+    'mail-temp.com',
+    'tempmailaddress.com',
+    'anonymousemail.me',
+    'protonmail.com.de',  
+    'tuta.io',            
+    'temp-mail.io',      
+    'minuteinbox.com',
+    'crazymailing.com',
+    '0121.com'
   ];
 
   /**

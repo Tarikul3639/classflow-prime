@@ -3,16 +3,16 @@
 import React, { useState, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { verifyPasswordResetOTPThunk } from "@/redux/slices/auth/thunks/verifyPasswordResetOTPThunk";
-import { resendPasswordResetOTPThunk } from "@/redux/slices/auth/thunks/resendPasswordResetOTPThunk";
-import { clearError } from "@/redux/slices/auth/authSlice";
+import { verifyCodePasswordResetThunk } from "@/redux/slices/auth/thunks/password-reset.thunk";
+import { resendCodePasswordResetThunk } from "@/redux/slices/auth/thunks/password-reset.thunk";
+import { clearAuthError } from "@/redux/slices/auth/authSlice";
 import ErrorMessage from "./Error";
 import OTPInputForm from "./OTPInputForm";
 import ResendOTPSection from "./ResendOTPSection";
 
 interface StepOTPVerificationProps {
   email: string;
-  onNext: (code: string) => void; // ✅ Return verified code
+  onNext: (code: string) => void; // Return verified code
   onBack: () => void;
 }
 
@@ -22,12 +22,7 @@ const StepOTPVerification: React.FC<StepOTPVerificationProps> = ({
   onBack,
 }) => {
   const dispatch = useAppDispatch();
-  const verifyStatus = useAppSelector(
-    (state) => state.auth?.requestStatus?.verifyPasswordResetOTP
-  );
-  const resendStatus = useAppSelector(
-    (state) => state.auth?.requestStatus?.sendPasswordResetOTP
-  );
+  const status = useAppSelector((state) => state.auth?.passwordReset);
 
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
   const [timer, setTimer] = useState(120); // 2 minutes
@@ -36,7 +31,7 @@ const StepOTPVerification: React.FC<StepOTPVerificationProps> = ({
   // Clear error on unmount
   useEffect(() => {
     return () => {
-      dispatch(clearError("verifyPasswordResetOTP"));
+      dispatch(clearAuthError());
     };
   }, [dispatch]);
 
@@ -59,21 +54,21 @@ const StepOTPVerification: React.FC<StepOTPVerificationProps> = ({
     if (otpCode.length !== 6) return;
 
     const result = await dispatch(
-      verifyPasswordResetOTPThunk({ email, otp: otpCode })
+      verifyCodePasswordResetThunk({ email, code: otpCode }),
     );
 
-    if (verifyPasswordResetOTPThunk.fulfilled.match(result)) {
-      console.log("✅ OTP verified, moving to password reset");
-      onNext(otpCode); // ✅ Pass verified code to parent
+    if (verifyCodePasswordResetThunk.fulfilled.match(result)) {
+      console.log("OTP verified, moving to password reset");
+      onNext(otpCode); // Pass verified code to parent
     }
   };
 
   const handleResendOTP = async () => {
     if (!canResend) return;
 
-    const result = await dispatch(resendPasswordResetOTPThunk({ email }));
+    const result = await dispatch(resendCodePasswordResetThunk({ email }));
 
-    if (resendPasswordResetOTPThunk.fulfilled.match(result)) {
+    if (resendCodePasswordResetThunk.fulfilled.match(result)) {
       setTimer(120);
       setCanResend(false);
       setOtp(["", "", "", "", "", ""]);
@@ -93,26 +88,26 @@ const StepOTPVerification: React.FC<StepOTPVerificationProps> = ({
         </p>
       </div>
 
-      <ErrorMessage error={verifyStatus.error} />
+      <ErrorMessage error={status.error} />
 
       <OTPInputForm
         otp={otp}
         setOtp={setOtp}
         onSubmit={handleVerifyOTP}
-        isLoading={verifyStatus.loading}
+        isLoading={status.loading}
       />
 
       <ResendOTPSection
         timer={timer}
         canResend={canResend}
         onResend={handleResendOTP}
-        isLoading={resendStatus.loading}
+        isLoading={status.loading}
       />
 
       <div className="mt-4 pt-4 border-t border-slate-100 text-center">
         <button
           onClick={onBack}
-          disabled={verifyStatus.loading}
+          disabled={status.loading}
           className="inline-flex items-center gap-2 text-slate-500 hover:text-[#399aef] text-xs md:text-sm font-bold transition-all group disabled:opacity-50"
         >
           <ArrowLeft

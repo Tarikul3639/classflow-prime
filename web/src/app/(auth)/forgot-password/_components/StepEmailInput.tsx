@@ -5,7 +5,7 @@ import { Mail, ArrowRight, Loader2, ArrowLeft } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import Link from "next/link";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { sendPasswordResetOTPThunk } from "@/redux/slices/auth/thunks/sendPasswordResetOTPThunk";
+import { requestPasswordResetThunk } from "@/redux/slices/auth/thunks/password-reset.thunk";
 import ErrorMessage from "./Error";
 
 interface StepEmailInputProps {
@@ -21,12 +21,12 @@ const StepEmailInput: React.FC<StepEmailInputProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const { loading: isLoading, error } = useAppSelector(
-    (state) => state.auth?.requestStatus?.sendPasswordResetOTP || {}
+    (state) => state.auth.passwordReset
   );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(sendPasswordResetOTPThunk({ email }))
+    dispatch(requestPasswordResetThunk({ email }))
       .unwrap()
       .then(() => {
         onNext();

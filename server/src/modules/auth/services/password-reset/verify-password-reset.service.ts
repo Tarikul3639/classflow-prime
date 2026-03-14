@@ -16,7 +16,7 @@ export class VerifyPasswordResetService {
 
     // must select hidden reset fields (select:false)
     const user = await this.userModel
-      .findOne({ email })
+      .findOne({ email }).select('+passwordResetCode +passwordResetExpiresAt +passwordResetAttempts +lastPasswordResetRequestAt');
 
     if (!user) throw new NotFoundException('User not found');
 

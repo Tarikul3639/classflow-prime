@@ -4,13 +4,13 @@ import React, { useState, useEffect } from "react";
 import { Lock, Eye, EyeOff, ArrowRight, Loader2, ArrowLeft } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { resetPasswordThunk } from "@/redux/slices/auth/thunks/resetPasswordThunk";
-import { clearError } from "@/redux/slices/auth/authSlice";
+import { confirmNewPasswordPasswordResetThunk } from "@/redux/slices/auth/thunks/password-reset.thunk";
+import { clearAuthError } from "@/redux/slices/auth/authSlice";
 import ErrorMessage from "./Error";
 
 interface StepNewPasswordProps {
   email: string;
-  code: string; // ✅ Receive verified code
+  code: string; // Receive verified code
   onNext: () => void;
   onBack: () => void;
 }
@@ -23,7 +23,7 @@ const StepNewPassword: React.FC<StepNewPasswordProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector(
-    (state) => state.auth?.requestStatus?.resetPassword
+    (state) => state.auth?.passwordReset
   );
 
   const [password, setPassword] = useState("");
@@ -35,7 +35,7 @@ const StepNewPassword: React.FC<StepNewPasswordProps> = ({
   // Clear error on unmount
   useEffect(() => {
     return () => {
-      dispatch(clearError("resetPassword"));
+      dispatch(clearAuthError());
     };
   }, [dispatch]);
 
@@ -67,11 +67,11 @@ const StepNewPassword: React.FC<StepNewPasswordProps> = ({
     }
 
     const result = await dispatch(
-      resetPasswordThunk({ email, code, newPassword: password })
+      confirmNewPasswordPasswordResetThunk({ email, code, newPassword: password })
     );
 
-    if (resetPasswordThunk.fulfilled.match(result)) {
-      console.log("✅ Password reset successful");
+    if (confirmNewPasswordPasswordResetThunk.fulfilled.match(result)) {
+      console.log("Password reset successful");
       onNext();
     }
   };

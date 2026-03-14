@@ -369,6 +369,7 @@ UserSchema.methods.assertEmailVerificationCooldown = function (
 
 // Verify password reset code
 UserSchema.methods.verifyResetCode = function (code: string): boolean {
+  
   if (!this.passwordResetCode || !this.passwordResetExpiresAt) {
     throw new BadRequestException(
       'No reset code found. Please request a new one.',

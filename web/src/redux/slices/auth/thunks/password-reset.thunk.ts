@@ -13,7 +13,7 @@ export const requestPasswordResetThunk = createAsyncThunk<any, { email: string }
   },
 );
 
-export const verifyPasswordResetThunk = createAsyncThunk<any, { email: string; code: string }>(
+export const verifyCodePasswordResetThunk = createAsyncThunk<any, { email: string; code: string }>(
   'auth/passwordResetVerify',
   async (payload, { rejectWithValue }) => {
     try {
@@ -25,7 +25,7 @@ export const verifyPasswordResetThunk = createAsyncThunk<any, { email: string; c
   },
 );
 
-export const resendPasswordResetThunk = createAsyncThunk<any, { email: string }>(
+export const resendCodePasswordResetThunk = createAsyncThunk<any, { email: string }>(
   'auth/passwordResetResend',
   async (payload, { rejectWithValue }) => {
     try {
@@ -37,7 +37,7 @@ export const resendPasswordResetThunk = createAsyncThunk<any, { email: string }>
   },
 );
 
-export const confirmPasswordResetThunk = createAsyncThunk<
+export const confirmNewPasswordPasswordResetThunk = createAsyncThunk<
   any,
   { email: string; code: string; newPassword: string }
 >(

@@ -14,9 +14,9 @@ import {
 
 import {
   requestPasswordResetThunk,
-  verifyPasswordResetThunk,
-  resendPasswordResetThunk,
-  confirmPasswordResetThunk,
+  verifyCodePasswordResetThunk,
+  resendCodePasswordResetThunk,
+  confirmNewPasswordPasswordResetThunk,
 } from './thunks/password-reset.thunk';
 
 type AuthState = {
@@ -247,40 +247,40 @@ export const authSlice = createSlice({
       state.passwordReset.error = action.payload ?? 'Request failed';
     });
 
-    builder.addCase(verifyPasswordResetThunk.pending, (state) => {
+    builder.addCase(verifyCodePasswordResetThunk.pending, (state) => {
       state.passwordReset.loading = true;
       state.passwordReset.error = null;
       state.passwordReset.lastAction = 'verify';
     });
-    builder.addCase(verifyPasswordResetThunk.fulfilled, (state) => {
+    builder.addCase(verifyCodePasswordResetThunk.fulfilled, (state) => {
       state.passwordReset.loading = false;
       state.passwordReset.isCodeVerified = true;
     });
-    builder.addCase(verifyPasswordResetThunk.rejected, (state, action: any) => {
+    builder.addCase(verifyCodePasswordResetThunk.rejected, (state, action: any) => {
       state.passwordReset.loading = false;
       state.passwordReset.error = action.payload ?? 'Verify failed';
       state.passwordReset.isCodeVerified = false;
     });
 
-    builder.addCase(resendPasswordResetThunk.pending, (state) => {
+    builder.addCase(resendCodePasswordResetThunk.pending, (state) => {
       state.passwordReset.loading = true;
       state.passwordReset.error = null;
       state.passwordReset.lastAction = 'resend';
     });
-    builder.addCase(resendPasswordResetThunk.fulfilled, (state) => {
+    builder.addCase(resendCodePasswordResetThunk.fulfilled, (state) => {
       state.passwordReset.loading = false;
     });
-    builder.addCase(resendPasswordResetThunk.rejected, (state, action: any) => {
+    builder.addCase(resendCodePasswordResetThunk.rejected, (state, action: any) => {
       state.passwordReset.loading = false;
       state.passwordReset.error = action.payload ?? 'Resend failed';
     });
 
-    builder.addCase(confirmPasswordResetThunk.pending, (state) => {
+    builder.addCase(confirmNewPasswordPasswordResetThunk.pending, (state) => {
       state.passwordReset.loading = true;
       state.passwordReset.error = null;
       state.passwordReset.lastAction = 'confirm';
     });
-    builder.addCase(confirmPasswordResetThunk.fulfilled, (state) => {
+    builder.addCase(confirmNewPasswordPasswordResetThunk.fulfilled, (state) => {
       state.passwordReset.loading = false;
 
       // After reset, user should re-login
@@ -291,7 +291,7 @@ export const authSlice = createSlice({
       state.passwordReset.emailForReset = null;
       state.passwordReset.isCodeVerified = false;
     });
-    builder.addCase(confirmPasswordResetThunk.rejected, (state, action: any) => {
+    builder.addCase(confirmNewPasswordPasswordResetThunk.rejected, (state, action: any) => {
       state.passwordReset.loading = false;
       state.passwordReset.error = action.payload ?? 'Reset failed';
     });

@@ -2,6 +2,7 @@ import {
   ConflictException,
   Injectable,
   InternalServerErrorException,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import type { Model } from 'mongoose';
@@ -14,6 +15,7 @@ import {
 } from '../../../../database/entities/user.entity';
 import { MailService } from '../../../../modules/mail/services/mail.service';
 import { UserSanitizerService } from '../sanitizer/user-sanitizer.service';
+import { EmailValidator } from '../../../../shared/utils/email-validator.util';
 
 @Injectable()
 export class SignUpService {
@@ -22,10 +24,19 @@ export class SignUpService {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     private readonly mailService: MailService,
     private readonly sanitizer: UserSanitizerService,
-  ) {}
+  ) { }
 
   async execute(dto: SignUpDto) {
     const email = dto.email.toLowerCase().trim();
+
+    // 1) basic format check (so user gets clean message)
+    if (!EmailValidator.isValidFormat(email)) {
+      throw new BadRequestException('Invalid email format');
+    }
+
+    // 2) disposable / temporary email block (this throws your message)
+    EmailValidator.validateOrThrow(email);
+
     const session = await this.userModel.db.startSession();
 
     try {

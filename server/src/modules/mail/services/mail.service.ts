@@ -99,7 +99,7 @@ export class MailService {
         context: {
           ...this.baseContext(),
           name,
-          dashboardUrl: this.buildAppUrl('/dashboard'),
+          dashboardUrl: this.buildAppUrl('/'),
           supportEmail: 'support@classflow.com',
         },
       });
