@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
+import { ConfigService } from '@nestjs/config';
 
 interface BaseEmailContext {
   appName: string;
@@ -11,7 +12,20 @@ export class MailService {
   private readonly logger = new Logger(MailService.name);
   private readonly codeExpiryMinutes = 15;
 
-  constructor(private readonly mailerService: MailerService) {}
+  constructor(
+    private readonly mailerService: MailerService,
+    private readonly configService: ConfigService,
+  ) {}
+
+  private get frontendUrl(): string {
+    return this.configService.get<string>('FRONTEND_URL', 'http://localhost:3000');
+  }
+
+  private buildAppUrl(path: string): string {
+    const base = this.frontendUrl.replace(/\/$/, '');
+    const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+    return `${base}${normalizedPath}`;
+  }
 
   private baseContext(): BaseEmailContext {
     return {
@@ -85,6 +99,7 @@ export class MailService {
         context: {
           ...this.baseContext(),
           name,
+          dashboardUrl: this.buildAppUrl('/dashboard'),
           supportEmail: 'support@classflow.com',
         },
       });
@@ -111,6 +126,9 @@ export class MailService {
         context: {
           ...this.baseContext(),
           name,
+          changedAt: new Date().toLocaleString(),
+          signinUrl: this.buildAppUrl('/auth/login'),
+          supportUrl: this.buildAppUrl('/support'),
           supportEmail: 'support@classflow.com',
         },
       });

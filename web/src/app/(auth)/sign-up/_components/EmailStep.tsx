@@ -46,7 +46,8 @@ export const EmailInputStep: React.FC<StepEmailInputProps> = ({
 
         <button
           type="submit"
-          className="w-full py-3 bg-[#399aef] text-white text-xs md:text-sm font-medium rounded-lg hover:bg-[#3289d6] transition-all flex items-center justify-center gap-2"
+          disabled={!email.trim()}
+          className="w-full py-3 bg-[#399aef] text-white text-xs md:text-sm font-medium rounded-lg hover:bg-[#3289d6] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
         >
           Continue <ArrowRight className="size-4 md:size-4.5" />
         </button>
@@ -54,8 +55,8 @@ export const EmailInputStep: React.FC<StepEmailInputProps> = ({
 
       <AuthFooter
         message="Already have an account?"
-        linkText="Back to Login"
-        linkHref="/auth/sign-in"
+        linkText="Back to Sign In"
+        linkHref="/sign-in"
       />
     </div>
   );

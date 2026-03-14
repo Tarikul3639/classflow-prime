@@ -4,7 +4,7 @@ import { apiClient, getErrorMessage } from '@/lib/api/axios';
 type SignInPayload = { email: string; password: string };
 type SignInResult = { user: any; tokens: { accessToken: string; refreshToken: string } };
 
-export const signinThunk = createAsyncThunk<SignInResult, SignInPayload>(
+export const SignInThunk = createAsyncThunk<SignInResult, SignInPayload>(
     'auth/signin',
     async (payload, { rejectWithValue }) => {
         try {

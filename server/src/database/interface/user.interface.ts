@@ -36,8 +36,6 @@ export interface IUser {
   lastLogin?: Date;
   lastLoginIp?: string;
   refreshTokens?: string[];
-  failedLoginAttempts: number;
-  accountLockedUntil?: Date;
 
   // Academic Info
   classes?: Types.ObjectId[];
@@ -50,38 +48,30 @@ export interface IUser {
   updatedAt?: Date;
   deletedAt?: Date;
 
-  // Virtual Properties
+  // Virtuals
   fullName?: string;
   initials?: string;
 }
 
 // ==================== User Document Interface (Mongoose) ====================
 export interface IUserDocument extends IUser, Document {
-  // ==================== Instance Methods ====================
-
-  comparePassword(candidatePassword: string): Promise<boolean>;
+  // Auth
+  assertPasswordMatch(candidatePassword: string): Promise<void>;
   changedPasswordAfter(JWTTimestamp: number): boolean;
-  isAccountLocked(): boolean;
-
-  incrementFailedLoginAttempts(): Promise<void>;
-  resetFailedLoginAttempts(): Promise<void>;
 
   // OTP helpers
   createEmailVerificationCode(expiresInMinutes?: number): string;
-  createPasswordResetCode(expiresInMinutes?: number): string;
-
-  verifyEmailCode(code: string): boolean;
-
-  // Cooldown helper (default 60s in implementation)
+  verifyEmailCode(code: string): true;
   assertEmailVerificationCooldown(cooldownSeconds?: number): void;
 
-  verifyResetCode(code: string): boolean;
-
-  resetPassword(newPassword: string): Promise<void>;
-
-  // Cooldown helper (default 60s in implementation)
+  createPasswordResetCode(expiresInMinutes?: number): string;
+  verifyResetCode(code: string): true;
   assertPasswordResetCooldown(cooldownSeconds?: number): void;
 
+  // Password
+  resetPassword(newPassword: string): Promise<void>;
+
+  // Refresh token helpers
   addRefreshToken(token: string): Promise<void>;
   removeRefreshToken(token: string): Promise<void>;
 }

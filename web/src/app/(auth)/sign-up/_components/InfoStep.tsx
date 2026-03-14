@@ -86,10 +86,6 @@ export const InfoStep: React.FC<InfoStepProps> = ({
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
 
-    // basic validation (UI-level; backend will validate too)
-    if (!email?.trim()) return;
-    if (password.trim().length < 6) return;
-
     const { firstName, lastName } = splitName(name);
 
     const payload: SignUpRequest = {

@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import type { User } from './types';
 
-import { signinThunk } from './thunks/signin.thunks';
+import { SignInThunk } from './thunks/signin.thunks';
 import { meThunk } from './thunks/me.thunk';
 import { signoutAllThunk, signoutCurrentThunk } from './thunks/signout.thunk';
 
@@ -117,16 +117,16 @@ export const authSlice = createSlice({
     // -------------------------
     // SIGNIN
     // -------------------------
-    builder.addCase(signinThunk.pending, (state) => {
+    builder.addCase(SignInThunk.pending, (state) => {
       state.loading = true;
       state.error = null;
     });
-    builder.addCase(signinThunk.fulfilled, (state, action: any) => {
+    builder.addCase(SignInThunk.fulfilled, (state, action: any) => {
       state.loading = false;
       state.user = action.payload.user;
       state.isAuthenticated = true;
     });
-    builder.addCase(signinThunk.rejected, (state, action: any) => {
+    builder.addCase(SignInThunk.rejected, (state, action: any) => {
       state.loading = false;
       state.error = action.payload ?? 'Sign in failed';
       state.user = null;

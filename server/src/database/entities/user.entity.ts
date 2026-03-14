@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { IUser, IUserDocument } from '../interface/user.interface';
-import { BadRequestException } from '@nestjs/common/exceptions/bad-request.exception';
+import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 
 export type UserDocument = User & IUserDocument;
 
@@ -248,14 +248,11 @@ UserSchema.pre<UserDocument>('save', async function () {
 // ==================== Instance Methods ====================
 
 // Compare password (NOTE: when querying user for login, use .select('+password'))
-UserSchema.methods.comparePassword = async function (
+UserSchema.methods.assertPasswordMatch = async function (
   candidatePassword: string,
-): Promise<boolean> {
-  try {
-    return await bcrypt.compare(candidatePassword, this.password);
-  } catch (_error) {
-    return false;
-  }
+): Promise<void> {
+  const ok = await bcrypt.compare(candidatePassword, this.password);
+  if (!ok) throw new UnauthorizedException('Password does not match');
 };
 
 // Check if password was changed after JWT was issued

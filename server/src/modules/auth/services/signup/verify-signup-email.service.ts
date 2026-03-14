@@ -17,11 +17,11 @@ export class VerifySignupEmailService {
 
     async execute(dto: VerifySignupEmailDto) {
 
-        // ✅ MUST select hidden fields for verification
+        // MUST select hidden fields for verification
         const user = await this.userModel
             .findOne({ email: dto.email })
             .select('+emailVerificationCode +emailVerificationExpiresAt');
-            
+
         if (!user) throw new NotFoundException('User not found');
 
         if (user.isEmailVerified) {

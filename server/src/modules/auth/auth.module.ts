@@ -20,6 +20,7 @@ import { PasswordResetController } from './controllers/password-reset.controller
 // Reusable helpers
 import { TokenService } from './services/token/token.service';
 import { UserSanitizerService } from './services/sanitizer/user-sanitizer.service';
+import { AuthThrottleService } from './services/throttle/auth-throttle.service';
 
 // Feature services
 import { SignInService } from './services/signin/signin.service';
@@ -41,6 +42,7 @@ import { ValidateUserService } from './services/users/validate-user.service';
 // -------------------- ENTITIES ------------------------
 // ------------------------------------------------------
 import { User, UserSchema } from 'src/database/entities/user.entity';
+import { AuthThrottle, AuthThrottleSchema } from 'src/database/entities/auth-throttle.entity';
 
 // ------------------------------------------------------
 // -------------------- MODULES -------------------------
@@ -56,7 +58,10 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
+      { name: AuthThrottle.name, schema: AuthThrottleSchema },
+    ]),
     MailModule,
     PassportModule,
     JwtModule.registerAsync({
@@ -87,6 +92,7 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
     // reusable core helpers
     TokenService,
     UserSanitizerService,
+    AuthThrottleService,
 
     // core auth features
     SignInService,
@@ -116,6 +122,7 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
     // Export what other modules might need
     TokenService,
     UserSanitizerService,
+    AuthThrottleService,
   ],
 })
 export class AuthModule {}
