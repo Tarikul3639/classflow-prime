@@ -9,6 +9,7 @@ interface RequestPasswordResetRequest {
   email: string;
 }
 interface RequestPasswordResetResponse {
+  success: boolean;
   message: string;
 }
 export const requestPasswordResetThunk = createAsyncThunk<
@@ -21,6 +22,10 @@ export const requestPasswordResetThunk = createAsyncThunk<
       "/auth/password-reset/request",
       payload,
     );
+
+    if (!data.success) {
+      return rejectWithValue(data.message || "Request failed");
+    }
     return data;
   } catch (error) {
     return rejectWithValue(getErrorMessage(error));
@@ -36,6 +41,7 @@ interface VerifyCodePasswordResetRequest {
   code: string;
 }
 interface VerifyCodePasswordResetResponse {
+  success: boolean;
   message: string;
 }
 
@@ -49,6 +55,9 @@ export const verifyCodePasswordResetThunk = createAsyncThunk<
       "/auth/password-reset/verify",
       payload,
     );
+    if (!data.success) {
+      return rejectWithValue(data.message || "Verification failed");
+    }
     return data;
   } catch (error) {
     return rejectWithValue(getErrorMessage(error));
@@ -63,6 +72,7 @@ interface ResendCodePasswordResetRequest {
   email: string;
 }
 interface ResendCodePasswordResetResponse {
+  success: boolean;
   message: string;
 }
 export const resendCodePasswordResetThunk = createAsyncThunk<
@@ -75,6 +85,9 @@ export const resendCodePasswordResetThunk = createAsyncThunk<
       "/auth/password-reset/resend",
       payload,
     );
+    if (!data.success) {
+      return rejectWithValue(data.message || "Resend failed");
+    }
     return data;
   } catch (error) {
     return rejectWithValue(getErrorMessage(error));
@@ -91,6 +104,7 @@ interface ConfirmNewPasswordPasswordResetRequest {
   newPassword: string;
 }
 interface ConfirmNewPasswordPasswordResetResponse {
+  success: boolean;
   message: string;
 }
 export const confirmNewPasswordPasswordResetThunk = createAsyncThunk<
@@ -104,6 +118,9 @@ export const confirmNewPasswordPasswordResetThunk = createAsyncThunk<
         "/auth/password-reset/confirm",
         payload,
       );
+    if (!data.success) {
+      return rejectWithValue(data.message || "Password reset failed");
+    }
     return data;
   } catch (error) {
     return rejectWithValue(getErrorMessage(error));

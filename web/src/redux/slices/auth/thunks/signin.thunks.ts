@@ -11,8 +11,12 @@ interface SignInRequest {
     password: string;
 }
 interface SignInResponse {
-    user: IUser;
-    tokens: ITokens;
+    success: boolean;
+    message: string;
+    data: {
+        user: IUser;
+        tokens: ITokens;
+    };
 }
 
 export const SignInThunk = createAsyncThunk<
@@ -25,10 +29,13 @@ export const SignInThunk = createAsyncThunk<
             '/auth/signin',
             payload,
         );
+        if (!data.success) {
+            return rejectWithValue(data.message || "Sign in failed");
+        }
 
         // store tokens
-        localStorage.setItem('accessToken', data.tokens.accessToken);
-        localStorage.setItem('refreshToken', data.tokens.refreshToken);
+        localStorage.setItem('accessToken', data.data.tokens.accessToken);
+        localStorage.setItem('refreshToken', data.data.tokens.refreshToken);
 
         return data;
     } catch (error) {

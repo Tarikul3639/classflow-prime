@@ -33,11 +33,11 @@ export const sessionStatusSlice = createSlice({
                 state.signIn.error = null;
                 state.signIn.message = null;
             })
-            .addCase(SignInThunk.fulfilled, (state, action: any) => {
+            .addCase(SignInThunk.fulfilled, (state, action) => {
                 state.signIn.loading = false;
                 state.signIn.message = action.payload?.message ?? null;
             })
-            .addCase(SignInThunk.rejected, (state, action: any) => {
+            .addCase(SignInThunk.rejected, (state, action) => {
                 state.signIn.loading = false;
                 state.signIn.error = action.payload ?? 'Sign in failed';
             });
@@ -52,7 +52,7 @@ export const sessionStatusSlice = createSlice({
             .addCase(meThunk.fulfilled, (state) => {
                 state.me.loading = false;
             })
-            .addCase(meThunk.rejected, (state, action: any) => {
+            .addCase(meThunk.rejected, (state, action) => {
                 state.me.loading = false;
                 state.me.error = action.payload ?? 'Failed to load user';
             });
@@ -64,11 +64,11 @@ export const sessionStatusSlice = createSlice({
                 state.signoutCurrent.error = null;
                 state.signoutCurrent.message = null;
             })
-            .addCase(signoutCurrentThunk.fulfilled, (state, action: any) => {
+            .addCase(signoutCurrentThunk.fulfilled, (state, action) => {
                 state.signoutCurrent.loading = false;
                 state.signoutCurrent.message = action.payload?.message ?? 'Signed out';
             })
-            .addCase(signoutCurrentThunk.rejected, (state, action: any) => {
+            .addCase(signoutCurrentThunk.rejected, (state, action) => {
                 state.signoutCurrent.loading = false;
                 state.signoutCurrent.error = action.payload ?? 'Signout failed';
             });
@@ -80,12 +80,12 @@ export const sessionStatusSlice = createSlice({
                 state.signoutAll.error = null;
                 state.signoutAll.message = null;
             })
-            .addCase(signoutAllThunk.fulfilled, (state, action: any) => {
+            .addCase(signoutAllThunk.fulfilled, (state, action) => {
                 state.signoutAll.loading = false;
                 state.signoutAll.message =
                     action.payload?.message ?? 'Signed out from all devices';
             })
-            .addCase(signoutAllThunk.rejected, (state, action: any) => {
+            .addCase(signoutAllThunk.rejected, (state, action) => {
                 state.signoutAll.loading = false;
                 state.signoutAll.error = action.payload ?? 'Signout failed';
             });

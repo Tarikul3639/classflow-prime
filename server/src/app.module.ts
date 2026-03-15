@@ -9,6 +9,7 @@ import { SeedModule } from './database/seeds/seed.module';
 import { MailModule } from './modules/mail/mail.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { ClassModule } from './modules/class/class.module';
+import { CoreModule } from './core/core.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ClassModule } from './modules/class/class.module';
     MailModule,
     NotificationModule,
     ClassModule,
+    CoreModule,
   ],
   controllers: [],
   providers: [],

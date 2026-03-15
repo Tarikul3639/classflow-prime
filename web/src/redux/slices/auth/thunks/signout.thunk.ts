@@ -11,6 +11,7 @@ interface SignOutRequest {
 }
 
 interface SignOutResponse {
+  success: boolean;
   message: string;
 }
 export const signoutCurrentThunk = createAsyncThunk<
@@ -23,6 +24,10 @@ export const signoutCurrentThunk = createAsyncThunk<
       '/auth/signout',
       payload,
     );
+
+    if (!data.success) {
+      return rejectWithValue(data.message || "Sign out failed");
+    }
 
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
@@ -44,6 +49,10 @@ export const signoutAllThunk = createAsyncThunk<
 >('auth/signoutAll', async (_: void, { rejectWithValue }) => {
   try {
     const { data } = await apiClient.post<SignOutResponse>('/auth/signout/all');
+
+    if (!data.success) {
+      return rejectWithValue(data.message || "Sign out failed");
+    }
 
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');

@@ -10,8 +10,11 @@ import { IUser } from "../auth.types";
  */
 
 export interface ISignUpResponse {
+  success: boolean;
   message: string;
-  user: IUser;
+  data: {
+    user: IUser;
+  };
 }
 
 export type ISignUpRequest = {
@@ -45,6 +48,9 @@ export const signupThunk = createAsyncThunk<
       "/auth/signup",
       payload,
     );
+    if (!data.success) {
+      return rejectWithValue(data.message || "Signup failed");
+    }
     return data;
   } catch (error) {
     return rejectWithValue(getErrorMessage(error));
@@ -62,8 +68,11 @@ export interface IEmailVerifyRequest {
   code: string;
 }
 export interface IEmailVerifyResponse {
+  success: boolean;
   message: string;
-  user?: IUser;
+  data?: {
+    user?: IUser;
+  }
 }
 
 export const verifySignupEmailThunk = createAsyncThunk<
@@ -77,6 +86,10 @@ export const verifySignupEmailThunk = createAsyncThunk<
       "/auth/signup/verify",
       payload,
     );
+
+    if (!data.success) {
+      return rejectWithValue(data.message || "Verification failed");
+    }
     return data;
   } catch (error) {
     return rejectWithValue(getErrorMessage(error));
@@ -92,6 +105,7 @@ export interface IResendVerificationRequest {
   email: string;
 }
 export interface IResendVerificationResponse {
+  success: boolean;
   message: string;
 }
 
@@ -105,6 +119,9 @@ export const resendSignupVerificationThunk = createAsyncThunk<
       "/auth/signup/resend",
       payload,
     );
+    if (!data.success) {
+      return rejectWithValue(data.message || "Resend failed");
+    }
     return data;
   } catch (error) {
     return rejectWithValue(getErrorMessage(error));

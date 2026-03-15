@@ -8,6 +8,14 @@ import { UserSanitizerService } from '../sanitizer/user-sanitizer.service';
 import { User, UserDocument } from '../../../../database/entities/user.entity';
 import { ThrottlePurpose } from '../../../../database/entities/auth-throttle.entity';
 import { AuthThrottleService } from '../throttle/auth-throttle.service';
+import { IUser } from 'src/database/interface/user.interface';
+import { ITokens } from '../token/token.types';
+
+export class SignInResponseDto {
+  message: string;
+  user: IUser;
+  tokens: ITokens;
+}
 
 type Ctx = { ip: string; userAgent?: string };
 
@@ -21,7 +29,7 @@ export class SignInService {
     private readonly tokenService: TokenService,
     private readonly sanitizer: UserSanitizerService,
     private readonly throttle: AuthThrottleService,
-  ) {}
+  ) { }
 
   async execute(dto: SignInDto, ctx: Ctx) {
     const email = dto.email.toLowerCase().trim();
@@ -73,6 +81,11 @@ export class SignInService {
     user.lastLogin = new Date();
     await user.save();
 
-    return { user: this.sanitizer.sanitize(user), tokens };
+    const response: SignInResponseDto = {
+      message: 'Signed in successfully',
+      user: this.sanitizer.sanitize(user),
+      tokens,
+    };
+    return response;
   }
 }

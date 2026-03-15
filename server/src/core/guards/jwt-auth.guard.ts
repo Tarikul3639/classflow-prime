@@ -15,9 +15,12 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
     canActivate(context: ExecutionContext) {
         // Check if the route is marked as public
+        // Reflector reads the metadata set by @Public() decorator.
+        // If @Public() is found on the method or controller, it returns true.
+        // Otherwise it returns undefined.
         const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
-            context.getHandler(),
-            context.getClass(),
+            context.getHandler(), // Current route method → e.g. signin()
+            context.getClass(),   // Current controller class → e.g. SigninController
         ]);
         if (isPublic) {
             return true; // Bypass authentication for public routes
