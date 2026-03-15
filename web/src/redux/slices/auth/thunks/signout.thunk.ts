@@ -29,9 +29,6 @@ export const signoutCurrentThunk = createAsyncThunk<
       return rejectWithValue(data.message || "Sign out failed");
     }
 
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-
     return data;
   } catch (error) {
     return rejectWithValue(getErrorMessage(error));
@@ -53,9 +50,6 @@ export const signoutAllThunk = createAsyncThunk<
     if (!data.success) {
       return rejectWithValue(data.message || "Sign out failed");
     }
-
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
 
     return data;
   } catch (error) {

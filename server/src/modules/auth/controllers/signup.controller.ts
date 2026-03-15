@@ -1,7 +1,16 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Res,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import type { Response } from 'express';
 
 import { Public } from '../../../shared/decorators/public.decorator';
+import { setAuthCookies } from '../../../shared/utils/auth-cookies.util';
 
 import { SignUpDto } from '../dto/signup/signup.dto';
 import { VerifySignupEmailDto } from '../dto/signup/verify-signup-email.dto';
@@ -10,7 +19,12 @@ import { ResendSignupVerificationDto } from '../dto/signup/resend-signup-verific
 import { SignUpService } from '../services/signup/signup.service';
 import { VerifySignupEmailService } from '../services/signup/verify-signup-email.service';
 import { ResendSignupVerificationService } from '../services/signup/resend-signup-verification.service';
+import { TokenService } from '../services/token/token.service';
 
+/**
+ * Signup Controller
+ * Handles user registration and email verification
+ */
 @ApiTags('Auth')
 @Controller('auth/signup')
 export class SignupController {
@@ -18,7 +32,14 @@ export class SignupController {
     private readonly signUpService: SignUpService,
     private readonly verifySignupEmailService: VerifySignupEmailService,
     private readonly resendSignupVerificationService: ResendSignupVerificationService,
-  ) {}
+    private readonly tokenService: TokenService,
+  ) { }
+
+  /**
+   * User registration endpoint.
+   * Creates a new user and sends a verification code to their email.
+   * This endpoint is public and does not require authentication.
+   */
 
   @Public()
   @Post()
@@ -29,14 +50,11 @@ export class SignupController {
     return this.signUpService.execute(dto);
   }
 
-  @Public()
-  @Post('verify')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Verify signup email code' })
-  @ApiResponse({ status: 200, description: 'Email verified successfully' })
-  async verify(@Body() dto: VerifySignupEmailDto) {
-    return this.verifySignupEmailService.execute(dto);
-  }
+  /**
+   * Resend verification code endpoint.
+   * Allows users to request a new verification code if they didn't receive the first one or if it expired.
+   * This endpoint is public and does not require authentication.
+   */
 
   @Public()
   @Post('resend')
@@ -45,5 +63,38 @@ export class SignupController {
   @ApiResponse({ status: 200, description: 'Verification code resent' })
   async resend(@Body() dto: ResendSignupVerificationDto) {
     return this.resendSignupVerificationService.execute(dto);
+  }
+
+  /**
+   * Verify email endpoint.
+   * Verifies the user's email using the code sent to them.
+   * If verification is successful, it can also log in the user by returning auth tokens.
+   * This endpoint is public and does not require authentication.
+   */
+
+  @Public()
+  @Post('verify')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Verify signup email code' })
+  @ApiResponse({ status: 200, description: 'Email verified successfully' })
+  async verify(@Body() dto: VerifySignupEmailDto, @Res({ passthrough: true }) res: Response) {
+    // The service will handle verification and return tokens if successful
+    const result = await this.verifySignupEmailService.execute(dto);
+
+    // If you want auto-login after verify:
+    // Issue tokens and set cookies here (HTTP layer concern)
+    const tokens = await this.tokenService.signTokens({
+      sub: result.user._id.toString(),
+      email: result.user.email,
+    });
+
+    // Set HttpOnly cookies with the tokens
+    setAuthCookies(res, tokens);
+
+    // Optional: return user info without tokens since they are in cookies
+    return {
+      message: result.message,
+      user: result.user,
+    };
   }
 }

@@ -5,19 +5,22 @@ import {
   HttpStatus,
   Post,
   Req,
+  Res,
   Ip,
 } from '@nestjs/common';
-import type { Request } from 'express';
+import type { Request, Response } from 'express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { Public } from '../../../shared/decorators/public.decorator';
+import { setAuthCookies } from '../../../shared/utils/auth-cookies.util';
+
 import { SignInDto } from '../dto/signin/signin.dto';
 import { SignInService } from '../services/signin/signin.service';
 
 @ApiTags('Auth')
 @Controller('auth/signin')
 export class SigninController {
-  constructor(private readonly signInService: SignInService) {}
+  constructor(private readonly signInService: SignInService) { }
 
   @Public()
   @Post()
@@ -25,7 +28,12 @@ export class SigninController {
   @ApiOperation({ summary: 'Sign in' })
   @ApiResponse({ status: 200, description: 'Signed in successfully' })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
-  async signin(@Body() dto: SignInDto, @Req() req: Request, @Ip() ip: string) {
+  async signin(
+    @Body() dto: SignInDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+    @Ip() ip: string,
+  ) {
     // Prefer x-forwarded-for when behind proxy, else req.ip
     const realIp =
       (req.headers['x-forwarded-for'] as string | undefined)
@@ -34,8 +42,22 @@ export class SigninController {
       req.ip ||
       ip;
 
+    // Get user-agent for throttling purposes
     const userAgent = req.headers['user-agent'] ?? '';
 
-    return this.signInService.execute(dto, { ip: realIp, userAgent });
+    // Call the service to perform sign-in logic
+    const result = await this.signInService.execute(dto, {
+      ip: realIp,
+      userAgent,
+    });
+
+    // set HttpOnly cookies here (HTTP layer concern)
+    setAuthCookies(res, result.tokens);
+
+    // Optional: tokens removed from response body since they are in cookies, but can be included if needed by frontend
+    return {
+      message: result.message,
+      user: result.user,
+    };
   }
 }

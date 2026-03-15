@@ -33,10 +33,6 @@ export const SignInThunk = createAsyncThunk<
             return rejectWithValue(data.message || "Sign in failed");
         }
 
-        // store tokens
-        localStorage.setItem('accessToken', data.data.tokens.accessToken);
-        localStorage.setItem('refreshToken', data.data.tokens.refreshToken);
-
         return data;
     } catch (error) {
         return rejectWithValue(getErrorMessage(error));
