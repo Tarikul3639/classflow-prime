@@ -33,7 +33,7 @@ export class ResendSignupVerificationService {
     // 2) disposable / temporary email block (this throws your message)
     EmailValidator.validateOrThrow(dto.email);
 
-    const user = await this.userModel
+    const user: UserDocument | null = await this.userModel
       .findOne({ email })
       .select('+emailVerificationCode +emailVerificationExpiresAt');
 

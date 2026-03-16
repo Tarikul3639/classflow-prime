@@ -20,7 +20,7 @@ export class RequestPasswordResetService {
         const email = dto.email.toLowerCase().trim();
 
         // lastPasswordResetRequestAt is not select:false, so no need to select it explicitly
-        const user = await this.userModel.findOne({ email });
+        const user: UserDocument | null = await this.userModel.findOne({ email });
         if (!user) throw new NotFoundException('User not found');
 
         // entity method (you must implement this in user.entity.ts)

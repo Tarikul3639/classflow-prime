@@ -12,7 +12,7 @@ export class ValidateUserService {
   ) {}
 
   async execute(email: string, password: string): Promise<UserDocument | null> {
-    const user = await this.userModel.findOne({ email: email.toLowerCase() });
+    const user: UserDocument | null = await this.userModel.findOne({ email: email.toLowerCase() });
     if (!user) return null;
 
     const ok = await bcrypt.compare(password, user.password);

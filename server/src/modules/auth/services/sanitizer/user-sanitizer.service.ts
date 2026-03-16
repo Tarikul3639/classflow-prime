@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { UserDocument } from '../../../../database/entities/user.entity';
 
 @Injectable()
 export class UserSanitizerService {
-  sanitize(user: any) {
+  sanitize(user: UserDocument | null): Partial<UserDocument> | null {
     if (!user) return user;
 
     const obj = user.toObject ? user.toObject() : { ...user };

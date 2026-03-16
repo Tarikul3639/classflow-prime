@@ -81,15 +81,8 @@ export class SignupController {
     // The service will handle verification and return tokens if successful
     const result = await this.verifySignupEmailService.execute(dto);
 
-    // If you want auto-login after verify:
-    // Issue tokens and set cookies here (HTTP layer concern)
-    const tokens = await this.tokenService.signTokens({
-      sub: result.user._id.toString(),
-      email: result.user.email,
-    });
-
     // Set HttpOnly cookies with the tokens
-    setAuthCookies(res, tokens);
+    setAuthCookies(res, result.tokens);
 
     // Optional: return user info without tokens since they are in cookies
     return {

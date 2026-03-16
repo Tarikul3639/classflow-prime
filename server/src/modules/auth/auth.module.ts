@@ -12,6 +12,7 @@ import { MeController } from './controllers/me.controller';
 import { SignoutController } from './controllers/signout.controller';
 import { SignupController } from './controllers/signup.controller';
 import { PasswordResetController } from './controllers/password-reset.controller';
+import { RefreshController } from './controllers/refresh.controller';
 
 // --------------------------------------------------
 // -------------------- SERVICES --------------------
@@ -83,6 +84,7 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
     SigninController,
     MeController,
     SignoutController,
+    RefreshController,
 
     // feature groups
     SignupController,
@@ -114,6 +116,9 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
     JwtStrategy,
     LocalStrategy,
     JwtRefreshStrategy,
+
+    // refresh token controller (if you are using cookie-based refresh tokens)
+    RefreshController,
 
     // user validation (used by strategies)
     ValidateUserService,

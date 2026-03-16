@@ -399,6 +399,8 @@ UserSchema.methods.resetPassword = async function (
   await this.save();
 };
 
+//TODO: ALL functions remove from this file and put in services. Entity should only have basic helpers like passwordCompare, verifyCode, etc. No business logic like incrementing attempts or locking accounts. That should be in services where we can handle edge cases better (e.g. if user.save() fails after incrementing attempts, account won't be locked but attempts will be incremented, so we can retry save without incrementing again).
+
 /**
  * Cooldown check for password reset email verification code
  * - cooldownSeconds is optional

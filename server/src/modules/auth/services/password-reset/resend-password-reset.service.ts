@@ -20,7 +20,7 @@ export class ResendPasswordResetService {
     const email = dto.email.toLowerCase().trim();
 
     // passwordResetCode/passwordResetExpiresAt are select:false, but we don't need to read them here.
-    const user = await this.userModel.findOne({ email });
+    const user: UserDocument | null = await this.userModel.findOne({ email });
     if (!user) throw new NotFoundException('User not found');
 
     // no OtpService: entity cooldown helper

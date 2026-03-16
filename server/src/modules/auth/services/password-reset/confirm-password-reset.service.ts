@@ -17,7 +17,7 @@ export class ConfirmPasswordResetService {
         const email = dto.email.toLowerCase().trim();
 
         // must select hidden reset fields
-        const user = await this.userModel.findOne({ email }).select('+passwordResetCode +passwordResetExpiresAt +passwordResetAttempts +lastPasswordResetRequestAt');
+        const user: UserDocument | null = await this.userModel.findOne({ email }).select('+passwordResetCode +passwordResetExpiresAt +passwordResetAttempts +lastPasswordResetRequestAt');
 
         if (!user) throw new NotFoundException('User not found');
 

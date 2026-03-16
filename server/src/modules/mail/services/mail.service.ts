@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
+import type { StringValue } from "ms";
 
 interface BaseEmailContext {
   appName: string;
@@ -10,15 +11,21 @@ interface BaseEmailContext {
 @Injectable()
 export class MailService {
   private readonly logger = new Logger(MailService.name);
-  private readonly codeExpiryMinutes = 15;
 
   constructor(
     private readonly mailerService: MailerService,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   private get frontendUrl(): string {
     return this.configService.get<string>('FRONTEND_URL', 'http://localhost:3000');
+  }
+
+  private get verificationCodeExpiresIn(): StringValue {
+    return this.configService.get<StringValue>(
+      'mail.verificationCodeExpiresIn',
+      '15m',
+    );
   }
 
   private buildAppUrl(path: string): string {
@@ -48,7 +55,7 @@ export class MailService {
           email,
           code,
           title: 'Verify your email',
-          expirationMinutes: this.codeExpiryMinutes,
+          expirationMinutes: this.verificationCodeExpiresIn,
           supportEmail: 'support@classflow.com',
         },
       });
@@ -79,7 +86,7 @@ export class MailService {
           username: name,
           code,
           title: 'Reset your password',
-          expirationMinutes: this.codeExpiryMinutes,
+          expirationMinutes: this.verificationCodeExpiresIn,
           supportEmail: 'support@classflow.com',
         },
       });

@@ -13,7 +13,7 @@ import { ITokens } from '../token/token.types';
 
 export class SignInResponseDto {
   message: string;
-  user: IUser;
+  user: Partial<IUser> | null;
   tokens: ITokens;
 }
 
@@ -44,7 +44,7 @@ export class SignInService {
     });
 
     // 2) load user (+password)
-    const user = await this.userModel
+    const user: UserDocument | null = await this.userModel
       .findOne({ email })
       .select('+password +refreshTokens');
 
@@ -72,6 +72,7 @@ export class SignInService {
     const tokens = await this.tokenService.signTokens({
       sub: user._id.toString(),
       email: user.email,
+      role: user.role,
     });
 
     // 5) store refresh token

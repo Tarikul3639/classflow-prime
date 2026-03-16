@@ -13,7 +13,7 @@ export class GetCurrentUserService {
   ) {}
 
   async execute(userId: string) {
-    const user = await this.userModel.findById(userId);
+    const user: UserDocument | null = await this.userModel.findById(userId);
     if (!user) throw new NotFoundException('User not found');
     return this.sanitizer.sanitize(user);
   }

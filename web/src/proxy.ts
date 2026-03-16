@@ -18,7 +18,6 @@ function isProtectedPath(pathname: string) {
 
 export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  console.log("Path name: ",pathname);
 
   const auth = isAuthRoute(pathname);
   const protectedRoute = isProtectedPath(pathname);
