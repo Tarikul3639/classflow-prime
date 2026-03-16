@@ -25,10 +25,10 @@ export function proxy(req: NextRequest) {
   // only enforce on auth + protected
   if (!auth && !protectedRoute) return NextResponse.next();
 
-  const accessToken = req.cookies.get('accessToken')?.value;
+  const refreshToken = req.cookies.get('refreshToken')?.value;
 
   // not logged in -> block protected
-  if (!accessToken && protectedRoute) {
+  if (!refreshToken && protectedRoute) {
     const url = req.nextUrl.clone();
     url.pathname = '/sign-in';
     url.searchParams.set('next', pathname);
@@ -36,7 +36,7 @@ export function proxy(req: NextRequest) {
   }
 
   // logged in -> block auth pages
-  if (accessToken && auth) {
+  if (refreshToken && auth) {
     const url = req.nextUrl.clone();
     url.pathname = '/';
     return NextResponse.redirect(url);

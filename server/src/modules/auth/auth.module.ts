@@ -3,6 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import type { StringValue } from 'ms';
 
 // -----------------------------------------------------
 // -------------------- CONTROLLERS --------------------
@@ -13,6 +14,7 @@ import { SignoutController } from './controllers/signout.controller';
 import { SignupController } from './controllers/signup.controller';
 import { PasswordResetController } from './controllers/password-reset.controller';
 import { RefreshController } from './controllers/refresh.controller';
+import { DebugController } from './controllers/debug.controller';
 
 // --------------------------------------------------
 // -------------------- SERVICES --------------------
@@ -43,7 +45,10 @@ import { ValidateUserService } from './services/users/validate-user.service';
 // -------------------- ENTITIES ------------------------
 // ------------------------------------------------------
 import { User, UserSchema } from 'src/database/entities/user.entity';
-import { AuthThrottle, AuthThrottleSchema } from 'src/database/entities/auth-throttle.entity';
+import {
+  AuthThrottle,
+  AuthThrottleSchema,
+} from 'src/database/entities/auth-throttle.entity';
 
 // ------------------------------------------------------
 // -------------------- MODULES -------------------------
@@ -69,13 +74,7 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('jwt.accessToken.secret'),
-        signOptions: {
-          expiresIn: parseInt(
-            configService.get<string>('jwt.accessToken.expiresIn', '3600'),
-            10,
-          ),
-        },
+        secret: configService.get<StringValue>('jwt.accessToken.secret'),
       }),
     }),
   ],
@@ -85,6 +84,7 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
     MeController,
     SignoutController,
     RefreshController,
+    DebugController,
 
     // feature groups
     SignupController,
@@ -116,9 +116,6 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
     JwtStrategy,
     LocalStrategy,
     JwtRefreshStrategy,
-
-    // refresh token controller (if you are using cookie-based refresh tokens)
-    RefreshController,
 
     // user validation (used by strategies)
     ValidateUserService,
