@@ -10,3 +10,9 @@ export interface ISession {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
+export interface ISessionMethods {
+  setToken(rawToken: string): Promise<void>;
+  compareToken(rawToken: string): Promise<boolean>;
+  isExpired(): boolean;
+}

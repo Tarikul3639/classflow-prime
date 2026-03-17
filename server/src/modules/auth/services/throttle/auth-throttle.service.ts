@@ -9,7 +9,7 @@ export class AuthThrottleService {
   constructor(
     @InjectModel(Throttle.name)
     private readonly throttleModel: Model<ThrottleDocument>,
-  ) {}
+  ) { }
 
   /**
    * Internal helper to fetch or create the throttle record
@@ -54,10 +54,17 @@ export class AuthThrottleService {
     if (doc.expiresAt && doc.expiresAt > new Date()) {
       const diffInMs = doc.expiresAt.getTime() - Date.now();
       const diffInMinutes = Math.ceil(diffInMs / 1000 / 60);
-      
+
       throw new ForbiddenException(
         `Too many attempts. Please try again in ${diffInMinutes} minute(s).`
       );
+    }
+
+    // If locked but expired, reset attempts and expiresAt
+    if (doc.expiresAt && doc.expiresAt <= new Date()) {
+      doc.attempts = 0;
+      doc.expiresAt = undefined;
+      await doc.save();
     }
 
     return doc;

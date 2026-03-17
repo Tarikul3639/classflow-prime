@@ -1,17 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsIn } from 'class-validator';
+import { IsString} from 'class-validator';
 
-export class DecodeTokenDto {
-  @ApiProperty({ description: 'JWT token to decode' })
+export class AccessTokenDecodeDto {
+  @ApiProperty({ description: 'Access token to decode' })
   @IsString()
   token: string;
+}
 
-  @ApiProperty({
-    description: 'Type of token to decode',
-    enum: ['access', 'refresh'],
-    default: 'refresh',
-  })
+export class RefreshTokenDecodeDto {
+  @ApiProperty({ description: 'Refresh token to decode' })
   @IsString()
-  @IsIn(['access', 'refresh'], { message: 'type must be either "access" or "refresh"' })
-  type: 'access' | 'refresh';
+  token: string;
+}
+
+export class PasswordDecodeDto {
+  @ApiProperty({ description: 'Password to decode' })
+  @IsString()
+  password: string;
 }

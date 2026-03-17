@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { IVerification } from '../interface/verification.interface';
+import { IVerification, IVerificationMethods } from '../interface/verification.interface';
 
-export type VerificationDocument = HydratedDocument<Verification & IVerification>;
+export type VerificationDocument = HydratedDocument<Verification & IVerification & IVerificationMethods>;
 
 @Schema({
     timestamps: true, // createdAt, updatedAt
@@ -24,22 +24,6 @@ export class Verification implements IVerification {
         required: true,
     })
     expiresAt: Date;
-
-    // ==================== Schema Methods ====================
-
-    /**
-     * Check if the token is expired
-     */
-    isExpired(): boolean {
-        return this.expiresAt <= new Date();
-    }
-
-    /**
-     * Verify token value
-     */
-    verify(token: string): boolean {
-        return !this.isExpired() && this.value === token;
-    }
 }
 
 export const VerificationSchema =
@@ -52,3 +36,19 @@ VerificationSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 // Optional: fast lookup by identifier
 VerificationSchema.index({ identifier: 1 });
+
+// ==================== Schema Methods ====================
+
+/**
+ * Check if the token is expired
+ */
+VerificationSchema.methods.isExpired = function (): boolean {
+    return this.expiresAt <= new Date();
+};
+
+/**
+ * Verify token value
+ */
+VerificationSchema.methods.verify = function (token: string): boolean {
+    return !this.isExpired() && this.value === token;
+}

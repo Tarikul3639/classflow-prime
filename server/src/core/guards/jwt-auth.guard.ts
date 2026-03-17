@@ -3,6 +3,7 @@ import {
   Injectable,
   UnauthorizedException,
   CanActivate,
+  ForbiddenException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
@@ -17,10 +18,10 @@ export class JwtAuthGuard implements CanActivate {
     private readonly reflector: Reflector,
     private readonly jwtService: JwtService,
     private readonly tokenService: TokenService,
-  ) {}
+  ) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    // 1️⃣ Check if the route is marked as public
+    // 1️) Check if the route is marked as public
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -34,12 +35,12 @@ export class JwtAuthGuard implements CanActivate {
     const accessToken = request.cookies?.['accessToken'];
     const refreshToken = request.cookies?.['refreshToken'];
 
-    // 2️⃣ Exit if no tokens are present in cookies
+    // 2️) Exit if no tokens are present in cookies
     if (!accessToken && !refreshToken) {
       throw new UnauthorizedException('Authentication tokens missing');
     }
 
-    // 3️⃣ Attempt to verify the Access Token
+    // 3️) Attempt to verify the Access Token
     if (accessToken) {
       try {
         const payload = await this.jwtService.verifyAsync(accessToken);
@@ -53,26 +54,39 @@ export class JwtAuthGuard implements CanActivate {
       }
     }
 
-    // 4️⃣ Silent Refresh Logic (Handling undefined strings)
-    try {
-      // Ensure IP and User-Agent are strings, not undefined
-      const ip = (request.ip || request.get('x-forwarded-for') || '127.0.0.1') as string;
-      const ua = (request.get('User-Agent') || 'unknown-device') as string;
+    // 3️) Silent Refresh Logic
+    if (refreshToken) {
+      try {
+        // Safe IP extraction considering proxies
+        const ip = (request.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
+          request.ip ||
+          'unknown';
+        const ua = request.headers['user-agent'] || 'unknown-device';
 
-      // Rotate tokens using the TokenService
-      const tokens = await this.tokenService.refreshTokens(refreshToken, ip, ua);
+        // Rotate tokens
+        const tokens = await this.tokenService.refreshTokens(refreshToken, ip, ua);
 
-      // Update the client's cookies
-      setAuthCookies(response, tokens);
+        // Update Cookies
+        setAuthCookies(response, tokens);
 
-      // Attach the new payload to the request
-      const payload = await this.jwtService.verifyAsync(tokens.accessToken);
-      request['user'] = payload;
+        // Attach user payload to request (Extract from new access token)
+        const newPayload = this.jwtService.decode(tokens.accessToken);
+        request['user'] = newPayload;
 
-      return true;
-    } catch (error: any) {
-      // Catch specific security alerts from TokenService (e.g., Compromised session)
-      throw new UnauthorizedException(error.message || 'Session expired. Please login again');
+        return true;
+      } catch (error: any) {
+        // Clear cookies on refresh failure to prevent infinite loops
+        response.clearCookie('accessToken');
+        response.clearCookie('refreshToken');
+
+        throw new UnauthorizedException(
+          error instanceof ForbiddenException
+            ? error.message
+            : 'Session expired. Please login again'
+        );
+      }
     }
+
+    return false;
   }
 }

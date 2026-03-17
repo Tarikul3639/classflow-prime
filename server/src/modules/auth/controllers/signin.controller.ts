@@ -3,6 +3,7 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
+  Headers,
   Post,
   Req,
   Res,
@@ -33,6 +34,7 @@ export class SigninController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
     @Ip() ip: string,
+    @Headers('user-agent') ua: string,
   ) {
     // Prefer x-forwarded-for when behind proxy, else req.ip
     const realIp =
@@ -42,13 +44,10 @@ export class SigninController {
       req.ip ||
       ip;
 
-    // Get user-agent for throttling purposes
-    const userAgent = req.headers['user-agent'] ?? '';
-
     // Call the service to perform sign-in logic
     const result = await this.signInService.execute(dto, {
       ip: realIp,
-      userAgent,
+      userAgent: ua || 'unknown-device',
     });
 
     // set HttpOnly cookies here (HTTP layer concern)

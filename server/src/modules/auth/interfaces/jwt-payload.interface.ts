@@ -22,6 +22,16 @@ export interface IJwtPayload {
   role: UserRole;
 
   /**
+   * IP address of the client (optional, can be used for additional security checks)
+   */
+  ip?: string;
+
+  /**
+   * User agent string of the client (optional, can be used for additional security checks)
+   */
+  ua?: string;
+
+  /**
    * Issued at timestamp (automatically added by JWT)
    */
   iat?: number;

@@ -7,3 +7,8 @@ export interface IVerification {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
+export interface IVerificationMethods {
+  isExpired(): boolean;
+  verify(token: string): boolean;
+}

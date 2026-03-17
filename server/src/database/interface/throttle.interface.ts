@@ -16,3 +16,9 @@ export interface IThrottle {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
+export interface IThrottleMethods {
+  increment(attemptWindowMinutes?: number): void;
+  reset(): void;
+  isExpired(): boolean;
+}

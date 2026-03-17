@@ -1,9 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import { ISession } from '../interface/session.interface';
+import { ISession, ISessionMethods  } from '../interface/session.interface';
 
-export type SessionDocument = HydratedDocument<Session & ISession>;
+export type SessionDocument = HydratedDocument<Session & ISession & ISessionMethods>;
 
 @Schema({
     timestamps: true, // createdAt, updatedAt
@@ -31,40 +31,6 @@ export class Session implements ISession {
 
     @Prop()
     userAgent?: string; // User agent string of the client like browser or app info e.g., "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-
-    //----------------------------------------------------------
-    // -------------------- Schema Methods ---------------------
-    // ---------------------------------------------------------
-
-    /**
-     * Hash the session token before saving
-     */
-    async setToken(rawToken: string) {
-        const salt = await bcrypt.genSalt(10);
-        this.token = await bcrypt.hash(rawToken, salt);
-    }
-
-    /**
-     * Compare raw token with stored hashed token
-     */
-    async compareToken(rawToken: string): Promise<boolean> {
-        if (!this.token) return false;
-        return bcrypt.compare(rawToken, this.token);
-    }
-
-    /**
-     * Check if session is expired
-     */
-    isExpired(): boolean {
-        return this.expiresAt <= new Date();
-    }
-
-    /**
-     * Invalidate session immediately
-     */
-    invalidate() {
-        this.expiresAt = new Date();
-    }
 }
 
 export const SessionSchema = SchemaFactory.createForClass(Session);
@@ -76,3 +42,38 @@ SessionSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 // Optional: fast lookup by userId
 SessionSchema.index({ userId: 1 });
+
+
+//----------------------------------------------------------
+// -------------------- Schema Methods ---------------------
+// ---------------------------------------------------------
+
+/**
+ * Hash the session token before saving
+ */
+SessionSchema.methods.setToken = async function (rawToken: string) {
+    const salt = await bcrypt.genSalt(10);
+    this.token = await bcrypt.hash(rawToken, salt);
+}
+
+/**
+ * Compare raw token with stored hashed token
+ */
+SessionSchema.methods.compareToken = async function (rawToken: string): Promise<boolean> {
+    if (!this.token) return false;
+    return bcrypt.compare(rawToken, this.token);
+}
+
+/**
+ * Check if session is expired
+ */
+SessionSchema.methods.isExpired = function (): boolean {
+    return this.expiresAt <= new Date();
+}
+
+/**
+ * Invalidate session immediately
+ */
+SessionSchema.methods.invalidate = function () {
+    this.expiresAt = new Date();
+}

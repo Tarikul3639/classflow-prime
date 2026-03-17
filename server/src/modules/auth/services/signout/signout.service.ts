@@ -18,19 +18,19 @@ export class SignOutService {
    * Handles sign out for a single session or all sessions
    */
   async execute(userId: string, refreshToken?: string) {
-    // 1️⃣ Verify user existence
+    // 1️) Verify user existence
     const user = await this.userModel.findById(userId);
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    // 2️⃣ Sign out from ALL devices
+    // 2️) Sign out from ALL devices
     if (!refreshToken) {
       await this.sessionModel.deleteMany({ userId: user._id });
       return { message: 'Signed out from all devices' };
     }
 
-    // 3️⃣ Sign out from current device only
+    // 3️) Sign out from current device only
     // This utilizes the logic already present in your TokenService
     try {
       await this.tokenService.revokeSession(refreshToken);

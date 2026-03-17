@@ -3,11 +3,14 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
+  Headers,
+  Ip,
   Post,
   Res,
+  Req,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
 
 import { Public } from '../../../shared/decorators/public.decorator';
 import { setAuthCookies } from '../../../shared/utils/auth-cookies.util';
@@ -19,7 +22,6 @@ import { ResendSignupVerificationDto } from '../dto/signup/resend-signup-verific
 import { SignUpService } from '../services/signup/signup.service';
 import { VerifySignupEmailService } from '../services/signup/verify-signup-email.service';
 import { ResendSignupVerificationService } from '../services/signup/resend-signup-verification.service';
-import { TokenService } from '../services/token/token.service';
 
 /**
  * Signup Controller
@@ -76,9 +78,24 @@ export class SignupController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Verify signup email code' })
   @ApiResponse({ status: 200, description: 'Email verified successfully' })
-  async verify(@Body() dto: VerifySignupEmailDto, @Res({ passthrough: true }) res: Response) {
-    // The service will handle verification and return tokens if successful
-    const result = await this.verifySignupEmailService.execute(dto);
+  async verify(
+    @Body() dto: VerifySignupEmailDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+    @Ip() ip: string,
+    @Headers('user-agent') ua: string,
+  ) {
+    // 1. Extract Real IP (Proxy handling)
+    const realIp =
+      (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
+      req.socket.remoteAddress ||
+      ip;
+
+    // 2. Execute service with Context (ip and userAgent)
+    const result = await this.verifySignupEmailService.execute(dto, {
+      ip: realIp,
+      userAgent: ua || 'unknown-device',
+    });
 
     // Set HttpOnly cookies with the tokens
     setAuthCookies(res, result.tokens);

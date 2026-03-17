@@ -10,10 +10,11 @@ import { AccountProvider } from 'src/database/interface/account.interface';
 import { ThrottlePurpose } from 'src/database/interface/throttle.interface';
 import { AuthThrottleService } from '../throttle/auth-throttle.service';
 import { ITokens } from '../token/token.types';
+import { IUser } from 'src/database/interface/user.interface';
 
 export class SignInResponseDto {
   message: string;
-  user: any;
+  user: IUser;
   tokens: ITokens;
 }
 
@@ -29,14 +30,14 @@ export class SignInService {
     @InjectModel(Account.name) private readonly accountModel: Model<AccountDocument>,
     private readonly tokenService: TokenService,
     private readonly throttle: AuthThrottleService,
-  ) {}
+  ) { }
 
   async execute(dto: SignInDto, ctx: Ctx): Promise<SignInResponseDto> {
     const email = dto.email.toLowerCase().trim();
     const ip = (ctx.ip || 'unknown').trim();
     const ua = ctx.userAgent || 'unknown-device';
 
-    // 1️⃣ Throttle check to prevent Brute-Force
+    // 1️) Throttle check to prevent Brute-Force
     const t = await this.throttle.assertNotLocked({
       key: email,
       ip,
@@ -44,14 +45,14 @@ export class SignInService {
       userAgent: ua,
     });
 
-    // 2️⃣ Load User by email
+    // 2️) Load User by email
     const user = await this.userModel.findOne({ email });
     if (!user) {
       await this.handleFailure(t);
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // 3️⃣ Load Account for password verification
+    // 3️) Load Account for password verification
     // In standard, passwords live in the Account entity linked to 'password' provider
     const account = await this.accountModel.findOne({
       userId: user._id,
@@ -63,14 +64,14 @@ export class SignInService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // 4️⃣ Password Verification
+    // 4️) Password Verification
     const isPasswordMatch = await account.comparePassword(dto.password);
     if (!isPasswordMatch) {
       await this.handleFailure(t);
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Password is incorrect');
     }
 
-    // 5️⃣ Success: Reset Throttling & Issue Tokens + Create Session
+    // 5️) Success: Reset Throttling & Issue Tokens + Create Session
     await this.throttle.success(t);
 
     // This method now generates JWTs AND saves a hashed session in the Session collection
@@ -85,9 +86,10 @@ export class SignInService {
     return {
       message: 'Signed in successfully',
       user: {
-        id: user._id,
+        _id: user._id,
         name: user.name,
         email: user.email,
+        emailVerified: user.emailVerified,
         role: user.role,
         avatarUrl: user.avatarUrl,
       },

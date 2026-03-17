@@ -36,11 +36,6 @@ interface InfoStepProps {
   email: string;
 }
 
-type SplitNameResult = {
-  firstName: string;
-  lastName?: string;
-};
-
 export const InfoStep: React.FC<InfoStepProps> = ({
   name,
   setName,
@@ -75,24 +70,13 @@ export const InfoStep: React.FC<InfoStepProps> = ({
       .slice(0, 2);
   };
 
-  const splitName = (full: string): SplitNameResult => {
-    const parts = full.trim().split(/\s+/).filter(Boolean);
-    return {
-      firstName: parts[0] ?? "",
-      lastName: parts.slice(1).join(" ") || undefined,
-    };
-  };
-
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
-
-    const { firstName, lastName } = splitName(name);
 
     const payload: ISignUpRequest = {
       email: email.trim().toLowerCase(),
       password,
-      firstName,
-      lastName,
+      name: name.trim(),
       avatarUrl,
     };
 

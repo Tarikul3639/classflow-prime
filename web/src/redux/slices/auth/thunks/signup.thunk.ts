@@ -20,8 +20,7 @@ export interface ISignUpResponse {
 export type ISignUpRequest = {
   email: string;
   password: string;
-  firstName: string;
-  lastName?: string;
+  name: string;
   avatarUrl?: string;
 };
 
@@ -31,8 +30,8 @@ export const signupThunk = createAsyncThunk<
   { rejectValue: string }
 >("auth/signup", async (payload, { rejectWithValue }) => {
   // client-side validation inside thunk
-  if (payload.firstName.trim().length < 2) {
-    return rejectWithValue("First name must be at least 2 characters");
+  if (payload.name.trim().length < 2) {
+    return rejectWithValue("Name must be at least 2 characters");
   }
 
   if (!payload.password || payload.password.length < 6) {

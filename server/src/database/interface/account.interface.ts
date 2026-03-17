@@ -22,3 +22,17 @@ export interface IAccount {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
+export interface IAccountMethods {
+  setPassword(rawPassword: string): Promise<void>;
+  comparePassword(rawPassword: string): Promise<boolean>;
+
+  setAccessToken(token: string): Promise<void>;
+  compareAccessToken(token: string): Promise<boolean>;
+
+  setRefreshToken(token: string): Promise<void>;
+  compareRefreshToken(token: string): Promise<boolean>;
+
+  isAccessTokenExpired(): boolean;
+  isRefreshTokenExpired(): boolean;
+}

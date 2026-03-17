@@ -10,7 +10,6 @@ import type { IJwtPayload } from '../../interfaces/jwt-payload.interface';
 import type { ITokens } from './token.types';
 import { User, UserDocument } from 'src/database/entities/user.entity';
 import { UserRole } from 'src/database/interface/user.interface';
-import { Account, AccountDocument } from 'src/database/entities/account.entity';
 import { Session, SessionDocument } from 'src/database/entities/session.entity';
 
 @Injectable()
@@ -19,7 +18,6 @@ export class TokenService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-    @InjectModel(Account.name) private readonly accountModel: Model<AccountDocument>,
     @InjectModel(Session.name) private readonly sessionModel: Model<SessionDocument>,
   ) { }
 
@@ -47,7 +45,7 @@ export class TokenService {
    * Initial login: Generates tokens and creates a new persistent session
    */
   async createSession(userId: string, email: string, role: UserRole, ip: string, ua: string): Promise<ITokens> {
-    const payload: IJwtPayload = { sub: userId, email, role };
+    const payload: IJwtPayload = { sub: userId, email, role, ip, ua };
     const tokens = await this.signTokens(payload);
 
     // Create a new session entry linked to this specific device/browser
@@ -116,6 +114,8 @@ export class TokenService {
       sub: user._id.toString(),
       email: user.email,
       role: user.role,
+      ip: ip,
+      ua: ua,
     });
 
     // 6️) Update Existing Session instead of creating a new one
