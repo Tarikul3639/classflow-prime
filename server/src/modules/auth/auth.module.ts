@@ -12,8 +12,7 @@ import { SigninController } from './controllers/signin.controller';
 import { MeController } from './controllers/me.controller';
 import { SignoutController } from './controllers/signout.controller';
 import { SignupController } from './controllers/signup.controller';
-import { PasswordResetController } from './controllers/password-reset.controller';
-import { RefreshController } from './controllers/refresh.controller';
+// import { PasswordResetController } from './controllers/password-reset.controller';
 import { DebugController } from './controllers/debug.controller';
 
 // --------------------------------------------------
@@ -22,7 +21,6 @@ import { DebugController } from './controllers/debug.controller';
 
 // Reusable helpers
 import { TokenService } from './services/token/token.service';
-import { UserSanitizerService } from './services/sanitizer/user-sanitizer.service';
 import { AuthThrottleService } from './services/throttle/auth-throttle.service';
 
 // Feature services
@@ -34,10 +32,10 @@ import { SignUpService } from './services/signup/signup.service';
 import { VerifySignupEmailService } from './services/signup/verify-signup-email.service';
 import { ResendSignupVerificationService } from './services/signup/resend-signup-verification.service';
 
-import { RequestPasswordResetService } from './services/password-reset/request-password-reset.service';
-import { VerifyPasswordResetService } from './services/password-reset/verify-password-reset.service';
-import { ResendPasswordResetService } from './services/password-reset/resend-password-reset.service';
-import { ConfirmPasswordResetService } from './services/password-reset/confirm-password-reset.service';
+// import { RequestPasswordResetService } from './services/password-reset/request-password-reset.service';
+// import { VerifyPasswordResetService } from './services/password-reset/verify-password-reset.service';
+// import { ResendPasswordResetService } from './services/password-reset/resend-password-reset.service';
+// import { ConfirmPasswordResetService } from './services/password-reset/confirm-password-reset.service';
 
 import { ValidateUserService } from './services/users/validate-user.service';
 
@@ -46,9 +44,12 @@ import { ValidateUserService } from './services/users/validate-user.service';
 // ------------------------------------------------------
 import { User, UserSchema } from 'src/database/entities/user.entity';
 import {
-  AuthThrottle,
-  AuthThrottleSchema,
-} from 'src/database/entities/auth-throttle.entity';
+  Throttle,
+  ThrottleSchema,
+} from 'src/database/entities/throttle.entity';
+import { Account, AccountSchema } from 'src/database/entities/account.entity';
+import { Session, SessionSchema } from 'src/database/entities/session.entity';
+import { Verification, VerificationSchema } from 'src/database/entities/verification.entity';
 
 // ------------------------------------------------------
 // -------------------- MODULES -------------------------
@@ -66,7 +67,10 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
   imports: [
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
-      { name: AuthThrottle.name, schema: AuthThrottleSchema },
+      { name: Throttle.name, schema: ThrottleSchema },
+      { name: Account.name, schema: AccountSchema },
+      { name: Session.name, schema: SessionSchema },
+      { name: Verification.name, schema: VerificationSchema },
     ]),
     MailModule,
     PassportModule,
@@ -83,17 +87,15 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
     SigninController,
     MeController,
     SignoutController,
-    RefreshController,
     DebugController,
 
     // feature groups
     SignupController,
-    PasswordResetController,
+    // PasswordResetController,
   ],
   providers: [
     // reusable core helpers
     TokenService,
-    UserSanitizerService,
     AuthThrottleService,
 
     // core auth features
@@ -107,10 +109,10 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
     ResendSignupVerificationService,
 
     // password reset flow
-    RequestPasswordResetService,
-    VerifyPasswordResetService,
-    ResendPasswordResetService,
-    ConfirmPasswordResetService,
+    // RequestPasswordResetService,
+    // VerifyPasswordResetService,
+    // ResendPasswordResetService,
+    // ConfirmPasswordResetService,
 
     // strategies (if you are still using them)
     JwtStrategy,
@@ -123,8 +125,7 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
   exports: [
     // Export what other modules might need
     TokenService,
-    UserSanitizerService,
     AuthThrottleService,
   ],
 })
-export class AuthModule {}
+export class AuthModule { }

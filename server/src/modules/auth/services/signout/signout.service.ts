@@ -1,28 +1,49 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User, UserDocument } from '../../../../database/entities/user.entity';
+
+import { User, UserDocument } from 'src/database/entities/user.entity';
+import { Session, SessionDocument } from 'src/database/entities/session.entity';
+import { TokenService } from '../token/token.service';
 
 @Injectable()
 export class SignOutService {
-  constructor(@InjectModel(User.name) private readonly userModel: Model<UserDocument>) {}
+  constructor(
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(Session.name) private readonly sessionModel: Model<SessionDocument>,
+    private readonly tokenService: TokenService,
+  ) {}
 
+  /**
+   * Handles sign out for a single session or all sessions
+   */
   async execute(userId: string, refreshToken?: string) {
+    // 1️⃣ Verify user existence
     const user = await this.userModel.findById(userId);
-    if (!user) throw new NotFoundException('User not found');
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
 
+    // 2️⃣ Sign out from ALL devices
     if (!refreshToken) {
-      // if not provided => signout all
-      user.refreshTokens = [];
-      await user.save();
+      await this.sessionModel.deleteMany({ userId: user._id });
       return { message: 'Signed out from all devices' };
     }
 
-    user.refreshTokens = (user.refreshTokens || []).filter((t) => t !== refreshToken);
-    await user.save();
-    return { message: 'Signout successful' };
+    // 3️⃣ Sign out from current device only
+    // This utilizes the logic already present in your TokenService
+    try {
+      await this.tokenService.revokeSession(refreshToken);
+      return { message: 'Signout successful' };
+    } catch (error) {
+      // If token is already gone or invalid, we consider it signed out
+      return { message: 'Signout successful' };
+    }
   }
 
+  /**
+   * Helper to clear all active sessions for a user
+   */
   async signOutAll(userId: string) {
     return this.execute(userId, undefined);
   }

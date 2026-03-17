@@ -1,5 +1,5 @@
 import { SetMetadata } from '@nestjs/common';
-import type { UserRole } from '../../database/entities/user.entity';
+import type { UserRole } from '../../database/interface/user.interface';
 
 /**
  * Roles Decorator

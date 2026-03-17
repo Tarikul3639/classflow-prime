@@ -1,68 +1,92 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import type { Model } from 'mongoose';
-
-import {
-  AuthThrottle,
-  AuthThrottleDocument,
-  ThrottlePurpose,
-} from '../../../../database/entities/auth-throttle.entity';
+import { Model } from 'mongoose';
+import { Throttle, ThrottleDocument } from '../../../../database/entities/throttle.entity';
+import { ThrottlePurpose } from '../../../../database/interface/throttle.interface';
 
 @Injectable()
 export class AuthThrottleService {
   constructor(
-    @InjectModel(AuthThrottle.name)
-    private readonly throttleModel: Model<AuthThrottleDocument>,
+    @InjectModel(Throttle.name)
+    private readonly throttleModel: Model<ThrottleDocument>,
   ) {}
 
-  async getOrCreate(params: {
+  /**
+   * Internal helper to fetch or create the throttle record
+   */
+  private async getOrCreate(params: {
     key: string;
     ip: string;
     purpose: ThrottlePurpose;
     userAgent?: string;
-  }) {
+  }): Promise<ThrottleDocument> {
     const { key, ip, purpose, userAgent } = params;
 
-    return this.throttleModel.findOneAndUpdate(
-      { key, ip, purpose },
+    const doc = await this.throttleModel.findOneAndUpdate(
+      { identifier: key, ipAddress: ip, purpose },
       {
-        $setOnInsert: { key, ip, purpose },
-        $set: { lastUserAgent: userAgent ?? '' },
+        $setOnInsert: { identifier: key, ipAddress: ip, purpose, attempts: 0 },
+        $set: { userAgent: userAgent ?? 'unknown' },
       },
       {
         upsert: true,
-        returnDocument: 'after', // ✅ replaces new:true
+        new: true,
+        runValidators: true,
       },
     );
+
+    if (!doc) throw new InternalServerErrorException('Could not sync throttle state');
+    return doc;
   }
 
+  /**
+   * logic replaced doc.assertNotLocked()
+   */
   async assertNotLocked(params: {
     key: string;
     ip: string;
     purpose: ThrottlePurpose;
     userAgent?: string;
-  }) {
+  }): Promise<ThrottleDocument> {
     const doc = await this.getOrCreate(params);
 
-    // doc can be null in some edge cases; be safe
-    if (!doc) {
-      return this.getOrCreate(params);
+    // Manual check instead of entity method
+    if (doc.expiresAt && doc.expiresAt > new Date()) {
+      const diffInMs = doc.expiresAt.getTime() - Date.now();
+      const diffInMinutes = Math.ceil(diffInMs / 1000 / 60);
+      
+      throw new ForbiddenException(
+        `Too many attempts. Please try again in ${diffInMinutes} minute(s).`
+      );
     }
 
-    doc.assertNotLocked();
     return doc;
   }
 
+  /**
+   * logic replaced doc.recordFailure()
+   */
   async fail(
-    doc: AuthThrottleDocument,
+    doc: ThrottleDocument,
     opts: { maxAttempts: number; lockMinutes: number },
   ) {
-    doc.recordFailure(opts.maxAttempts, opts.lockMinutes);
+    doc.attempts += 1;
+
+    if (doc.attempts >= opts.maxAttempts) {
+      const lockTime = new Date();
+      lockTime.setMinutes(lockTime.getMinutes() + opts.lockMinutes);
+      doc.expiresAt = lockTime;
+    }
+
     await doc.save();
   }
 
-  async success(doc: AuthThrottleDocument) {
-    doc.recordSuccess();
+  /**
+   * logic replaced doc.recordSuccess()
+   */
+  async success(doc: ThrottleDocument) {
+    doc.attempts = 0;
+    doc.expiresAt = undefined;
     await doc.save();
   }
 }

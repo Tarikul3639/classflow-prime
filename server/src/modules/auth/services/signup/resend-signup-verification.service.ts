@@ -8,62 +8,103 @@ import { InjectModel } from '@nestjs/mongoose';
 import type { Model } from 'mongoose';
 
 import { ResendSignupVerificationDto } from '../../dto/signup/resend-signup-verification.dto';
-import { User, UserDocument } from '../../../../database/entities/user.entity';
+import { User, UserDocument } from 'src/database/entities/user.entity';
+import {
+  Verification,
+  VerificationDocument,
+} from 'src/database/entities/verification.entity';
 import { MailService } from '../../../../modules/mail/services/mail.service';
 import { EmailValidator } from 'src/shared/utils/email-validator.util';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ResendSignupVerificationService {
   private readonly resendCooldownSeconds = 60;
-  private readonly otpExpiryMinutes = 15;
 
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(Verification.name)
+    private readonly verificationModel: Model<VerificationDocument>,
     private readonly mailService: MailService,
+    private readonly configService: ConfigService,
   ) { }
 
+  // TODO: Configure OTP expiry time in config
+  private get otpExpiryMinutes(): number {
+    return this.configService.get<number>('signupVerification.otpExpiryMinutes', 10);
+  }
+  
   async execute(dto: ResendSignupVerificationDto) {
     const email = dto.email.toLowerCase().trim();
 
-    // 1) basic format check (so user gets clean message)
-    if (!EmailValidator.isValidFormat(dto.email)) {
+    // 1️) Validate email
+    if (!EmailValidator.isValidFormat(email)) {
       throw new BadRequestException('Invalid email format');
     }
+    EmailValidator.validateOrThrow(email);
 
-    // 2) disposable / temporary email block (this throws your message)
-    EmailValidator.validateOrThrow(dto.email);
-
-    const user: UserDocument | null = await this.userModel
-      .findOne({ email })
-      .select('+emailVerificationCode +emailVerificationExpiresAt');
-
+    // 2️) Load user
+    const user: UserDocument | null = await this.userModel.findOne({ email });
     if (!user) throw new NotFoundException('User not found');
-
-    if (user.isEmailVerified) {
+    if (user.emailVerified)
       throw new BadRequestException('Email already verified');
+
+    // 3️) Check last OTP cooldown
+    const lastOtp = await this.verificationModel
+      .findOne({ identifier: email })
+      .sort({ createdAt: -1 })
+      .exec();
+
+    if (lastOtp?.createdAt) {
+      const secondsSinceLast =
+        (Date.now() - lastOtp.createdAt.getTime()) / 1000;
+      if (secondsSinceLast < this.resendCooldownSeconds) {
+        throw new BadRequestException(
+          `Please wait ${Math.ceil(this.resendCooldownSeconds - secondsSinceLast)} seconds before resending`,
+        );
+      }
     }
 
-    // Check cooldown using entity method (throws if still in cooldown)
-    user.assertEmailVerificationCooldown(this.resendCooldownSeconds);
-
-    // Create new code and update timestamp using entity method
-    const code = user.createEmailVerificationCode(this.otpExpiryMinutes);
-    user.emailVerificationLastSentAt = new Date();
-
-    await user.save();
+    // 4️) Start MongoDB session for transaction
+    const session = await this.verificationModel.db.startSession();
+    session.startTransaction();
 
     try {
+      // 5️) Generate OTP
+      const code = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit
+      const expiresAt = new Date(
+        Date.now() + this.otpExpiryMinutes * 60 * 1000,
+      );
+
+      // 6️) Save OTP in transaction
+      const verificationToken: VerificationDocument = new this.verificationModel({
+        identifier: email,
+        value: code,
+        expiresAt,
+      });
+
+      await verificationToken.save({ session });
+
+      // 7️) Send email
       await this.mailService.sendVerificationEmail(
         user.email,
-        (user as { fullName: string }).fullName || user.firstName,
+        (user as { name?: string }).name || user.name,
         code,
       );
-    } catch (_err) {
+
+      // 8️) Commit transaction if email sent successfully
+      await session.commitTransaction();
+      session.endSession();
+
+      return { message: 'Verification code resent successfully' };
+    } catch (err) {
+      // Abort transaction if any error occurs (email failed or save failed)
+      await session.abortTransaction();
+      session.endSession();
+
       throw new InternalServerErrorException(
-        'Failed to send verification email. Please try again later.',
+        'Failed to resend verification email. Please try again later.',
       );
     }
-
-    return { message: 'Verification code resent successfully' };
   }
 }

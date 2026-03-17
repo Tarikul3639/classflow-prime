@@ -10,29 +10,24 @@ import {
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 
-export class SignUpDto {
+interface ISignUpDto {
+    name: string;
+    email: string;
+    password: string;
+    avatarUrl?: string;
+}
+
+export class SignUpDto implements ISignUpDto {
     @ApiProperty({
         example: 'Tarikul Islam',
         description: 'Full name of the user',
     })
     @IsString()
-    @IsNotEmpty({ message: 'First name is required' })
-    @MinLength(2, { message: 'First name must be at least 2 characters' })
-    @MaxLength(60, { message: 'First name must be at most 60 characters' })
+    @IsNotEmpty({ message: 'Name is required' })
+    @MinLength(2, { message: 'Name must be at least 2 characters' })
+    @MaxLength(60, { message: 'Name must be at most 60 characters' })
     @Transform(({ value }) => value?.trim())
-    firstName: string;
-
-    @ApiPropertyOptional({
-        example: 'Islam',
-        description: 'Last name of the user',
-    })
-    @IsOptional()
-    @IsString()
-    @IsNotEmpty({ message: 'Last name is required' })
-    @MinLength(2, { message: 'Last name must be at least 2 characters' })
-    @MaxLength(60, { message: 'Last name must be at most 60 characters' })
-    @Transform(({ value }) => value?.trim())
-    lastName: string;
+    name: string;
 
     @ApiProperty({
         example: 'tarikul@example.com',

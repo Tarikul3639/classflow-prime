@@ -1,85 +1,144 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ForbiddenException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import type { StringValue } from "ms";
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
-import type { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
+import type { StringValue } from 'ms';
+import ms from 'ms';
 
 import type { IJwtPayload } from '../../interfaces/jwt-payload.interface';
 import type { ITokens } from './token.types';
-import { User, UserDocument } from '../../../../database/entities/user.entity';
+import { User, UserDocument } from 'src/database/entities/user.entity';
+import { UserRole } from 'src/database/interface/user.interface';
+import { Account, AccountDocument } from 'src/database/entities/account.entity';
+import { Session, SessionDocument } from 'src/database/entities/session.entity';
 
-
-/**
- * Service for handling JWT token generation and refreshing
- * This service is used by the SignInService to generate tokens upon successful login
- * and by the RefreshController to refresh tokens using a valid refresh token.
- */
 @Injectable()
 export class TokenService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(Account.name) private readonly accountModel: Model<AccountDocument>,
+    @InjectModel(Session.name) private readonly sessionModel: Model<SessionDocument>,
   ) { }
 
   private get jwtAccessTokenExpiresIn(): StringValue {
     return this.configService.get<StringValue>('jwt.accessToken.expiresIn', '15m');
   }
-  private get jwtRefreshExpiresIn(): StringValue {
+
+  private get jwtRefreshTokenExpiresIn(): StringValue {
     return this.configService.get<StringValue>('jwt.refreshToken.expiresIn', '7d');
   }
 
   /**
-   * Generate access and refresh tokens for a given user payload
-   * @param payload - The payload to include in the JWT (e.g., user ID and email)
-   * @returns An object containing the access token and refresh token
-   */
-
+ * Generates Access and Refresh JWTs
+ */
   async signTokens(payload: IJwtPayload): Promise<ITokens> {
-    // You can configure expirations in JwtModule options
-    const accessToken = await this.jwtService.signAsync(payload, { expiresIn: this.jwtAccessTokenExpiresIn });
-    const refreshToken = await this.jwtService.signAsync(payload, { expiresIn: this.jwtRefreshExpiresIn });
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(payload, { expiresIn: this.jwtAccessTokenExpiresIn }),
+      this.jwtService.signAsync(payload, { expiresIn: this.jwtRefreshTokenExpiresIn }),
+    ]);
+
     return { accessToken, refreshToken };
   }
 
   /**
-   * Refresh access and refresh tokens using a valid refresh token
-   * @param refreshToken - The refresh token to validate and use for generating new tokens
-   * @returns An object containing the new access token and refresh token
+   * Initial login: Generates tokens and creates a new persistent session
    */
-  async refreshTokens(refreshToken: string): Promise<ITokens> {
+  async createSession(userId: string, email: string, role: UserRole, ip: string, ua: string): Promise<ITokens> {
+    const payload: IJwtPayload = { sub: userId, email, role };
+    const tokens = await this.signTokens(payload);
+
+    // Create a new session entry linked to this specific device/browser
+    const session = new this.sessionModel({
+      userId: new Types.ObjectId(userId),
+      ipAddress: ip,
+      userAgent: ua,
+      expiresAt: new Date(Date.now() + ms(this.jwtRefreshTokenExpiresIn)),
+    });
+
+    // Hash the refresh token before saving to database (Security)
+    await session.setToken(tokens.refreshToken);
+    await session.save();
+
+    return tokens;
+  }
+
+  /**
+   * Refreshes session: Implements Token Rotation and Reuse Detection
+   */
+  async refreshTokens(refreshToken: string, ip: string, ua: string): Promise<ITokens> {
     let payload: IJwtPayload;
+
+    // 1️) Verify JWT Integrity
     try {
       payload = await this.jwtService.verifyAsync(refreshToken);
-    } catch (err) {
-      throw new UnauthorizedException('Invalid or expired refresh token');
+    } catch {
+      throw new UnauthorizedException('Session expired or invalid');
     }
 
-    // 1. Get user
-    const user: UserDocument | null = await this.userModel.findById(payload.sub);
-    if (!user) throw new UnauthorizedException('User not found');
+    // 2️) Detect Session Leak / Reuse
+    // We find all active sessions for this user to compare hashes
+    const sessions = await this.sessionModel.find({ userId: payload.sub });
 
-    // 2. Check if refresh token is still valid (exists in DB)
-    if (!user.refreshTokens.includes(refreshToken)) {
-      throw new UnauthorizedException('Refresh token revoked');
+    let currentSession: SessionDocument | null = null;
+    for (const s of sessions) {
+      if (await s.compareToken(refreshToken)) {
+        currentSession = s;
+        break;
+      }
     }
 
-    // 3. Rotate: Remove old, add new token (single use strategy)
-    // Remove used/old refresh token
-    user.refreshTokens = user.refreshTokens.filter((tok: string) => tok !== refreshToken);
+    // If token is valid but not found in DB, it was likely already used (Theft attempt)
+    if (!currentSession) {
+      await this.sessionModel.deleteMany({ userId: payload.sub });
+      throw new ForbiddenException('Security Alert: Compromised session detected. All devices logged out.');
+    }
 
-    // 4. Issue new tokens
-    const tokens = await this.signTokens({ sub: user._id, email: user.email, role: user.role });
+    // 3️) Verify Device Fingerprint (IP & User-Agent)
+    if (currentSession.userAgent !== ua) {
+      // Optional: Log this for security auditing
+      throw new UnauthorizedException('Device mismatch. Please login again.');
+    }
 
-    // Save new refreshToken (rotation, or you can limit for security)
-    user.refreshTokens.push(tokens.refreshToken);
+    // 4️) Check Expiration
+    if (currentSession.isExpired()) {
+      await currentSession.deleteOne();
+      throw new UnauthorizedException('Session has expired');
+    }
 
-    await user.save();
+    // 5️) Prepare New Tokens (Rotation)
+    const user = await this.userModel.findById(payload.sub);
+    if (!user) throw new UnauthorizedException('User no longer exists');
 
-    return {
-      accessToken: tokens.accessToken,
-      refreshToken: tokens.refreshToken,
-    };
+    const tokens = await this.signTokens({
+      sub: user._id.toString(),
+      email: user.email,
+      role: user.role,
+    });
+
+    // 6️) Update Existing Session instead of creating a new one
+    await currentSession.setToken(tokens.refreshToken);
+    currentSession.ipAddress = ip; // Update IP in case of network switch
+    currentSession.expiresAt = new Date(Date.now() + ms(this.jwtRefreshTokenExpiresIn));
+    await currentSession.save();
+
+    return tokens;
+  }
+
+  /**
+   * Logs out a specific session
+   */
+  async revokeSession(refreshToken: string): Promise<void> {
+    const payload = this.jwtService.decode(refreshToken) as IJwtPayload;
+    const sessions = await this.sessionModel.find({ userId: payload.sub });
+
+    for (const s of sessions) {
+      if (await s.compareToken(refreshToken)) {
+        await s.deleteOne();
+        break;
+      }
+    }
   }
 }

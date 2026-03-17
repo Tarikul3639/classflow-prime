@@ -32,7 +32,6 @@ export class SignupController {
     private readonly signUpService: SignUpService,
     private readonly verifySignupEmailService: VerifySignupEmailService,
     private readonly resendSignupVerificationService: ResendSignupVerificationService,
-    private readonly tokenService: TokenService,
   ) { }
 
   /**
