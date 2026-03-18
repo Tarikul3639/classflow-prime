@@ -35,6 +35,12 @@ export class JwtAuthGuard implements CanActivate {
     const accessToken = request.cookies?.['accessToken'];
     const refreshToken = request.cookies?.['refreshToken'];
 
+    // DEBUG: Add in JwtAuthGuard right after reading cookie:
+    console.log('[DEBUG guard] cookies:', {
+      access: accessToken ? accessToken.slice(0, 20) : null,
+      refresh: refreshToken ? refreshToken.slice(0, 20) : null,
+    });
+
     // 2️) Exit if no tokens are present in cookies
     if (!accessToken && !refreshToken) {
       console.log("Authentication token missing");
@@ -70,9 +76,9 @@ export class JwtAuthGuard implements CanActivate {
         // Update Cookies
         setAuthCookies(response, tokens);
 
-        // Attach user payload to request (Extract from new access token)
+        // NOTE: Attach user payload to request (Extract from new access token) 
         const newPayload = this.jwtService.decode(tokens.accessToken);
-        request['user'] = newPayload;
+        request['user'] = newPayload; // NOTE: This "user" will be available in controllers via @CurrentUser() decorator
 
         return true;
       } catch (error: any) {

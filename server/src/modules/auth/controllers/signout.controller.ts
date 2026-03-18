@@ -47,7 +47,7 @@ export class SignoutController {
 
     // revoke refresh token in DB (if present)
     const result = await this.signOutService.execute(
-      user.sub.toString(),
+      user.userId.toString(),
       refreshToken,
     );
 
@@ -71,7 +71,7 @@ export class SignoutController {
   @ApiResponse({ status: 200, description: 'Signed out from all devices' })
   async signoutAll(@CurrentUser() user: IJwtPayload, @Res({ passthrough: true }) res: Response,) {
     // revoke all refresh tokens in DB for the user
-    const result = await this.signOutService.signOutAll(user.sub.toString());
+    const result = await this.signOutService.signOutAll(user.userId.toString());
     // clear cookies on current device (client should be logged out)
     clearAuthCookies(res);
     return {

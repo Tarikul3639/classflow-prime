@@ -14,6 +14,23 @@ export const apiClient = axios.create({
   timeout: 10000, // 10 seconds
 });
 
+/**
+ * Global Interceptor (Optional but Recommended)
+ * Every response will go through this interceptor, allowing us to handle errors in a centralized way.
+ * For example, we can check for 401 Unauthorized errors and trigger a global logout or show a toast notification.
+ */
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const message = getErrorMessage(error);
+    
+    // Example: Triggering a toast globally
+    // toast.error(message); 
+    
+    return Promise.reject(error instanceof AxiosError ? error : new Error(message));
+  }
+);
+
 
 /**
  * Helper to get error message (AxiosError based)

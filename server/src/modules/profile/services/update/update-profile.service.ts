@@ -1,0 +1,59 @@
+import {
+    Injectable,
+    BadRequestException,
+    NotFoundException,
+} from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import type { Model } from 'mongoose';
+
+import { UpdateProfileDto } from '../../dto/update-profile.dto';
+import { User, UserDocument } from 'src/database/entities/user.entity';
+import type { IUser } from 'src/database/interface/user.interface';
+
+export class UpdateProfileResponseDto {
+    message: string;
+    data: {
+        _id: string;
+        name?: string;
+        email?: string;
+        avatarUrl?: string;
+        bio?: string;
+    };
+}
+
+@Injectable()
+export class UpdateProfileService {
+    constructor(
+        @InjectModel(User.name)
+        private readonly userModel: Model<UserDocument & IUser>,
+    ) { }
+
+    async execute(userId: string, dto: UpdateProfileDto): Promise<UpdateProfileResponseDto> {
+        if (!userId) {
+            throw new BadRequestException('User ID is required');
+        }
+
+        const user = await this.userModel.findById(userId);
+
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+
+        // Update fields if provided
+        if (dto.name !== undefined) user.name = dto.name;
+        if (dto.bio !== undefined) user.bio = dto.bio;
+        if (dto.avatarUrl !== undefined) user.avatarUrl = dto.avatarUrl;
+
+        const updatedUser = await user.save();
+        return {
+            message: `Profile updated for user ${user.email}`,
+            data: {
+                _id: updatedUser._id.toString(),
+                name: updatedUser.name,
+                email: updatedUser.email,
+                avatarUrl: updatedUser.avatarUrl || undefined,
+                bio: updatedUser.bio,
+            },
+        };
+    }
+}

@@ -16,6 +16,6 @@ export class MeController {
   @ApiResponse({ status: 200, description: 'Returns current user profile' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async me(@CurrentUser() user: IJwtPayload) {
-    return this.getCurrentUserService.execute(user.sub.toString());
+    return this.getCurrentUserService.execute(user.userId.toString());
   }
 }

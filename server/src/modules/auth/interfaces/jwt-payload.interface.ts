@@ -7,9 +7,9 @@ import type { UserRole } from '../../../database/interface/user.interface';
  */
 export interface IJwtPayload {
   /**
-   * User ID (subject)
+   * User ID 
    */
-  sub: string | Types.ObjectId;
+  userId: string | Types.ObjectId;
 
   /**
    * User email
@@ -20,6 +20,12 @@ export interface IJwtPayload {
    * User role
    */
   role: UserRole;
+
+  /**
+   *  Session ID must be included in the payload to link the JWT to a specific session in the database.
+   *  This allows us to manage sessions effectively (e.g., invalidate specific sessions, implement device-based security, etc.)
+   */
+  sid: string;
 
   /**
    * IP address of the client (optional, can be used for additional security checks)

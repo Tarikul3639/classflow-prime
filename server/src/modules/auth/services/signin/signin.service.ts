@@ -83,6 +83,9 @@ export class SignInService {
       ua,
     );
 
+    // DEBUG: Add near SignInService after tokens are generated:
+console.log('[DEBUG sign-in] refreshToken (truncated):', tokens.refreshToken?.slice(0, 50));
+
     return {
       message: 'Signed in successfully',
       user: {

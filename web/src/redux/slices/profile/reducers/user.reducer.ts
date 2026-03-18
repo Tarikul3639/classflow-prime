@@ -1,7 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { IRequestStatus } from "../../auth/auth.types";
-import { meThunk } from "../thunks/me.thunk";
+import { meThunk } from "../thunks/user.thunk";
+
 import { IUser } from "../profile.types";
+import { updateProfileThunk } from "../thunks/update.thunk";
 
 export type MeState = {
     user: IUser | null;
@@ -13,7 +15,7 @@ export const initialState: MeState = {
     status: { loading: false, error: null, message: null },
 };
 
-export const meSlice = createSlice({
+export const userSlice = createSlice({
     name: "profile/me",
     initialState,
     reducers: {
@@ -32,6 +34,16 @@ export const meSlice = createSlice({
                 state.status.message = "User loaded";
                 state.user = action.payload;
             })
+            .addCase(updateProfileThunk.fulfilled, (state, action) => {
+                state.status.loading = false;
+                state.status.message = "Profile updated";
+                if (state.user) {
+                    state.user.name = action.payload.data.name;
+                    state.user.email = action.payload.data.email;
+                    state.user.bio = action.payload.data.bio;
+                    state.user.avatarUrl = action.payload.data.avatarUrl;
+                } // Update user data with the updated profile
+            })
             .addCase(meThunk.rejected, (state, action) => {
                 state.status.loading = false;
                 state.status.error = action.payload ?? "Failed to load user";
@@ -39,5 +51,5 @@ export const meSlice = createSlice({
     },
 });
 
-export const { clearMeStatus } = meSlice.actions;
-export default meSlice.reducer;
+export const { clearMeStatus } = userSlice.actions;
+export default userSlice.reducer;

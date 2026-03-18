@@ -4,8 +4,9 @@ import { useEffect } from "react";
 import { Sidebar } from "@/components/layout/sidebar/Sidebar";
 import { BottomNavbar } from "@/components/layout/navbar/BottomNav";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { meThunk } from "@/redux/slices/profile/thunks/me.thunk";
+import { meThunk } from "@/redux/slices/profile/thunks/user.thunk";
 import { Loader } from "@/components/ui/Loader";
+import { toast } from "sonner";
 
 export default function MainLayout({
   children,
@@ -13,13 +14,19 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   const dispatch = useAppDispatch();
-  const { error, message, loading } = useAppSelector(
-    (state) => state.profile.user.status,
-  );
+  const { loading } = useAppSelector((state) => state.profile.user.status);
 
   // On mount, fetch current user if not already authenticated
   useEffect(() => {
-    dispatch(meThunk());
+    dispatch(meThunk())
+      .unwrap()
+      .then(() => {})
+      .catch((err) => {
+        toast.error("Failed to fetch user data", {
+          description: err,
+          position: "top-center",
+        }); // DEBUG: Show error message if fetch fails
+      });
   }, [dispatch]);
 
   if (loading) {

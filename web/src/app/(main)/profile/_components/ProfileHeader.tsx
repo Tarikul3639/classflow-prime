@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { User } from "lucide-react";
+import { User, LoaderIcon } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 interface ProfileHeaderProps {
   onSave: () => void;
@@ -12,6 +13,8 @@ export default function ProfileHeader({
   onSave,
   isChanged,
 }: ProfileHeaderProps) {
+  const dispatch = useAppDispatch();
+  const { loading } = useAppSelector((state) => state.profile.update.status); // Assuming user data is stored here
   return (
     <header className="sticky top-0 z-10 bg-slate-50 pb-4 pt-4 px-4 lg:px-8 border-b border-slate-200">
       <div className="flex items-center gap-3 mx-auto">
@@ -28,14 +31,23 @@ export default function ProfileHeader({
         </div>
         <button
           onClick={onSave}
-          className={`flex px-4 lg:px-5 py-2 lg:py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-sm shadow-primary/20 cursor-pointer ${
+          disabled={!isChanged || loading}
+          className={`flex px-4 lg:px-5 h-9 rounded-lg text-[13px] font-semibold transition-colors shadow-sm shadow-primary/20 cursor-pointer ${
             isChanged
               ? "bg-primary text-white hover:bg-primary/90"
               : "hidden bg-slate-200 text-slate-500 border border-slate-300 cursor-not-allowed"
           }`}
-          disabled={!isChanged}
         >
-          Save <span className="ml-1 hidden md:inline">Changes</span>
+          {loading ? (
+            <div className="flex items-center text-white">
+              <LoaderIcon className="size-4 animate-spin" />
+              <span className="ml-1 -mt-0.5 hidden md:inline">Saving...</span>
+            </div>
+          ) : (
+            <div className="flex items-center mb-0.5">
+              Save <span className="ml-1 hidden md:inline">Changes</span>
+            </div>
+          )}
         </button>
       </div>
     </header>

@@ -44,6 +44,13 @@ export class Class implements IClass {
     })
     semester?: string; // e.g., "Fall 2024"
 
+    // UI Identity Fields
+    @Prop({ default: '#3B82F6' }) // Default blue
+    themeColor: string;
+
+    @Prop({ default: null })
+    coverImage?: string;
+
     @Prop({
         type: [String],
         default: [],

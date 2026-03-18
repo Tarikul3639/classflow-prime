@@ -9,9 +9,7 @@ import type { IUser } from '../profile.types'
 interface MeResponse {
     success: boolean;
     message: string;
-    data: {
-        user: IUser;
-    };
+    data: IUser;
 }
 export const meThunk = createAsyncThunk<
     IUser,
@@ -23,7 +21,8 @@ export const meThunk = createAsyncThunk<
         if (!data.success) {
             return rejectWithValue(data.message || "Failed to fetch user data");
         }
-        return data.data.user;
+        console.log("User Data: ", data.data); // DEBUG: Log the user data received from the backend
+        return data.data;
     } catch (error) {
         return rejectWithValue(getErrorMessage(error));
     }

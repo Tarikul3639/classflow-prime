@@ -21,6 +21,8 @@ export type IUser = {
     enrolledClasses: {
         classId: string;
         className: string;
+        themeColor?: string;
+        coverImage?: string;
         role: string;
         status: string;
         joinedAt: Date;

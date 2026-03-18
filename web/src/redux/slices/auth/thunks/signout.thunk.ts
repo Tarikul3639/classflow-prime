@@ -5,10 +5,6 @@ import { apiClient, getErrorMessage } from '@/lib/api/axios';
  * Sign out current session.
  * Backend: POST /auth/signout
  */
-interface SignOutRequest {
-  // Optionally, you can include fields like refreshToken if your backend requires it for signout.
-  refreshToken?: string;
-}
 
 interface SignOutResponse {
   success: boolean;
@@ -16,7 +12,7 @@ interface SignOutResponse {
 }
 export const signoutCurrentThunk = createAsyncThunk<
   SignOutResponse,
-  SignOutRequest,
+  void,
   { rejectValue: string }
 >('auth/signoutCurrent', async (payload, { rejectWithValue }) => {
   try {

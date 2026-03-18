@@ -5,7 +5,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from '../auth/auth.module';
 
 import { MeController } from './controllers/me.controller';
+import { ProfileUpdateController } from './controllers/update-profile.controller';
 import { GetCurrentUserService } from './services/me/get-current-user.service';
+import { UpdateProfileService } from './services/update/update-profile.service';
 import { User, UserSchema } from 'src/database/entities/user.entity';
 
 @Module({
@@ -13,8 +15,8 @@ import { User, UserSchema } from 'src/database/entities/user.entity';
         MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
         AuthModule, // Import AuthModule to use its services and guards
     ],
-    controllers: [MeController],
-    providers: [GetCurrentUserService],
+    controllers: [MeController, ProfileUpdateController],
+    providers: [GetCurrentUserService, UpdateProfileService],
     exports: [GetCurrentUserService], // Export if other modules need to use it
 })
 export class ProfileModule { }

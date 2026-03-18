@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { use, useCallback, useState } from "react";
 // Import form ./_components
 import ProfileHeader from "./_components/ProfileHeader";
 import ProfilePicture from "./_components/ProfilePicture";
@@ -10,30 +10,39 @@ import JoinedClasses from "./_components/JoinedClasses";
 import Preferences from "./_components/Preferences";
 import VersionInfo from "./_components/VersionInfo";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import {
+  // signoutAllThunk,
+  signoutCurrentThunk,
+} from "@/redux/slices/auth/thunks/signout.thunk";
+import { updateProfileThunk } from "@/redux/slices/profile/thunks/update.thunk";
+import { Loader } from "@/components/ui/Loader";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const ProfileSettings: React.FC = () => {
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const { user, status } = useAppSelector((state) => state.profile.user); // Assuming user data is stored here
+  const { loading } = useAppSelector(
+    (state) => state.auth.session.signoutCurrent,
+  ); // For logout feedback
 
   const [userForm, setUserForm] = useState({
     name: user?.name || "",
     email: user?.email || "",
-    bio: user?.bio || "White space for bio...",
-    avatar: user?.avatarUrl || "",
+    bio: user?.bio || "",
+    avatarUrl: user?.avatarUrl || "",
   });
 
-  const [initialUserForm] = useState(userForm); // comparison purpose
+  const [initialUserForm, setInitialUserForm] = useState(userForm);
 
   const [preferences, setPreferences] = useState({
     notifications: true,
     darkMode: false,
   });
 
-  const isChanged = Object.keys(userForm).some(
-    (key) =>
-      userForm[key as keyof typeof userForm] !==
-      initialUserForm[key as keyof typeof userForm],
-  );
+  const isChanged =
+    JSON.stringify(userForm) !== JSON.stringify(initialUserForm);
 
   const handleChange = (field: keyof typeof userForm, value: string) => {
     setUserForm((prev) => ({ ...prev, [field]: value }));
@@ -41,24 +50,52 @@ const ProfileSettings: React.FC = () => {
 
   const handleSave = () => {
     if (!isChanged) return console.log("No changes to save");
-    console.log("Saving changes...", { ...userForm, ...preferences });
+    dispatch(updateProfileThunk(userForm))
+      .unwrap()
+      .then((res) => {
+        setInitialUserForm(userForm);
+        toast.success("Profile updated successfully", {
+          description: res.message,
+          position: "top-center",
+        });
+      })
+      .catch((err) => {
+        toast.error("Failed to update profile", {
+          description: err,
+          position: "top-center",
+        });
+      });
   };
 
   const handleToggle = (field: keyof typeof preferences) => {
     setPreferences((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
-  const handleLogout = () => {
-    console.log("Logging out...");
-  }
+  const handleLogout = async () => {
+    dispatch(signoutCurrentThunk())
+      .unwrap()
+      .then((res) => {
+        toast.success(res.message, { position: "top-center" });
+        router.push("/sign-in");
+      })
+      .catch((err) =>
+        toast("Logout Failed", { description: err, position: "top-center" }),
+      );
+  };
 
   const handleLanguageSettings = () => {
     console.log("Opening language settings...");
-  }
-
-  const handleAvatarChange = (url: string) => {
-    setUserForm((prev) => ({ ...prev, avatar: url }));
   };
+  
+  const regenerateAvatar = useCallback(() => {
+    const newSeed = Math.random().toString(36).substring(7);
+    const newAvatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${newSeed}`;
+    setUserForm((prev) => ({ ...prev, avatarUrl: newAvatarUrl }));
+  }, [setUserForm]);
+
+  if (status.loading || !user) {
+    return <Loader />;
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
@@ -71,30 +108,22 @@ const ProfileSettings: React.FC = () => {
             <div className="lg:col-span-5 space-y-5">
               <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
                 <ProfilePicture
-                  imageUrl={userForm.avatar}
-                  name={userForm.name}
+                  imageUrl={userForm.avatarUrl || ""}
+                  name={userForm.name || ""}
                   role="We are working on it..."
-                  email={userForm.email}
-                  onEdit={() => {
-                    const newAvatarUrl = prompt(
-                      "Enter new avatar URL",
-                      userForm.avatar,
-                    );
-                    if (newAvatarUrl) {
-                      handleAvatarChange(newAvatarUrl);
-                    }
-                  }}
+                  email={userForm.email || ""}
+                  onEdit={regenerateAvatar}
                 />
 
                 <PersonalInformation
-                  name={userForm.name}
-                  email={userForm.email}
-                  bio={userForm.bio}
+                  name={userForm.name || ""}
+                  email={userForm.email || ""}
+                  bio={userForm.bio || "White space for bio..."}
                   onNameChange={(value) => handleChange("name", value)}
                   onBioChange={(value) => handleChange("bio", value)}
                 />
 
-                <LogoutButton onLogout={handleLogout} />
+                <LogoutButton isLoading={loading} onLogout={handleLogout} />
               </div>
             </div>
 
