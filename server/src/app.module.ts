@@ -6,6 +6,7 @@ import configs from './config';
 import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { MailModule } from './modules/mail/mail.module';
+import { ProfileModule } from './modules/profile/profile.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { ClassModule } from './modules/class/class.module';
 import { CoreModule } from './core/core.module';
@@ -23,6 +24,7 @@ import { CoreModule } from './core/core.module';
     NotificationModule,
     ClassModule,
     CoreModule,
+    ProfileModule,
   ],
   controllers: [],
   providers: [],

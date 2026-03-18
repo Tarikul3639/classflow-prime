@@ -2,12 +2,12 @@ import { Controller, Get } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { CurrentUser } from '../../../shared/decorators/current-user.decorator';
-import type { IJwtPayload } from '../interfaces/jwt-payload.interface';
+import type { IJwtPayload } from 'src/modules/auth/interfaces/jwt-payload.interface';
 import { GetCurrentUserService } from '../services/me/get-current-user.service';
 
-@ApiTags('Auth')
+@ApiTags('Profile')
 @ApiBearerAuth('JWT-auth')
-@Controller('auth/me')
+@Controller('profile/me')
 export class MeController {
   constructor(private readonly getCurrentUserService: GetCurrentUserService) {}
 

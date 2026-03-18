@@ -1,20 +1,17 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 import { SignInThunk } from '../thunks/signin.thunks';
-import { meThunk } from '../thunks/me.thunk';
 import { IRequestStatus } from '../auth.types';
 import { signoutAllThunk, signoutCurrentThunk } from '../thunks/signout.thunk';
 
 export type AuthSessionStatusState = {
     signIn: IRequestStatus;
-    me: IRequestStatus;
     signoutCurrent: IRequestStatus;
     signoutAll: IRequestStatus;
 };
 
 export const initialState: AuthSessionStatusState = {
     signIn: { loading: false, error: null, message: null },
-    me: { loading: false, error: null, message: null },
     signoutCurrent: { loading: false, error: null, message: null },
     signoutAll: { loading: false, error: null, message: null },
 };
@@ -40,21 +37,6 @@ export const sessionStatusSlice = createSlice({
             .addCase(SignInThunk.rejected, (state, action) => {
                 state.signIn.loading = false;
                 state.signIn.error = action.payload ?? 'Sign in failed';
-            });
-
-        // me
-        builder
-            .addCase(meThunk.pending, (state) => {
-                state.me.loading = true;
-                state.me.error = null;
-                state.me.message = null;
-            })
-            .addCase(meThunk.fulfilled, (state) => {
-                state.me.loading = false;
-            })
-            .addCase(meThunk.rejected, (state, action) => {
-                state.me.loading = false;
-                state.me.error = action.payload ?? 'Failed to load user';
             });
 
         // signout current

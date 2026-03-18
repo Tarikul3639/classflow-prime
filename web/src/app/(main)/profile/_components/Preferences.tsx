@@ -28,15 +28,17 @@ export default function Preferences({
           icon={Bell}
           title="Push Notifications"
           description="Stay updated with class announcements"
-          enabled={notifications}
+          // enabled={notifications}
           onToggle={onNotificationsToggle}
+          disabled
         />
         <Toggle
           icon={Moon}
           title="Dark Mode"
           description="Reduce eye strain in low light"
-          enabled={darkMode}
+          // enabled={darkMode}
           onToggle={onDarkModeToggle}
+          disabled
         />
         <PreferenceItem
           icon={Globe}

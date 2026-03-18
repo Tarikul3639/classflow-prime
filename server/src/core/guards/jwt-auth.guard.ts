@@ -37,6 +37,7 @@ export class JwtAuthGuard implements CanActivate {
 
     // 2️) Exit if no tokens are present in cookies
     if (!accessToken && !refreshToken) {
+      console.log("Authentication token missing");
       throw new UnauthorizedException('Authentication tokens missing');
     }
 
@@ -78,7 +79,7 @@ export class JwtAuthGuard implements CanActivate {
         // Clear cookies on refresh failure to prevent infinite loops
         response.clearCookie('accessToken');
         response.clearCookie('refreshToken');
-
+        console.log("Token refresh failed:", error.message || error);
         throw new UnauthorizedException(
           error instanceof ForbiddenException
             ? error.message

@@ -5,9 +5,13 @@ import { User } from "lucide-react";
 
 interface ProfileHeaderProps {
   onSave: () => void;
+  isChanged: boolean;
 }
 
-export default function ProfileHeader({ onSave }: ProfileHeaderProps) {
+export default function ProfileHeader({
+  onSave,
+  isChanged,
+}: ProfileHeaderProps) {
   return (
     <header className="sticky top-0 z-10 bg-slate-50 pb-4 pt-4 px-4 lg:px-8 border-b border-slate-200">
       <div className="flex items-center gap-3 mx-auto">
@@ -24,7 +28,12 @@ export default function ProfileHeader({ onSave }: ProfileHeaderProps) {
         </div>
         <button
           onClick={onSave}
-          className="flex bg-primary text-white px-4 lg:px-5 py-2 lg:py-2.5 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors shadow-sm shadow-primary/20 cursor-pointer"
+          className={`flex px-4 lg:px-5 py-2 lg:py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-sm shadow-primary/20 cursor-pointer ${
+            isChanged
+              ? "bg-primary text-white hover:bg-primary/90"
+              : "hidden bg-slate-200 text-slate-500 border border-slate-300 cursor-not-allowed"
+          }`}
+          disabled={!isChanged}
         >
           Save <span className="ml-1 hidden md:inline">Changes</span>
         </button>

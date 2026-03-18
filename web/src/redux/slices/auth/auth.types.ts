@@ -7,20 +7,6 @@ export type ITokens = {
   refreshToken: string;
 };
 
-export type IUser = {
-  _id?: string;
-  email: string;
-  firstName: string;
-  lastName?: string;
-  fullName?: string;
-
-  role?: string;
-  status?: string;
-
-  avatarUrl?: string | null;
-  isEmailVerified?: boolean;
-};
-
 // ------------------------------------------
 // Requests (DTO-like)
 // ------------------------------------------
@@ -66,13 +52,4 @@ export interface IAuthStatusState {
   verifyCodePasswordReset: IRequestStatus;
   resendCodePasswordReset: IRequestStatus;
   confirmNewPasswordPasswordReset: IRequestStatus;
-}
-
-/**
- * Main auth slice state.
- */
-export interface IAuthState {
-  user: IUser | null;
-  isAuthenticated: boolean;
-  status: IAuthStatusState;
 }

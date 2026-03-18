@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Edit, Verified } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ProfilePictureProps {
   imageUrl: string;
@@ -21,12 +22,16 @@ export default function ProfilePicture({
   return (
     <div className="flex flex-col items-center text-center">
       <div className="relative group">
-        <div
-          className="h-28 w-28 rounded-full bg-cover bg-center border-4 border-slate-50 shadow-lg"
-          style={{
-            backgroundImage: `url('${imageUrl}')`,
-          }}
-        />
+        <Avatar className="h-28 w-28 rounded-full bg-cover bg-center border-4 border-slate-50 shadow-lg">
+          <AvatarImage
+            className="w-full h-full object-cover"
+            src={imageUrl}
+            alt={name}
+          />
+          <AvatarFallback className="w-full h-full text-3xl font-black">
+            {name.charAt(0)}
+          </AvatarFallback>
+        </Avatar>
         <button
           onClick={onEdit}
           className="absolute bottom-0 right-0 bg-primary text-white p-1.5 rounded-full shadow-lg border-4 border-white hover:scale-110 transition-transform"

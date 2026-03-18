@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { apiClient, getErrorMessage } from "@/lib/api/axios";
-import { IUser } from "../auth.types";
+import type { IUser } from '../../profile/profile.types'
 
 /**
  * Signup thunk with client-side validation. Adjust validation rules as needed.

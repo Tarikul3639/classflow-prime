@@ -76,7 +76,7 @@ async function bootstrap() {
         'Auth',
         'Authentication endpoints (signup, signin, signout, forgot password)',
       )
-      .addTag('Users', 'User management endpoints')
+      .addTag('Profile', 'User profile endpoints')
       .addTag('Dashboard', 'Dashboard statistics endpoints')
       .addTag('Classes', 'Class management endpoints')
       .addTag('Notifications', 'Notification endpoints')

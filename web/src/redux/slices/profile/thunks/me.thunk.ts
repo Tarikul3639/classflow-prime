@@ -1,10 +1,10 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { apiClient, getErrorMessage } from "@/lib/api/axios";
-import type { IUser } from "../auth.types";
+import type { IUser } from '../profile.types'
 
 /**
  * Fetch current authenticated user.
- * Backend: GET /auth/me
+ * Backend: GET /profile/me
  */
 interface MeResponse {
     success: boolean;
@@ -17,9 +17,9 @@ export const meThunk = createAsyncThunk<
     IUser,
     void,
     { rejectValue: string }
->("auth/me", async (_: void, { rejectWithValue }) => {
+>("profile/me", async (_: void, { rejectWithValue }) => {
     try {
-        const { data } = await apiClient.get<MeResponse>("/auth/me");
+        const { data } = await apiClient.get<MeResponse>("/profile/me");
         if (!data.success) {
             return rejectWithValue(data.message || "Failed to fetch user data");
         }

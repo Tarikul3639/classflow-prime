@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { apiClient, getErrorMessage } from '@/lib/api/axios';
-import type { IUser, ITokens } from '../auth.types';
+import type { ITokens } from '../auth.types';
+import type { IUser } from '../../profile/profile.types';
 
 /**
  * Sign in.

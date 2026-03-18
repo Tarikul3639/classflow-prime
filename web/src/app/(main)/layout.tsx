@@ -1,11 +1,30 @@
+"use client";
+
+import { useEffect } from "react";
 import { Sidebar } from "@/components/layout/sidebar/Sidebar";
 import { BottomNavbar } from "@/components/layout/navbar/BottomNav";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { meThunk } from "@/redux/slices/profile/thunks/me.thunk";
+import { Loader } from "@/components/ui/Loader";
 
 export default function MainLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const dispatch = useAppDispatch();
+  const { error, message, loading } = useAppSelector(
+    (state) => state.profile.user.status,
+  );
+
+  // On mount, fetch current user if not already authenticated
+  useEffect(() => {
+    dispatch(meThunk());
+  }, [dispatch]);
+
+  if (loading) {
+    return <Loader />;
+  }
   return (
     <div className="flex min-h-screen bg-slate-50">
       {/* Desktop Sidebar */}

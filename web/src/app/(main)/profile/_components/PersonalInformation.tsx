@@ -1,23 +1,22 @@
 "use client";
 
-import React from "react";
 import { User, Mail } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 
 interface PersonalInformationProps {
-  fullName: string;
+  name: string;
   email: string;
   bio: string;
-  onFullNameChange: (value: string) => void;
+  onNameChange: (value: string) => void;
   onBioChange: (value: string) => void;
 }
 
 export default function PersonalInformation({
-  fullName,
+  name,
   email,
   bio,
-  onFullNameChange,
+  onNameChange,
   onBioChange,
 }: PersonalInformationProps) {
   return (
@@ -32,8 +31,12 @@ export default function PersonalInformation({
           description="This is the name that will be displayed on your profile and to your classmates."
           type="text"
           className="px-3 py-2 text-sm"
-          value={fullName}
-          onChange={(e) => onFullNameChange(e.target.value)}
+          value={name}
+          onChange={(e) => {
+            if (e.target.value.trim().length < 25) {
+              onNameChange(e.target.value);
+            }
+          }}
         />
         <Input
           icon={Mail}
@@ -50,7 +53,11 @@ export default function PersonalInformation({
           description="Maximum 500 characters"
           value={bio}
           rows={4}
-          onChange={(e) => onBioChange(e.target.value)}
+          onChange={(e) => {
+            if (e.target.value.length <= 500) {
+              onBioChange(e.target.value);
+            }
+          }}
         />
       </div>
     </div>

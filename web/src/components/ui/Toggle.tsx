@@ -7,7 +7,8 @@ interface ToggleProps {
   icon: LucideIcon;
   title: string;
   description: string;
-  enabled: boolean;
+  enabled?: boolean;
+  disabled?: boolean;
   onToggle: () => void;
 }
 
@@ -15,8 +16,9 @@ export const Toggle = ({
   icon: Icon,
   title,
   description,
-  enabled,
+  enabled = false,
   onToggle,
+  ...props
 }: ToggleProps) => {
   return (
     <div className="py-3 flex items-center justify-between">
@@ -31,6 +33,7 @@ export const Toggle = ({
       </div>
       <button
         onClick={onToggle}
+        {...props}
         className={`relative inline-flex h-5 w-9 items-center rounded-full cursor-pointer transition-colors duration-200 ${
           enabled ? "bg-primary" : "bg-slate-200"
         }`}

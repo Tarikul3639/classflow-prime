@@ -9,7 +9,6 @@ import type { StringValue } from 'ms';
 // -------------------- CONTROLLERS --------------------
 // -----------------------------------------------------
 import { SigninController } from './controllers/signin.controller';
-import { MeController } from './controllers/me.controller';
 import { SignoutController } from './controllers/signout.controller';
 import { SignupController } from './controllers/signup.controller';
 // import { PasswordResetController } from './controllers/password-reset.controller';
@@ -25,7 +24,6 @@ import { AuthThrottleService } from './services/throttle/auth-throttle.service';
 
 // Feature services
 import { SignInService } from './services/signin/signin.service';
-import { GetCurrentUserService } from './services/me/get-current-user.service';
 import { SignOutService } from './services/signout/signout.service';
 
 import { SignUpService } from './services/signup/signup.service';
@@ -36,8 +34,6 @@ import { ResendSignupVerificationService } from './services/signup/resend-signup
 // import { VerifyPasswordResetService } from './services/password-reset/verify-password-reset.service';
 // import { ResendPasswordResetService } from './services/password-reset/resend-password-reset.service';
 // import { ConfirmPasswordResetService } from './services/password-reset/confirm-password-reset.service';
-
-import { ValidateUserService } from './services/users/validate-user.service';
 
 // ------------------------------------------------------
 // -------------------- ENTITIES ------------------------
@@ -55,13 +51,6 @@ import { Verification, VerificationSchema } from 'src/database/entities/verifica
 // -------------------- MODULES -------------------------
 // ------------------------------------------------------
 import { MailModule } from 'src/modules/mail/mail.module';
-
-// ------------------------------------------------------
-// -------------------- STRATEGIES ----------------------
-// ------------------------------------------------------
-import { JwtStrategy } from './strategies/jwt.strategy';
-import { LocalStrategy } from './strategies/local.strategy';
-import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 
 @Module({
   imports: [
@@ -85,7 +74,6 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
   controllers: [
     // core auth
     SigninController,
-    MeController,
     SignoutController,
     DebugController,
 
@@ -100,7 +88,6 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 
     // core auth features
     SignInService,
-    GetCurrentUserService,
     SignOutService,
 
     // signup flow
@@ -113,14 +100,6 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
     // VerifyPasswordResetService,
     // ResendPasswordResetService,
     // ConfirmPasswordResetService,
-
-    // strategies (if you are still using them)
-    JwtStrategy,
-    LocalStrategy,
-    JwtRefreshStrategy,
-
-    // user validation (used by strategies)
-    ValidateUserService,
   ],
   exports: [
     // Export what other modules might need

@@ -82,6 +82,7 @@ export class TokenService {
 
     let currentSession: SessionDocument | null = null;
     for (const s of sessions) {
+      console.log("Comparing token...", s._id, s.userAgent);
       if (await s.compareToken(refreshToken)) {
         currentSession = s;
         break;

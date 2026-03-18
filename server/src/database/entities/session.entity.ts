@@ -7,6 +7,7 @@ export type SessionDocument = HydratedDocument<Session & ISession & ISessionMeth
 
 @Schema({
     timestamps: true, // createdAt, updatedAt
+    strict: true, // Only defined fields are saved
 })
 export class Session implements ISession {
     @Prop({

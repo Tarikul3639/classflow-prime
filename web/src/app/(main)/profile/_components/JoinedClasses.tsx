@@ -3,12 +3,9 @@
 import React from "react";
 import { Code, Code as Function, BookOpen } from "lucide-react";
 import ClassCard from "./ClassCard";
+import Link from "next/link";
 
-interface JoinedClassesProps {
-  onManageAll: () => void;
-}
-
-export default function JoinedClasses({ onManageAll }: JoinedClassesProps) {
+export default function JoinedClasses() {
   const classes = [
     {
       id: "1",
@@ -46,12 +43,12 @@ export default function JoinedClasses({ onManageAll }: JoinedClassesProps) {
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-base font-bold text-slate-900">Joined Classes</h3>
-        <button
-          onClick={onManageAll}
+        <Link
+          href="/classes"
           className="text-primary text-xs font-bold hover:underline"
         >
           Manage All
-        </button>
+        </Link>
       </div>
       <div className="space-y-3">
         {classes.map((classItem) => (

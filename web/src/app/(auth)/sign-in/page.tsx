@@ -29,7 +29,7 @@ const SignInPage: React.FC = () => {
   const dispatch = useAppDispatch();
 
   // Select auth state
-  const { loading, error  } = useAppSelector(
+  const { loading, error } = useAppSelector(
     (state) => state.auth.session.signIn,
   );
 
@@ -54,13 +54,11 @@ const SignInPage: React.FC = () => {
 
       if (SignInThunk.fulfilled.match(resultAction)) {
         const user = resultAction.payload;
-
+        router.push("/");
         console.log("🎯 Sign-in successful:", user);
       } else {
-        // ❌ Error - stays on page and shows error
+        // Error - stays on page and shows error
         console.error("❌ Sign-in failed:", resultAction.payload);
-
-        // Error is already in Redux state, will be displayed
       }
     } catch (err) {
       console.error("❌ Unexpected error during sign-in:", err);
