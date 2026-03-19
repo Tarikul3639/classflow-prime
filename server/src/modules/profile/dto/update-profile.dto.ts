@@ -57,3 +57,34 @@ export class UpdateProfileDto {
     @IsUrl({}, { message: 'Avatar URL must be a valid URL' })
     avatarUrl: string;
 }
+
+/**
+ * DTO for the response after updating user profile
+ */
+
+export class UpdateProfileResponseDto {
+
+    @ApiProperty({
+        example: 'Profile updated for user',
+        description: 'Response message indicating the result of the profile update operation',
+    })
+    message: string;
+
+    @ApiProperty({
+        example: {
+            _id: '60d0fe4f5311236168a109ca',
+            name: 'John Doe',
+            email: 'john.doe@example.com',
+            avatarUrl: 'https://example.com/avatar.jpg',
+            bio: 'Software developer with a passion for open source.',
+        },
+        description: 'Updated user profile data',
+    })
+    data: {
+        _id: string;
+        name?: string;
+        email?: string;
+        avatarUrl?: string;
+        bio?: string;
+    };
+}

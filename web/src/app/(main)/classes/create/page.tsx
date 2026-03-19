@@ -1,69 +1,81 @@
 "use client";
 
-import React, { useState } from "react";
-import { ArrowLeft, Camera, X, PlusCircle } from "lucide-react";
+import React, { useEffect } from "react";
+import { ArrowLeft, Camera, Link } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
 
-const INPUT =
-  "w-full bg-slate-50 border border-slate-200 outline-none rounded-lg px-3 md:px-3.5 py-2 md:py-2.5 text-sm md:text-[14px] focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all";
+import {
+  updateFormData,
+  resetForm,
+} from "@/redux/slices/classes/reducers/create-class.reducer";
+import { createClass } from "@/redux/slices/classes/thunks/create-class.thunk";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { toast } from "sonner";
+
+const errorFieldMap: Record<string, string> = {
+  ClassName: "className",
+  Department: "department",
+  Semester: "semester",
+  About: "about",
+  CoverImage: "coverImage",
+};
+
+const DEPARTMENTS = [
+  { id: "cs", name: "Computer Science" },
+  { id: "math", name: "Mathematics" },
+  { id: "eng", name: "English" },
+  { id: "phy", name: "Physics" },
+  { id: "chem", name: "Chemistry" },
+  { id: "bio", name: "Biology" },
+  { id: "hist", name: "History" },
+  { id: "art", name: "Art" },
+  { id: "bus", name: "Business" },
+  { id: "other", name: "Other" },
+];
 
 export default function CreateClassPage() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-
-  // Form States
-  const [className, setClassName] = useState("");
-  const [intake, setIntake] = useState("");
-  const [section, setSection] = useState("");
-  const [department, setDepartment] = useState("");
-  const [imagePreview, setImagePreview] = useState<string | null>(
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuBiqTWbkwjYy_mo_vKEgSaE_mcDquuBA4sRWKC6PF19Y12A3wiv4JvSQNg7s8MGJhzBBFYMZOtE4ETlFLyPPR6LyWXFKlBfmguClalI9wnpFaAjzg7h3XwJ1a_rD7f8H2PStW0kYFL9FizfF6E8FqPYxfbRdQJSld9DorCv1ue79zweVL6AxSpJz2gLxavBKmqlOo-l1dSn8dpdqbr9Vb7yiVdtlLZvl33bUAdQ0gFr53C-4sABTbyiFLBCPAxP_DHdCFJKFOGahopf",
+  const despatch = useAppDispatch();
+  const { formData, loading, error } = useAppSelector(
+    (state) => state.classes.createClass,
   );
-  const [allowJoin, setAllowJoin] = useState(true);
-
-  const departments = [
-    { id: "cs", name: "Computer Science" },
-    { id: "math", name: "Mathematics" },
-    { id: "eng", name: "English" },
-    { id: "phy", name: "Physics" },
-    { id: "chem", name: "Chemistry" },
-    { id: "bio", name: "Biology" },
-    { id: "hist", name: "History" },
-    { id: "art", name: "Art" },
-    { id: "bus", name: "Business" },
-    { id: "other", name: "Other" },
-  ];
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    despatch(createClass(formData))
+      .unwrap()
+      .then((res) => {
+        console.log("🎯 Class created successfully:", res);
+        router.push(`/classes/${res.data.classId}/overview`);
+        despatch(resetForm());
+      })
+      .catch((err) => {
+        if (err.field) {
+          const fieldId = errorFieldMap[error.field || ""];
 
-    setTimeout(() => {
-      console.log({
-        className,
-        intake,
-        section,
-        department,
-        image: imagePreview,
-        allowJoin,
+          const el = document.getElementById(fieldId);
+
+          if (el) {
+            el.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+
+            // optional: focus
+            if ("focus" in el) {
+              (el as HTMLElement).focus();
+            }
+          }
+        } else {
+          toast("Failed to create class", {
+            description: err.message,
+            position: "top-center",
+          });
+        }
       });
-      setIsLoading(false);
-      router.push("/classes");
-    }, 2000);
   };
 
   return (
@@ -103,7 +115,7 @@ export default function CreateClassPage() {
                   <img
                     alt="Class Banner Preview"
                     className="absolute inset-0 w-full h-full object-cover"
-                    src={imagePreview || ""}
+                    src={formData.coverImage || ""}
                   />
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors"></div>
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -111,7 +123,23 @@ export default function CreateClassPage() {
                       <input
                         type="file"
                         accept="image/*"
-                        onChange={handleImageUpload}
+                        onChange={(e) => {
+                          // const file = e.target.files?.[0];
+                          // if (file) {
+                          //   const reader = new FileReader();
+                          //   reader.onloadend = () => {
+                          //     despatch(
+                          //       updateFormData({
+                          //         coverImage: reader.result as string,
+                          //       }),
+                          //     );
+                          //   };
+                          //   reader.readAsDataURL(file);
+                          // }
+                          alert(
+                            "Image upload is currently disabled in this demo.",
+                          );
+                        }}
                         className="hidden"
                       />
                       <Camera className="text-primary size-4 md:size-5" />
@@ -131,12 +159,18 @@ export default function CreateClassPage() {
                 <div className="p-6 md:p-10 space-y-6">
                   {/* Class Name */}
                   <Input
+                    id="className"
                     label="Class Name"
                     placeholder="e.g. Introduction to Computer Science"
-                    value={className}
+                    value={formData.className}
+                    error={
+                      error?.field === "ClassName"
+                        ? error.message || undefined
+                        : undefined
+                    }
                     onChange={(e) => {
                       if (e.target.value.length <= 30)
-                        setClassName(e.target.value);
+                        despatch(updateFormData({ className: e.target.value }));
                     }}
                     description="This is the name of your class that students will see. Max 30 characters."
                   />
@@ -144,25 +178,41 @@ export default function CreateClassPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Department */}
                     <Select
+                      id="department"
                       label="Department"
                       placeholder="Select department"
-                      options={departments.map((dept) => ({
+                      options={DEPARTMENTS.map((dept) => ({
                         value: dept.id,
                         label: dept.name,
                       }))}
-                      value={department}
-                      onChange={(e) => setDepartment(e.target.value)}
+                      value={formData.department}
+                      error={
+                        error?.field === "Department"
+                          ? error.message || undefined
+                          : undefined
+                      }
+                      onChange={(e) =>
+                        despatch(updateFormData({ department: e.target.value }))
+                      }
                       description="The academic department this class belongs to."
                     />
 
                     {/* Semester */}
                     <Input
+                      id="semester"
                       label="Semester"
                       placeholder="e.g. Fall 2026"
-                      value={intake}
+                      value={formData.semester}
+                      error={
+                        error?.field === "Semester"
+                          ? error.message || undefined
+                          : undefined
+                      }
                       onChange={(e) => {
                         if (e.target.value.length <= 10)
-                          setIntake(e.target.value);
+                          despatch(
+                            updateFormData({ semester: e.target.value }),
+                          );
                       }}
                       description="The semester or term for this class (e.g., Fall 2026). Max 10 characters."
                     />
@@ -172,10 +222,10 @@ export default function CreateClassPage() {
                   <Textarea
                     label="About this class"
                     placeholder="Provide a brief description of the class content and objectives."
-                    value={section}
+                    value={formData.about}
                     onChange={(e) => {
                       if (e.target.value.length <= 300)
-                        setSection(e.target.value);
+                        despatch(updateFormData({ about: e.target.value }));
                     }}
                     description="A short description to help students understand what this class is about. Max 300 characters."
                   />
@@ -189,18 +239,7 @@ export default function CreateClassPage() {
               <div className="bg-white rounded-3xl border border-slate-200/80 p-6">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center shrink-0">
-                    <svg
-                      className="text-primary"
-                      fill="none"
-                      height="24"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      viewBox="0 0 24 24"
-                      width="24"
-                    >
-                      <path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3" />
-                      <line x1="8" x2="16" y1="12" y2="12" />
-                    </svg>
+                    <Link className="size-5 text-primary" />
                   </div>
                   <div className="flex-1">
                     <p className="text-base font-bold text-slate-900">
@@ -213,8 +252,12 @@ export default function CreateClassPage() {
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={allowJoin}
-                      onChange={(e) => setAllowJoin(e.target.checked)}
+                      checked={formData.allowJoin}
+                      onChange={(e) =>
+                        despatch(
+                          updateFormData({ allowJoin: e.target.checked }),
+                        )
+                      }
                       className="sr-only peer"
                     />
                     <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/0 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
@@ -270,10 +313,10 @@ export default function CreateClassPage() {
                 </button>
                 <button
                   type="submit"
-                  disabled={isLoading}
+                  disabled={loading}
                   className="w-full py-2.5 bg-primary text-white rounded-xl text-sm font-semibold shadow-sm shadow-primary/20 hover:bg-primary/90 transition-all active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                 >
-                  <span>{isLoading ? "Creating..." : "Create Class"}</span>
+                  <span>{loading ? "Creating..." : "Create Class"}</span>
                 </button>
               </div>
             </div>

@@ -1,0 +1,57 @@
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, Types } from 'mongoose';
+import { Class, ClassDocument } from 'src/database/entities/class.entity';
+import { CreateClassResponseDto, CreateClassRequestDto } from '../dto/create-class.dto';
+import { IClass, ClassStatus } from 'src/database/interface/class.interface';
+
+export class CreateClassService {
+    constructor(
+        @InjectModel(Class.name)
+        private readonly classModel: Model<ClassDocument>,
+    ) { }
+
+    async execute(userId: string, dto: CreateClassRequestDto): Promise<CreateClassResponseDto> {
+        // Generate uppercase, unique join code
+        const joinCode = await this.generateUniqueJoinCode();
+
+        const newClass = new this.classModel<IClass>({
+            name: dto.className,
+            department: dto.department,
+            semester: dto.semester,
+            about: dto.about,
+            coverImage: dto.coverImage,
+            themeColor: dto.themeColor || '#3B82F6',
+            allowJoin: dto.allowJoin ?? true,
+            instructorId: new Types.ObjectId(userId),
+            status: ClassStatus.ACTIVE,
+            tags: [],          // default empty array
+            joinCode,
+        });
+
+        await newClass.save();
+
+        return {
+            message: 'Class created successfully',
+            classId: newClass._id.toString(),
+        };
+    }
+
+    // Utility: generate unique uppercase join code
+    private async generateUniqueJoinCode(): Promise<string> {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        const ClassModel = this.classModel;
+
+        let code = '';
+        let exists = true;
+
+        while (exists) {
+            code = Array.from({ length: 6 }, () =>
+                characters.charAt(Math.floor(Math.random() * characters.length))
+            ).join('');
+
+            exists = !!(await ClassModel.exists({ joinCode: code }));
+        }
+
+        return code;
+    }
+}

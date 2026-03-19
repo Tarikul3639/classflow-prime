@@ -14,6 +14,7 @@ export interface IClass {
     assistantIds?: Types.ObjectId[]; // IDs of assistants
     department?: string; // e.g., "Computer Science"
     semester?: string; // e.g., "Fall 2024"
+    allowJoin?: boolean; // Whether students can join using the join code
     themeColor?: string;  // UI theme color (e.g., "#3B82F6")
     coverImage?: string; // Cover image URL (e.g., "https://example.com/image.png")
     about?: string;      // Detailed class description

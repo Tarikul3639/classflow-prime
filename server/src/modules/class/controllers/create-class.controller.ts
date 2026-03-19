@@ -1,0 +1,26 @@
+import { Body, Controller, Post } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { CreateClassRequestDto, CreateClassResponseDto } from '../dto/create-class.dto';
+import { CreateClassService } from '../services/create-class.services';
+
+import { CurrentUser } from '../../../shared/decorators/current-user.decorator';
+import type { IJwtPayload } from 'src/modules/auth/interfaces/jwt-payload.interface';
+
+@ApiTags('Class')
+@Controller('classes')
+export class CreateClassController {
+    constructor(private readonly createClassService: CreateClassService) { }
+
+    @Post()
+    @ApiOperation({ summary: 'Create a new class' })
+    @ApiResponse({ status: 201, description: 'Class created successfully' })
+    async createClass(
+        @CurrentUser() user: IJwtPayload,
+        @Body() createClassRequestDto: CreateClassRequestDto,
+    ) {
+        return await this.createClassService.execute(
+            user.userId.toString(),
+            createClassRequestDto,
+        );
+    }
+}

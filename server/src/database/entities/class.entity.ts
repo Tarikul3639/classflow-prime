@@ -70,6 +70,9 @@ export class Class implements IClass {
     })
     status: ClassStatus;
 
+    @Prop({ default: true })
+    allowJoin: boolean;
+
     @Prop({ default: false })
     isArchived: boolean;
 }

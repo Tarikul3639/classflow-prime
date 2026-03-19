@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import type { Model } from 'mongoose';
-import * as bcrypt from 'bcrypt';
 
 import { SignUpDto } from '../../dto/signup/signup.dto';
 import { User, UserDocument } from 'src/database/entities/user.entity';

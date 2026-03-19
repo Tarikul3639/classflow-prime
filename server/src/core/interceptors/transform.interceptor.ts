@@ -20,11 +20,15 @@ export type ResponseFormat<T> = {
 export class TransformInterceptor<T> implements NestInterceptor<T, ResponseFormat<T>> {
     intercept(context: ExecutionContext, next: CallHandler): Observable<ResponseFormat<T>> {
         return next.handle().pipe(
-            map(response => ({
-                success: true,
-                message: response.message || null,
-                data: { ...response },
-            })),
+            map((response: any) => {
+                const { message, ...rest } = response; // Extract 'message' from the original response if it exists
+
+                return {
+                    success: true,
+                    message: message || null,
+                    data: rest, // Remove 'message' from the original response and put the rest in 'data'
+                };
+            }),
         );
     }
 }
