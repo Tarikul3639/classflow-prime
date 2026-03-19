@@ -1,43 +1,67 @@
 "use client";
 
 import React from "react";
-import { Code, Code as Function, BookOpen } from "lucide-react";
 import ClassCard from "./ClassCard";
 import Link from "next/link";
 
-export default function JoinedClasses() {
-  const classes = [
-    {
-      id: "1",
-      name: "Intro to CS 101",
-      instructor: "Prof. Miller",
-      schedule: "MWF 9:00 AM",
-      status: "Active" as const,
-      icon: Code,
-      iconBg: "bg-orange-100",
-      iconColor: "text-orange-600",
-    },
-    {
-      id: "2",
-      name: "Calculus II",
-      instructor: "Dr. Chen",
-      schedule: "TTh 11:00 AM",
-      status: "Active" as const,
-      icon: Function,
-      iconBg: "bg-purple-100",
-      iconColor: "text-purple-600",
-    },
-    {
-      id: "3",
-      name: "World History",
-      instructor: "Prof. Dave",
-      schedule: "Semester End",
-      status: "Ended" as const,
-      icon: BookOpen,
-      iconBg: "bg-blue-100",
-      iconColor: "text-primary",
-    },
-  ];
+interface ClassProps {
+  classId: string;
+  className: string;
+  themeColor?: string;
+  coverImage?: string;
+  role: string;
+  status: string;
+  joinedAt: Date;
+}
+
+export default function JoinedClasses({ classes }: { classes: ClassProps[] }) {
+  // const cls: ClassProps[] = [
+  //   {
+  //     classId: "CLS101",
+  //     className: "Mathematics 101",
+  //     themeColor: "#4CAF50",
+  //     coverImage: "https://example.com/images/math.jpg",
+  //     role: "student",
+  //     status: "active",
+  //     joinedAt: new Date("2025-01-10T09:30:00Z"),
+  //   },
+  //   {
+  //     classId: "CLS102",
+  //     className: "Physics Fundamentals",
+  //     themeColor: "#2196F3",
+  //     coverImage: "https://example.com/images/physics.jpg",
+  //     role: "teacher",
+  //     status: "active",
+  //     joinedAt: new Date("2025-02-05T11:00:00Z"),
+  //   },
+  //   {
+  //     classId: "CLS103",
+  //     className: "Chemistry Basics",
+  //     themeColor: "#FF9800",
+  //     coverImage: "https://example.com/images/chemistry.jpg",
+  //     role: "student",
+  //     status: "ended",
+  //     joinedAt: new Date("2025-03-01T14:15:00Z"),
+  //   },
+  //   {
+  //     classId: "CLS104",
+  //     className: "English Literature",
+  //     themeColor: "#9C27B0",
+  //     coverImage: "https://example.com/images/english.jpg",
+  //     role: "admin",
+  //     status: "active",
+  //     joinedAt: new Date("2025-01-20T08:00:00Z"),
+  //   },
+  //   {
+  //     classId: "CLS105",
+  //     className: "Computer Science",
+  //     themeColor: "#607D8B",
+  //     coverImage: "https://example.com/images/cs.jpg",
+  //     role: "student",
+  //     status: "ended",
+  //     joinedAt: new Date("2025-03-15T16:45:00Z"),
+  //   },
+  // ];
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
@@ -50,9 +74,9 @@ export default function JoinedClasses() {
           Manage All
         </Link>
       </div>
-      <div className="space-y-3">
+      <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
         {classes.map((classItem) => (
-          <ClassCard key={classItem.id} {...classItem} />
+          <ClassCard key={classItem.classId} {...classItem} />
         ))}
       </div>
     </div>

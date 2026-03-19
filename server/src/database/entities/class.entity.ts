@@ -36,11 +36,17 @@ export class Class implements IClass {
         trim: true,
         maxlength: 1000,
     })
-    description?: string;
+    about?: string;
 
     @Prop({
         trim: true,
-        maxlength: 20,
+        maxlength: 100,
+    })
+    department?: string; // e.g., "Computer Science"
+
+    @Prop({
+        trim: true,
+        maxlength: 50,
     })
     semester?: string; // e.g., "Fall 2024"
 
@@ -71,4 +77,4 @@ export class Class implements IClass {
 export const ClassSchema = SchemaFactory.createForClass(Class);
 
 // ==================== Indexes ====================
-ClassSchema.index({ name: 'text', description: 'text', tags: 'text' }); // for text search
+ClassSchema.index({ name: 'text', about: 'text', tags: 'text' }); // for text search

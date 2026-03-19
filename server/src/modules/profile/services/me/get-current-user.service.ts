@@ -173,21 +173,33 @@ export class GetCurrentUserService {
       {
         $lookup: {
           from: 'enrollments',
-          let: { userId: '$_id' },
+          let: { userId: '$_id' }, // 'let' define variable for current user ID, Here '$_id' is the field reference for the 'users' collection
           pipeline: [
-            { $match: { $expr: { $eq: ['$userId', '$$userId'] } } },
+            { $match: { $expr: { $eq: ['$userId', '$$userId'] } } }, // '$expr' need for variable vs field compare, '$$' for variable reference, '$' for field reference. Here we compare 'userId' field in 'enrollments' with the variable 'userId' defined in 'let'
             {
               $lookup: {
                 from: 'classes',
                 let: { classId: '$classId' },
                 pipeline: [
                   { $match: { $expr: { $eq: ['$_id', '$$classId'] } } },
-                  { $project: { name: 1, status: 1, themeColor: 1, coverImage: 1 } },
+                  {
+                    $project: {
+                      name: 1,
+                      status: 1,
+                      themeColor: 1,
+                      coverImage: 1,
+                    },
+                  },
                 ],
-                as: 'classDetails'
-              }
+                as: 'classDetails',
+              },
             },
-            { $unwind: { path: '$classDetails', preserveNullAndEmptyArrays: true } },
+            {
+              $unwind: {
+                path: '$classDetails',
+                preserveNullAndEmptyArrays: true,
+              },
+            }, // Array to object conversion for easier access to class details in projection
             {
               $project: {
                 classId: 1,
@@ -197,13 +209,22 @@ export class GetCurrentUserService {
                 status: '$classDetails.status',
                 themeColor: '$classDetails.themeColor',
                 coverImage: '$classDetails.coverImage',
-              }
-            }
+              },
+            },
           ],
-          as: 'enrolledClasses'
-        }
+          as: 'enrolledClasses',
+        },
       },
-      { $project: { name: 1, email: 1, emailVerified: 1, bio: 1, avatarUrl: 1, enrolledClasses: 1 } }
+      {
+        $project: {
+          name: 1,
+          email: 1,
+          emailVerified: 1,
+          bio: 1,
+          avatarUrl: 1,
+          enrolledClasses: 1,
+        },
+      },
     ];
 
     // 2. Optimized User & Enrollment Fetch using Aggregation

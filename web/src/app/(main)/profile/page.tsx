@@ -86,7 +86,7 @@ const ProfileSettings: React.FC = () => {
   const handleLanguageSettings = () => {
     console.log("Opening language settings...");
   };
-  
+
   const regenerateAvatar = useCallback(() => {
     const newSeed = Math.random().toString(36).substring(7);
     const newAvatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${newSeed}`;
@@ -129,7 +129,9 @@ const ProfileSettings: React.FC = () => {
 
             {/* Right Column - Classes & Preferences */}
             <div className="lg:col-span-7 space-y-5">
-              <JoinedClasses />
+              {user.enrolledClasses.length > 0 && (
+                <JoinedClasses classes={user.enrolledClasses} />
+              )}
 
               <Preferences
                 notifications={preferences.notifications}

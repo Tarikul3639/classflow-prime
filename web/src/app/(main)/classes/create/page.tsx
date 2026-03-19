@@ -3,6 +3,9 @@
 import React, { useState } from "react";
 import { ArrowLeft, Camera, X, PlusCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 
 const INPUT =
   "w-full bg-slate-50 border border-slate-200 outline-none rounded-lg px-3 md:px-3.5 py-2 md:py-2.5 text-sm md:text-[14px] focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all";
@@ -25,6 +28,13 @@ export default function CreateClassPage() {
     { id: "cs", name: "Computer Science" },
     { id: "math", name: "Mathematics" },
     { id: "eng", name: "English" },
+    { id: "phy", name: "Physics" },
+    { id: "chem", name: "Chemistry" },
+    { id: "bio", name: "Biology" },
+    { id: "hist", name: "History" },
+    { id: "art", name: "Art" },
+    { id: "bus", name: "Business" },
+    { id: "other", name: "Other" },
   ];
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -120,104 +130,55 @@ export default function CreateClassPage() {
                 {/* Form Fields */}
                 <div className="p-6 md:p-10 space-y-6">
                   {/* Class Name */}
-                  <div>
-                    <label
-                      className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2.5 ml-1"
-                      htmlFor="class-name"
-                    >
-                      Class Name
-                    </label>
-                    <input
-                      className={INPUT}
-                      id="class-name"
-                      placeholder="e.g. Fall 2026 7th Semester"
-                      type="text"
-                      value={className}
-                      onChange={(e) => setClassName(e.target.value)}
-                      required
-                    />
-                  </div>
+                  <Input
+                    label="Class Name"
+                    placeholder="e.g. Introduction to Computer Science"
+                    value={className}
+                    onChange={(e) => {
+                      if (e.target.value.length <= 30)
+                        setClassName(e.target.value);
+                    }}
+                    description="This is the name of your class that students will see. Max 30 characters."
+                  />
 
-                  <div className="grid grid-cols-2 gap-6">
-                    {/* Intake */}
-                    <div>
-                      <label
-                        className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2.5 ml-1"
-                        htmlFor="intake"
-                      >
-                        Intake
-                      </label>
-                      <input
-                        className={INPUT}
-                        id="intake"
-                        placeholder="Fall 2026"
-                        type="text"
-                        value={intake}
-                        onChange={(e) => setIntake(e.target.value)}
-                        required
-                      />
-                    </div>
-
-                    {/* Section */}
-                    <div>
-                      <label
-                        className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2.5 ml-1"
-                        htmlFor="section"
-                      >
-                        Section
-                      </label>
-                      <input
-                        className={INPUT}
-                        id="section"
-                        placeholder="Section A"
-                        type="text"
-                        value={section}
-                        onChange={(e) => setSection(e.target.value)}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  {/* Department */}
-                  <div>
-                    <label
-                      className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2.5 ml-1"
-                      htmlFor="department"
-                    >
-                      Department
-                    </label>
-                    <select
-                      className="w-full bg-slate-50 border border-slate-200 outline-none rounded-lg px-3 md:px-3.5 py-2 md:py-2.5 text-sm md:text-[14px] focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                      id="department"
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Department */}
+                    <Select
+                      label="Department"
+                      placeholder="Select department"
+                      options={departments.map((dept) => ({
+                        value: dept.id,
+                        label: dept.name,
+                      }))}
                       value={department}
                       onChange={(e) => setDepartment(e.target.value)}
-                      required
-                    >
-                      <option value="" disabled>
-                        Select department
-                      </option>
-                      {departments.map((dept) => (
-                        <option key={dept.id} value={dept.id}>
-                          {dept.name}
-                        </option>
-                      ))}
-                    </select>
+                      description="The academic department this class belongs to."
+                    />
+
+                    {/* Semester */}
+                    <Input
+                      label="Semester"
+                      placeholder="e.g. Fall 2026"
+                      value={intake}
+                      onChange={(e) => {
+                        if (e.target.value.length <= 10)
+                          setIntake(e.target.value);
+                      }}
+                      description="The semester or term for this class (e.g., Fall 2026). Max 10 characters."
+                    />
                   </div>
 
                   {/* About this class */}
-                  <div>
-                    <label
-                      className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2.5 ml-1"
-                      htmlFor="about"
-                    >
-                      About this class
-                    </label>
-                    <textarea
-                      className="w-full bg-slate-50 border border-slate-200 outline-none rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none h-24"
-                      id="about"
-                      placeholder="Add a brief description or notes about this class (optional)"
-                    />
-                  </div>
+                  <Textarea
+                    label="About this class"
+                    placeholder="Provide a brief description of the class content and objectives."
+                    value={section}
+                    onChange={(e) => {
+                      if (e.target.value.length <= 300)
+                        setSection(e.target.value);
+                    }}
+                    description="A short description to help students understand what this class is about. Max 300 characters."
+                  />
                 </div>
               </div>
             </div>

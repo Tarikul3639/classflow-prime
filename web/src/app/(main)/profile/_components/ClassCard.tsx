@@ -1,28 +1,23 @@
 "use client";
 
-import React from "react";
-import { LucideIcon } from "lucide-react";
-
 interface ClassCardProps {
-  name: string;
-  instructor: string;
-  schedule: string;
-  status: "Active" | "Ended";
-  icon: LucideIcon;
-  iconBg: string;
-  iconColor: string;
+  classId: string;
+  className: string;
+  themeColor?: string;
+  coverImage?: string;
+  role: string;
+  status: string;
+  joinedAt: Date;
 }
 
 export default function ClassCard({
-  name,
-  instructor,
-  schedule,
+  className: name,
+  themeColor,
+  role,
   status,
-  icon: Icon,
-  iconBg,
-  iconColor,
+  joinedAt,
 }: ClassCardProps) {
-  const isEnded = status === "Ended";
+  const isEnded = status === "ended";
 
   return (
     <div
@@ -32,19 +27,28 @@ export default function ClassCard({
     >
       <div className="flex items-center gap-3">
         <div
-          className={`h-10 w-10 rounded-lg ${iconBg} flex items-center justify-center ${iconColor}`}
+          style={{
+            backgroundColor: `${themeColor}10`,
+            color: `${themeColor}`,
+            border: `1px solid ${themeColor}20`,
+          }}
+          className={`h-10 w-10 rounded-lg flex items-center justify-center font-semibold text-base`}
         >
-          <Icon size={20} />
+          {name.charAt(0).toUpperCase()}
         </div>
         <div>
           <p className="font-bold text-slate-900 text-sm">{name}</p>
-          <p className="text-xs text-slate-500">
-            {instructor} • {schedule}
+          <p className="text-xs text-slate-500 capitalize">
+            {role} •{" "}
+            {new Date(joinedAt).toLocaleDateString(undefined, {
+              year: "numeric",
+              month: "short",
+            })}
           </p>
         </div>
       </div>
       <span
-        className={`px-2.5 py-1 rounded-full text-xs font-bold ${
+        className={`px-2.5 py-1 rounded-full text-xs font-bold capitalize ${
           isEnded
             ? "bg-slate-200 text-slate-600"
             : "bg-green-100 text-green-700"
