@@ -18,8 +18,6 @@ export class SignInResponseDto {
   tokens: ITokens;
 }
 
-type Ctx = { ip: string; userAgent?: string };
-
 @Injectable()
 export class SignInService {
   private readonly maxAttempts = 5;
@@ -32,17 +30,15 @@ export class SignInService {
     private readonly throttle: AuthThrottleService,
   ) { }
 
-  async execute(dto: SignInDto, ctx: Ctx): Promise<SignInResponseDto> {
+  async execute(dto: SignInDto, ip: string, userAgent: string): Promise<SignInResponseDto> {
     const email = dto.email.toLowerCase().trim();
-    const ip = (ctx.ip || 'unknown').trim();
-    const ua = ctx.userAgent || 'unknown-device';
 
     // 1️) Throttle check to prevent Brute-Force
     const t = await this.throttle.assertNotLocked({
       key: email,
       ip,
       purpose: ThrottlePurpose.SIGN_IN,
-      userAgent: ua,
+      userAgent,
     });
 
     // 2️) Load User by email
@@ -80,7 +76,7 @@ export class SignInService {
       user.email,
       user.role,
       ip,
-      ua,
+      userAgent,
     );
 
     // DEBUG: Add near SignInService after tokens are generated:

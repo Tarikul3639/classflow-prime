@@ -5,83 +5,39 @@ import { ArrowLeft } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { verifyCodePasswordResetThunk } from "@/redux/slices/auth/thunks/password-reset.thunk";
 import { resendCodePasswordResetThunk } from "@/redux/slices/auth/thunks/password-reset.thunk";
-import { clearPasswordResetStatus } from "@/redux/slices/auth/reducers/password-reset.reducer";
+import { goToStep, clearPasswordResetStatus } from "@/redux/slices/auth/reducers/password-reset.reducer";
 import ErrorMessage from "./Error";
 import OTPInputForm from "./OTPInputForm";
 import ResendOTPSection from "./ResendOTPSection";
 
-interface StepOTPVerificationProps {
-  email: string;
-  onNext: (code: string) => void; // Return verified code
-  onBack: () => void;
-}
-
-const StepOTPVerification: React.FC<StepOTPVerificationProps> = ({
-  email,
-  onNext,
-  onBack,
-}) => {
+const StepOTPVerification = () => {
   const dispatch = useAppDispatch();
-    const isVerifying = useAppSelector(
-      (s) => s.auth.passwordReset.verifyCodePasswordReset.loading,
-    );
-    const isResending = useAppSelector(
-      (s) => s.auth.passwordReset.resendCodePasswordReset.loading,
-    );
-    const error = useAppSelector(
-      (s) =>
-        s.auth.passwordReset.verifyCodePasswordReset.error ||
-        s.auth.passwordReset.resendCodePasswordReset.error,
-    );
-
+  const { email, verifyStatus, resendStatus } = useAppSelector((s) => s.auth.passwordReset);
+  
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
-  const [timer, setTimer] = useState(120); // 2 minutes
+  const [timer, setTimer] = useState(120);
   const [canResend, setCanResend] = useState(false);
 
-  // Clear error on unmount
-  useEffect(() => {
-    return () => {
-      dispatch(clearPasswordResetStatus());
-    };
-  }, [dispatch]);
-
-  // Timer countdown
   useEffect(() => {
     if (timer > 0) {
-      const interval = setInterval(() => {
-        setTimer((prev) => prev - 1);
-      }, 1000);
+      const interval = setInterval(() => setTimer((prev) => prev - 1), 1000);
       return () => clearInterval(interval);
-    } else {
-      setCanResend(true);
-    }
+    } else setCanResend(true);
   }, [timer]);
 
-  const handleVerifyOTP = async (e: React.FormEvent) => {
+  const handleVerifyOTP = (e: React.FormEvent) => {
     e.preventDefault();
-    const otpCode = otp.join("");
-
-    if (otpCode.length !== 6) return;
-
-    const result = await dispatch(
-      verifyCodePasswordResetThunk({ email, code: otpCode }),
-    );
-
-    if (verifyCodePasswordResetThunk.fulfilled.match(result)) {
-      console.log("OTP verified, moving to password reset");
-      onNext(otpCode); // Pass verified code to parent
+    const code = otp.join("");
+    if (code.length === 6) {
+      dispatch(verifyCodePasswordResetThunk({ email, code }));
     }
   };
 
   const handleResendOTP = async () => {
     if (!canResend) return;
-
     const result = await dispatch(resendCodePasswordResetThunk({ email }));
-
     if (resendCodePasswordResetThunk.fulfilled.match(result)) {
-      setTimer(120);
-      setCanResend(false);
-      setOtp(["", "", "", "", "", ""]);
+      setTimer(120); setCanResend(false); setOtp(["", "", "", "", "", ""]);
     }
   };
 
@@ -98,26 +54,15 @@ const StepOTPVerification: React.FC<StepOTPVerificationProps> = ({
         </p>
       </div>
 
-      <ErrorMessage error={error} />
+      <ErrorMessage error={verifyStatus.error || resendStatus.error} />
 
-      <OTPInputForm
-        otp={otp}
-        setOtp={setOtp}
-        onSubmit={handleVerifyOTP}
-        isLoading={isVerifying}
-      />
+      <OTPInputForm otp={otp} setOtp={setOtp} onSubmit={handleVerifyOTP} isLoading={verifyStatus.loading} />
 
-      <ResendOTPSection
-        timer={timer}
-        canResend={canResend}
-        onResend={handleResendOTP}
-        isLoading={isResending}
-      />
+      <ResendOTPSection timer={timer} canResend={canResend} onResend={handleResendOTP} isLoading={resendStatus.loading} />
 
       <div className="mt-4 pt-4 border-t border-slate-100 text-center">
         <button
-          onClick={onBack}
-          disabled={isVerifying || isResending}
+          onClick={() => dispatch(goToStep("email"))}
           className="inline-flex items-center gap-2 text-slate-500 hover:text-[#399aef] text-xs md:text-sm font-bold transition-all group disabled:opacity-50"
         >
           <ArrowLeft

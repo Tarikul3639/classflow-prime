@@ -43,6 +43,9 @@ interface VerifyCodePasswordResetRequest {
 interface VerifyCodePasswordResetResponse {
   success: boolean;
   message: string;
+  data: {
+    resetToken: string; // token to be used in confirm step
+  };
 }
 
 export const verifyCodePasswordResetThunk = createAsyncThunk<
@@ -100,7 +103,7 @@ export const resendCodePasswordResetThunk = createAsyncThunk<
  */
 interface ConfirmNewPasswordPasswordResetRequest {
   email: string;
-  code: string;
+  resetToken: string;
   newPassword: string;
 }
 interface ConfirmNewPasswordPasswordResetResponse {

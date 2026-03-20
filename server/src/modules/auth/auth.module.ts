@@ -11,7 +11,7 @@ import type { StringValue } from 'ms';
 import { SigninController } from './controllers/signin.controller';
 import { SignoutController } from './controllers/signout.controller';
 import { SignupController } from './controllers/signup.controller';
-// import { PasswordResetController } from './controllers/password-reset.controller';
+import { PasswordResetController } from './controllers/password-reset.controller';
 import { DebugController } from './controllers/debug.controller';
 
 // --------------------------------------------------
@@ -30,10 +30,11 @@ import { SignUpService } from './services/signup/signup.service';
 import { VerifySignupEmailService } from './services/signup/verify-signup-email.service';
 import { ResendSignupVerificationService } from './services/signup/resend-signup-verification.service';
 
-// import { RequestPasswordResetService } from './services/password-reset/request-password-reset.service';
-// import { VerifyPasswordResetService } from './services/password-reset/verify-password-reset.service';
-// import { ResendPasswordResetService } from './services/password-reset/resend-password-reset.service';
-// import { ConfirmPasswordResetService } from './services/password-reset/confirm-password-reset.service';
+// Password reset flow
+import { RequestService } from './services/password-reset/request.service';
+import { ResendOtpService } from './services/password-reset/resend-otp.service';
+import { VerifyOtpService } from './services/password-reset/verify-otp.service';
+import { ResetPasswordService } from './services/password-reset/reset-password.service';
 
 // ------------------------------------------------------
 // -------------------- ENTITIES ------------------------
@@ -79,7 +80,7 @@ import { MailModule } from 'src/modules/mail/mail.module';
 
     // feature groups
     SignupController,
-    // PasswordResetController,
+    PasswordResetController,
   ],
   providers: [
     // reusable core helpers
@@ -96,10 +97,10 @@ import { MailModule } from 'src/modules/mail/mail.module';
     ResendSignupVerificationService,
 
     // password reset flow
-    // RequestPasswordResetService,
-    // VerifyPasswordResetService,
-    // ResendPasswordResetService,
-    // ConfirmPasswordResetService,
+    RequestService,
+    ResendOtpService,
+    VerifyOtpService,
+    ResetPasswordService,
   ],
   exports: [
     // Export what other modules might need

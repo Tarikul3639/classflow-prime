@@ -13,6 +13,8 @@ import type { Request, Response } from 'express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { Public } from '../../../shared/decorators/public.decorator';
+import { RequestInfo } from 'src/shared/decorators/request-info.decorator';
+import type { IRequestInfo } from 'src/shared/decorators/request-info.decorator';
 import { setAuthCookies } from '../../../shared/utils/auth-cookies.util';
 
 import { SignInDto } from '../dto/signin/signin.dto';
@@ -31,24 +33,12 @@ export class SigninController {
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
   async signin(
     @Body() dto: SignInDto,
-    @Req() req: Request,
+    @RequestInfo() info: IRequestInfo,
     @Res({ passthrough: true }) res: Response,
-    @Ip() ip: string,
-    @Headers('user-agent') ua: string,
   ) {
-    // Prefer x-forwarded-for when behind proxy, else req.ip
-    const realIp =
-      (req.headers['x-forwarded-for'] as string | undefined)
-        ?.split(',')[0]
-        ?.trim() ||
-      req.ip ||
-      ip;
 
     // Call the service to perform sign-in logic
-    const result = await this.signInService.execute(dto, {
-      ip: realIp,
-      userAgent: ua || 'unknown-device',
-    });
+    const result = await this.signInService.execute(dto, info.ip, info.userAgent);
 
     // set HttpOnly cookies here (HTTP layer concern)
     setAuthCookies(res, result.tokens);

@@ -20,5 +20,5 @@ export interface IThrottle {
 export interface IThrottleMethods {
   increment(attemptWindowMinutes?: number): void;
   reset(): void;
-  isExpired(): boolean;
+  isBlocked(): boolean;
 }

@@ -1,36 +1,46 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Lock, Eye, EyeOff, ArrowRight, Loader2, ArrowLeft } from "lucide-react";
+import {
+  Lock,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  Loader2,
+  ArrowLeft,
+} from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { confirmNewPasswordPasswordResetThunk } from "@/redux/slices/auth/thunks/password-reset.thunk";
-import { clearPasswordResetStatus } from "@/redux/slices/auth/reducers/password-reset.reducer";
+import {
+  clearPasswordResetStatus,
+  goToStep,
+} from "@/redux/slices/auth/reducers/password-reset.reducer";
 import ErrorMessage from "./Error";
 
-interface StepNewPasswordProps {
-  email: string;
-  code: string; // Receive verified code
-  onNext: () => void;
-  onBack: () => void;
-}
-
-const StepNewPassword: React.FC<StepNewPasswordProps> = ({
-  email,
-  code,
-  onNext,
-  onBack,
-}) => {
+const StepNewPassword = () => {
   const dispatch = useAppDispatch();
-  const { loading, error } = useAppSelector(
-    (state) => state.auth.passwordReset.confirmNewPasswordPasswordReset
+  const { email, resetToken, confirmStatus } = useAppSelector(
+    (s) => s.auth.passwordReset,
   );
-
+  const { loading } = confirmStatus;
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [validationError, setValidationError] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (resetToken) {
+      dispatch(
+        confirmNewPasswordPasswordResetThunk({
+          email,
+          resetToken,
+          newPassword: password,
+        }),
+      );
+    }
+  };
 
   // Clear error on unmount
   useEffect(() => {
@@ -38,43 +48,6 @@ const StepNewPassword: React.FC<StepNewPasswordProps> = ({
       dispatch(clearPasswordResetStatus());
     };
   }, [dispatch]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setValidationError("");
-
-    // Validation
-    if (password.length < 8) {
-      setValidationError("Password must be at least 8 characters");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setValidationError("Passwords do not match");
-      return;
-    }
-
-    // Password strength check
-    const hasUpperCase = /[A-Z]/.test(password);
-    const hasLowerCase = /[a-z]/.test(password);
-    const hasNumber = /\d/.test(password);
-
-    if (!hasUpperCase || !hasLowerCase || !hasNumber) {
-      setValidationError(
-        "Password must contain uppercase, lowercase, and number"
-      );
-      return;
-    }
-
-    const result = await dispatch(
-      confirmNewPasswordPasswordResetThunk({ email, code, newPassword: password })
-    );
-
-    if (confirmNewPasswordPasswordResetThunk.fulfilled.match(result)) {
-      console.log("Password reset successful");
-      onNext();
-    }
-  };
 
   return (
     <div>
@@ -87,7 +60,7 @@ const StepNewPassword: React.FC<StepNewPasswordProps> = ({
         </p>
       </div>
 
-      <ErrorMessage error={error || validationError} />
+      <ErrorMessage error={confirmStatus.error} />
 
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* New Password */}
@@ -216,7 +189,7 @@ const StepNewPassword: React.FC<StepNewPasswordProps> = ({
 
       <div className="mt-4 pt-4 border-t border-slate-100 text-center">
         <button
-          onClick={onBack}
+          onClick={() => dispatch(goToStep("otp"))}
           disabled={loading}
           className="inline-flex items-center gap-2 text-slate-500 hover:text-[#399aef] text-xs md:text-sm font-bold transition-all group disabled:opacity-50"
         >

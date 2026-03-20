@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import ForgotPasswordSteps from "./_components/ForgotPasswordSteps";
@@ -8,68 +8,21 @@ import StepEmailInput from "./_components/StepEmailInput";
 import StepOTPVerification from "./_components/StepOTPVerification";
 import StepNewPassword from "./_components/StepNewPassword";
 import StepSuccess from "./_components/StepSuccess";
-import { clearPasswordResetStatus } from "@/redux/slices/auth/reducers/password-reset.reducer";
-import { useAppDispatch } from "@/redux/hooks";
-
-export type ForgotPasswordStep = "email" | "otp" | "password" | "success";
+import { useAppSelector } from "@/redux/hooks";
 
 const ForgotPasswordPage: React.FC = () => {
   const router = useRouter();
-  const dispatch = useAppDispatch();
-
-  const [currentStep, setCurrentStep] = useState<ForgotPasswordStep>("email");
-  const [email, setEmail] = useState("");
-  const [verifiedCode, setVerifiedCode] = useState(""); // Store verified code
-
-  const handleNextStep = (step: ForgotPasswordStep, code?: string) => {
-    if (code) {
-      setVerifiedCode(code); // Save code when moving from OTP to password step
-    }
-    setCurrentStep(step);
-  };
+  // Get current step from Redux state
+  const currentStep = useAppSelector((state) => state.auth.passwordReset.currentStep);
 
   const renderStep = () => {
     switch (currentStep) {
       case "email":
-        return (
-          <StepEmailInput
-            email={email}
-            setEmail={setEmail}
-            onNext={() => {
-              dispatch(clearPasswordResetStatus());
-              handleNextStep("otp");
-            }}
-          />
-        );
+        return <StepEmailInput />;
       case "otp":
-        return (
-          <StepOTPVerification
-            email={email}
-            onNext={(code) => {
-              dispatch(clearPasswordResetStatus());
-              handleNextStep("password", code);
-            }} // Pass code
-            onBack={() => {
-              dispatch(clearPasswordResetStatus());
-              handleNextStep("email");
-            }}
-          />
-        );
+        return <StepOTPVerification />;
       case "password":
-        return (
-          <StepNewPassword
-            email={email}
-            code={verifiedCode} // Pass verified code
-            onNext={() => {
-              dispatch(clearPasswordResetStatus());
-              handleNextStep("success");
-            }}
-            onBack={() => {
-              dispatch(clearPasswordResetStatus());
-              handleNextStep("otp");
-            }}
-          />
-        );
+        return <StepNewPassword />;
       case "success":
         return <StepSuccess onGoToLogin={() => router.push("/sign-in")} />;
       default:
@@ -85,10 +38,7 @@ const ForgotPasswordPage: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           className="w-full max-w-md bg-white rounded-2xl shadow-xl shadow-blue-100/50 p-6 sm:p-8 border border-slate-200"
         >
-          {/* Progress Steps */}
           <ForgotPasswordSteps currentStep={currentStep} />
-
-          {/* Dynamic Step Content */}
           <div className="mt-8">{renderStep()}</div>
         </motion.div>
       </main>

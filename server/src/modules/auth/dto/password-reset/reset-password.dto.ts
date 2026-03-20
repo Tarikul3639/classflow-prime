@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString, Length, Matches, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MaxLength, Matches, MinLength } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class ResetPasswordDto {
@@ -13,16 +13,14 @@ export class ResetPasswordDto {
   email: string;
 
   @ApiProperty({
-    example: '654321',
-    description: '6-digit password reset code',
-    minLength: 6,
-    maxLength: 6,
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN0dWRlbnRAZXhhbXBsZS5jb20iLCJpYXQiOjE2ODg4ODQwMDAsImV4cCI6MTY4ODg4NzYwMH0.abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890',
+    description: 'Password reset token received after verifying reset code',
   })
   @IsString()
   @IsNotEmpty()
-  @Length(6, 6, { message: 'Code must be exactly 6 digits' })
-  @Matches(/^\d{6}$/, { message: 'Code must contain only digits' })
-  code: string;
+  @MinLength(20)
+  @MaxLength(255)
+  resetToken: string;
 
   @ApiProperty({
     example: 'NewStrongPass123',

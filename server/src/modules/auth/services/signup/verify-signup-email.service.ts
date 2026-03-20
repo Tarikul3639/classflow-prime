@@ -44,10 +44,8 @@ export class VerifySignupEmailService {
         private readonly tokenService: TokenService,
     ) { }
 
-    async execute(dto: VerifySignupEmailDto, ctx: Ctx): Promise<SignUpResponseDto> {
+    async execute(dto: VerifySignupEmailDto, ip: string, userAgent: string): Promise<SignUpResponseDto> {
         const email = dto.email.toLowerCase().trim();
-        const ip = (ctx.ip || 'unknown').trim();
-        const ua = ctx.userAgent || 'unknown-device';
 
         // 1️) Validate email format
         if (!EmailValidator.isValidFormat(email)) {
@@ -99,7 +97,7 @@ export class VerifySignupEmailService {
                 user.email,
                 user.role,
                 ip,
-                ua,
+                userAgent,
             );
 
             // 9️) Optional: store refresh token in Account (hashed)
@@ -115,7 +113,7 @@ export class VerifySignupEmailService {
                     userId: user._id,
                     accountId: email,
                     providerId: AccountProvider.PASSWORD,
-                    
+
                 });
             }
 

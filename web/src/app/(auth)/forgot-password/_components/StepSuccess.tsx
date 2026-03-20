@@ -29,7 +29,7 @@ const StepSuccess: React.FC<StepSuccessProps> = ({ onGoToLogin }) => {
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-        className="mx-auto mb-6 w-20 h-20 bg-linear-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center shadow-lg shadow-green-200"
+        className="mx-auto mb-6 w-20 h-20 bg-primary rounded-full flex items-center justify-center shadow-lg shadow-blue-200"
       >
         <CheckCircle2 size={40} className="text-white" />
       </motion.div>

@@ -5,32 +5,20 @@ import { Input } from "@/components/ui/Input";
 import Link from "next/link";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { requestPasswordResetThunk } from "@/redux/slices/auth/thunks/password-reset.thunk";
+import { setResetEmail } from "@/redux/slices/auth/reducers/password-reset.reducer";
 import ErrorMessage from "./Error";
 
-interface StepEmailInputProps {
-  email: string;
-  setEmail: (email: string) => void;
-  onNext: () => void;
-}
-
-const StepEmailInput: React.FC<StepEmailInputProps> = ({
-  email,
-  setEmail,
-  onNext,
-}) => {
+const StepEmailInput = () => {
   const dispatch = useAppDispatch();
+  const email = useAppSelector((state) => state.auth.passwordReset.email);
   const { loading: isLoading, error } = useAppSelector(
-    (state) => state.auth.passwordReset.requestPasswordReset
+    (state) => state.auth.passwordReset.requestStatus,
   );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(requestPasswordResetThunk({ email }))
-      .unwrap()
-      .then(() => {
-        onNext();
-      })
-      .catch(() => {});
+    dispatch(requestPasswordResetThunk({ email }));
+    // .then() বা .unwrap() করার দরকার নেই, স্লাইস নিজেই fulfilled হলে ধাপ পরিবর্তন করবে
   };
 
   return (
@@ -53,7 +41,7 @@ const StepEmailInput: React.FC<StepEmailInputProps> = ({
           type="email"
           placeholder="Enter your email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => dispatch(setResetEmail(e.target.value))}
           icon={Mail}
         />
 
@@ -69,7 +57,8 @@ const StepEmailInput: React.FC<StepEmailInputProps> = ({
             </>
           ) : (
             <>
-              Send Verification Code <ArrowRight className="size-4 md:size-4.5" />
+              Send Verification Code{" "}
+              <ArrowRight className="size-4 md:size-4.5" />
             </>
           )}
         </button>
