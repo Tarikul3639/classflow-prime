@@ -1,31 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  ArrowLeft,
-  Search,
-  GraduationCap,
-  Users,
-  Copy,
-  Plus,
-  UserPlus,
-  BookOpen,
-} from "lucide-react";
+import { Search, Users, Plus, UserPlus, BookOpen } from "lucide-react";
 import Link from "next/link";
-
-// Types
-interface ClassItem {
-  id: string;
-  code: string;
-  title: string;
-  department: string;
-  instructor: string;
-  members: number;
-  classCode: string;
-  avatar: string;
-  badgeBg: string;
-  badgeText: string;
-}
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Classes: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState("all");
@@ -37,58 +15,106 @@ const Classes: React.FC = () => {
     { id: "archived", label: "Archived" },
   ];
 
-  const classes: ClassItem[] = [
+  const classes = [
     {
-      id: "1",
-      code: "CS101",
-      title: "Data Structures",
-      department: "Computer Science Dept.",
+      id: 1,
+      department: "Computer Science",
+      title: "Data Structures & Algorithms",
+      students: 45,
       instructor: "Prof. Alan Turing",
-      members: 45,
-      classCode: "XJ9-22B",
-      avatar:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuBWjfyC45SiOxiHCiYxJBYfJWPoz4gipczWkq4afrlMljef2yRNmCTq9TOkKIs9PSCI2Jy7XGRkDLkgYhCPygbjvRh8r0wqzENwKWnQf88zCChwkbbafylrxC6Tn6L5GG6eU85CNdvuZml3Js5NK_V_q-KLiJXSDBaK1kzBM-pfqGJF0KI9zux6NnKUAYhB2ltRnJ470wPpTNaj2BFdb5Jib_9o95IQeB4qI3SMMRF2Rq06fFwVmT6tMjhW_yclTlkHlp9fdPcYMg",
-      badgeBg: "bg-blue-50",
-      badgeText: "text-pribg-primary",
+      semester: "Spring 2025",
+      themeColor: "#3A8BFF",
+      initials: null,
+      coverImage: "https://i.pravatar.cc/150?img=12",
+      status: "active",
     },
     {
-      id: "2",
-      code: "PSY101",
-      title: "Intro to Psychology",
-      department: "Humanities Dept.",
-      instructor: "Dr. Sigmund Freud",
-      members: 128,
-      classCode: "PSY-ORG",
-      avatar:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuA6SUD5TiCX469S1NAdZT6QVEeu4NNJMzFseA3lVrwVqxn3cKmjhgZLBtikIWmkUwK__nFcqVoFSFuYVpJy0-LbVo5hwJTV275pnwQLPbe73vV185q9hD_aTPh-Vqi-nAyY1RzAiIHpgNsqlLENPCPqcW4wBZwvLFP3kH50uNmtkXOIK-j8aeDuplIYS7Wn_0nuGMUVlOj7lF7Uv8xjyBPOsoAZ_LW2g5YQC-4gZnKh6M_u7-CYX2kqDNkrzVwD2ckUMsAusufDoQ",
-      badgeBg: "bg-purple-50",
-      badgeText: "text-purple-600",
+      id: 2,
+      department: "Software Engineering",
+      title: "Web Development",
+      students: 60,
+      instructor: "Linus Torvalds",
+      semester: "Spring 2025",
+      themeColor: "#22C55E",
+      initials: "LT",
+      coverImage:
+        "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80",
+      status: "active",
     },
     {
-      id: "3",
-      code: "ART204",
-      title: "Modern Art History",
-      department: "Arts & Design",
-      instructor: "Prof. Frida Kahlo",
-      members: 32,
-      classCode: "ART-VIV",
-      avatar:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuCXXxBi8iN6JqDd94orObAYe24RSDuDMLjLJ4lx-fmpw_8tTOuB7GuHMP9g1zadjtHdCXAW2e-TiR1yCeWw2vxCFsdJXVrjV4iMj5NlLVF5i204oDVuiO3gFNtm9OHpulUQ1T3lYlO3f3ABznyLN59mvkA5xbIbrRLEI0UIY-KiO6_YR9DbkC4h2CUT4gnBmU_wTPayx377cOKSm27Pn9wtA5MqATlKfdxxkbXe6DjQ4Ct665N11zoc-aHTV337Ak6RMVMunwFm6g",
-      badgeBg: "bg-emerald-50",
-      badgeText: "text-emerald-600",
+      id: 3,
+      department: "Artificial Intelligence",
+      title: "Machine Learning",
+      students: 38,
+      instructor: "Andrew Ng",
+      semester: "Spring 2025",
+      themeColor: "#F59E0B",
+      initials: "AN",
+      coverImage:
+        "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80",
+      status: "active",
     },
     {
-      id: "4",
-      code: "PHY301",
-      title: "Quantum Physics",
-      department: "Physics Dept.",
-      instructor: "Dr. Marie Curie",
-      members: 18,
-      classCode: "QTM-PHY",
-      avatar:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuDBidkEAMcoWotacBTcoZvxkTDKJuPXr0fkj-nHGHw3z1HyfDNLSkcSFTMqs13chwhGQRXa0XQwSTIRK_PMLt_A1OYfyoOZfjYxxHsI0-v3xp5nmBVPk9JiJbVbBPufxJcUXgWtba_e6w6UXrKZfcoeHBG52OY1gXrGlQRDbMahmZ0eByxa4Ft9jDHP7aGe8vyFyXriEicsex09tFNh-Gm2QMHucy-StptlEPbbe7TerS3F4i-tSmbxQUsYIe6HiNdk2ep4gN3SeQ",
-      badgeBg: "bg-orange-50",
-      badgeText: "text-orange-600",
+      id: 4,
+      department: "Mathematics",
+      title: "Linear Algebra",
+      students: 52,
+      instructor: "Gilbert Strang",
+      semester: "Spring 2025",
+      themeColor: "#EF4444",
+      initials: "GS",
+      coverImage:
+        "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80",
+      status: "active",
+    },
+    {
+      id: 5,
+      department: "Physics",
+      title: "Quantum Mechanics",
+      students: 28,
+      instructor: "Richard Feynman",
+      semester: "Spring 2025",
+      themeColor: "#8B5CF6",
+      initials: "RF",
+      coverImage:
+        "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+      status: "archived",
+    },
+    {
+      id: 6,
+      department: "Business",
+      title: "Entrepreneurship",
+      students: 34,
+      instructor: "Elon Musk",
+      semester: "Spring 2025",
+      themeColor: "#14B8A6",
+      initials: "EM",
+      avatar: null,
+      status: "active",
+    },
+    {
+      id: 7,
+      department: "Design",
+      title: "UI/UX Fundamentals",
+      students: 41,
+      instructor: "Don Norman",
+      semester: "Spring 2025",
+      themeColor: "#EC4899",
+      initials: "DN",
+      avatar: null,
+      status: "active",
+    },
+    {
+      id: 8,
+      department: "Cyber Security",
+      title: "Ethical Hacking",
+      students: 25,
+      instructor: "Kevin Mitnick",
+      semester: "Spring 2025",
+      themeColor: "#0EA5E9",
+      initials: "KM",
+      avatar: null,
+      status: "archived",
     },
   ];
 
@@ -200,63 +226,124 @@ const Classes: React.FC = () => {
               <Link
                 href={`/classes/${classItem.id}/overview`}
                 key={classItem.id}
-                className="bg-white rounded-xl p-4 shadow-sm border border-slate-200 hover:shadow-md hover:border-slate-300 transition-all cursor-pointer"
+                className="group relative rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-1 flex flex-col h-full"
+                style={{
+                  border: `1px solid ${classItem.themeColor}20`,
+                  boxShadow: `0 2px 10px ${classItem.themeColor}20`,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = `${classItem.themeColor}60`;
+                  e.currentTarget.style.boxShadow = `0 4px 50px ${classItem.themeColor}25`;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = `${classItem.themeColor}30`;
+                  e.currentTarget.style.boxShadow = "none";
+                }}
               >
-                {/* Header */}
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1 min-w-0">
-                    <span
-                      className={`inline-block px-2 py-0.5 rounded-md ${classItem.badgeBg} ${classItem.badgeText} text-[10px] font-bold uppercase tracking-wide mb-2`}
+                {/* --- Top Image/Banner Section --- */}
+                <div className="relative h-32 overflow-hidden bg-slate-100">
+                  {/* Background Image */}
+
+                  <Avatar className="absolute inset-0 w-full h-full object-cover rounded-none">
+                    <AvatarImage className="object-cover"
+                      src={classItem.coverImage || undefined}
+                      alt={classItem.title}
+                    />
+                    <AvatarFallback
+                      className="rounded-none w-full h-full text-4xl font-bold tracking-widest flex items-center justify-center"
+                      style={{
+                        backgroundColor:
+                          `${classItem.themeColor}50` || "#0066FF",
+                        color: classItem.themeColor,
+                      }}
                     >
-                      {classItem.code}
-                    </span>
-                    <h3 className="text-base font-bold text-slate-900 leading-tight mb-0.5 truncate">
-                      {classItem.title}
-                    </h3>
-                    <p className="text-xs text-slate-500 truncate">
-                      {classItem.department}
-                    </p>
-                  </div>
-                  <img
-                    alt={classItem.instructor}
-                    className="w-10 h-10 rounded-full object-cover border-2 border-slate-100 shrink-0 ml-2"
-                    src={classItem.avatar}
-                  />
-                </div>
+                      {classItem.title
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")}
+                    </AvatarFallback>
+                  </Avatar>
 
-                {/* Instructor Info */}
-                <div className="flex items-center gap-1.5 mb-3 pb-3 border-b border-slate-100">
-                  <GraduationCap
-                    className="text-slate-400 shrink-0"
-                    size={14}
-                  />
-                  <span className="text-xs text-slate-600 truncate">
-                    {classItem.instructor}
-                  </span>
-                </div>
-
-                {/* Footer */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1">
-                    <Users className="text-slate-400" size={14} />
-                    <span className="text-xs text-slate-600 font-medium">
-                      {classItem.members}
-                    </span>
-                  </div>
+                  {/* Badge: Active/Status */}
                   <div
-                    className="flex items-center gap-1.5 cursor-pointer group"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      copyToClipboard(classItem.classCode);
+                    className="absolute top-3 right-3 text-[11px] font-semibold capitalize tracking-widest px-2 py-0.5 pb-1 rounded-sm text-white"
+                    style={{
+                      backgroundColor: classItem.themeColor || "#0066FF",
                     }}
                   >
-                    <span className="font-mono text-xs font-semibold text-slate-900">
-                      {classItem.classCode}
+                    {classItem.status || "Active"}
+                  </div>
+
+                  {/* Department Label Overlay */}
+                  <div className="absolute bottom-3 left-3 right-3">
+                    <span
+                      className="inline-block px-2.5 py-0.75 bg-white/90 backdrop-blur-md rounded-sm text-[10px] font-semibold uppercase tracking-wider"
+                      style={{ color: classItem.themeColor || "#0066FF" }}
+                    >
+                      {classItem.department}
                     </span>
-                    <Copy
-                      className="text-slate-400 group-hover:text-pribg-primary transition-colors"
-                      size={13}
-                    />
+                  </div>
+                </div>
+
+                {/* --- Content Section --- */}
+                <div className="p-4 space-y-3 flex flex-col flex-1 bg-white">
+                  {/* Title */}
+                  <h3 className="text-lg font-bold text-[#203044] leading-tight line-clamp-2">
+                    {classItem.title}
+                  </h3>
+
+                  {/* Instructor Info */}
+                  <div className="flex items-center gap-2 ml-1">
+                    <Avatar className="w-8 h-8 border border-slate-200">
+                      <AvatarImage
+                        src={classItem.avatar || undefined}
+                        alt={classItem.instructor}
+                      />
+                      <AvatarFallback
+                        className="w-full h-full text-xs font-semibold p-1"
+                        style={{
+                          backgroundColor: classItem.themeColor,
+                          color: "#fff",
+                        }}
+                      >
+                        {classItem.initials ||
+                          classItem.instructor
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col">
+                      <p className="text-[9px] uppercase font-bold leading-none text-black opacity-60">
+                        Instructor
+                      </p>
+                      <span className="text-xs font-semibold text-on-surface">
+                        {classItem.instructor}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Divider and Footer */}
+                  <div className="pt-2 mt-auto border-t border-slate-100 flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-[#4d5d73]">
+                      {/* Material Icon (Using Lucide React if available or standard span) */}
+                      <Users size={16} className="text-slate-400" />
+                      <span className="text-xs font-semibold">
+                        {classItem.students} Students
+                      </span>
+                    </div>
+
+                    {/* Semester Tag */}
+                    <div
+                      className="text-xs font-semibold px-2 py-1 rounded"
+                      style={{
+                        backgroundColor:
+                          `${classItem.themeColor}15` || "#0066FF15",
+                        color: classItem.themeColor || "#0066FF",
+                      }}
+                    >
+                      {classItem.semester}
+                    </div>
                   </div>
                 </div>
               </Link>

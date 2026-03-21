@@ -84,7 +84,7 @@ export const passwordResetSlice = createSlice({
       })
       .addCase(verifyCodePasswordResetThunk.fulfilled, (state, action) => {
         state.verifyStatus.loading = false;
-        state.resetToken = action.payload.data.resetToken; // resetToken from backend to be used in confirm step
+        state.resetToken = action.payload.data.resetToken; // Note: resetToken from backend to be used in confirm step
         state.currentStep = "password";
       })
       .addCase(verifyCodePasswordResetThunk.rejected, (state, action) => {
