@@ -1,13 +1,24 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Search, Users, Plus, UserPlus, BookOpen } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  IClass,
+  fetchClasses,
+} from "@/redux/slices/classes/thunks/fetch-classes.thunk";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { toast } from "sonner";
+import { TopLoader } from "@/components/ui/TopLoader";
 
 const Classes: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const dispatch = useAppDispatch();
+  const { classes, loading } = useAppSelector(
+    (state) => state.classes.fetchClasses,
+  );
 
   const filters = [
     { id: "all", label: "All" },
@@ -15,112 +26,139 @@ const Classes: React.FC = () => {
     { id: "archived", label: "Archived" },
   ];
 
-  const classes = [
-    {
-      id: 1,
-      department: "Computer Science",
-      title: "Data Structures & Algorithms",
-      students: 45,
-      instructor: "Prof. Alan Turing",
-      semester: "Spring 2025",
-      themeColor: "#3A8BFF",
-      initials: null,
-      coverImage: "https://i.pravatar.cc/150?img=12",
-      status: "active",
-    },
-    {
-      id: 2,
-      department: "Software Engineering",
-      title: "Web Development",
-      students: 60,
-      instructor: "Linus Torvalds",
-      semester: "Spring 2025",
-      themeColor: "#22C55E",
-      initials: "LT",
-      coverImage:
-        "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80",
-      status: "active",
-    },
-    {
-      id: 3,
-      department: "Artificial Intelligence",
-      title: "Machine Learning",
-      students: 38,
-      instructor: "Andrew Ng",
-      semester: "Spring 2025",
-      themeColor: "#F59E0B",
-      initials: "AN",
-      coverImage:
-        "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80",
-      status: "active",
-    },
-    {
-      id: 4,
-      department: "Mathematics",
-      title: "Linear Algebra",
-      students: 52,
-      instructor: "Gilbert Strang",
-      semester: "Spring 2025",
-      themeColor: "#EF4444",
-      initials: "GS",
-      coverImage:
-        "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80",
-      status: "active",
-    },
-    {
-      id: 5,
-      department: "Physics",
-      title: "Quantum Mechanics",
-      students: 28,
-      instructor: "Richard Feynman",
-      semester: "Spring 2025",
-      themeColor: "#8B5CF6",
-      initials: "RF",
-      coverImage:
-        "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
-      status: "archived",
-    },
-    {
-      id: 6,
-      department: "Business",
-      title: "Entrepreneurship",
-      students: 34,
-      instructor: "Elon Musk",
-      semester: "Spring 2025",
-      themeColor: "#14B8A6",
-      initials: "EM",
-      avatar: null,
-      status: "active",
-    },
-    {
-      id: 7,
-      department: "Design",
-      title: "UI/UX Fundamentals",
-      students: 41,
-      instructor: "Don Norman",
-      semester: "Spring 2025",
-      themeColor: "#EC4899",
-      initials: "DN",
-      avatar: null,
-      status: "active",
-    },
-    {
-      id: 8,
-      department: "Cyber Security",
-      title: "Ethical Hacking",
-      students: 25,
-      instructor: "Kevin Mitnick",
-      semester: "Spring 2025",
-      themeColor: "#0EA5E9",
-      initials: "KM",
-      avatar: null,
-      status: "archived",
-    },
-  ];
+  useEffect(() => {
+    if (classes.length > 0) return; // Don't fetch again if we already have classes in state
+    setTimeout(() => {}, 5000);
+    dispatch(fetchClasses())
+      .unwrap()
+      .then(() => {
+        // toast.success("Classes loaded successfully");
+      })
+      .catch((err) => {
+        toast.error(err.message || "Failed to load classes");
+      });
+  }, [dispatch]);
 
-  const copyToClipboard = (code: string) => {
-    navigator.clipboard.writeText(code);
-  };
+  // TODO: Just for demo purposes, we should handle this better in the thunk itself and ensure it always returns an object
+  const safeClasses = Array.isArray(classes) ? classes : [];
+
+  const filteredClasses = safeClasses
+    .filter((cls) => {
+      if (activeFilter === "active") return cls.status === "active";
+      if (activeFilter === "archived") return cls.status === "archived";
+      return true; // for "all"
+    })
+    .filter(
+      (cls) =>
+        cls.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        cls.classId.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+
+  // const classes:IClass[] = [
+  //   {
+  //     classId: "1",
+  //     department: "Computer Science",
+  //     title: "Data Structures & Algorithms",
+  //     students: 45,
+  //     instructor: "Prof. Alan Turing",
+  //     semester: "Spring 2025",
+  //     themeColor: "#3A8BFF",
+  //     coverImage: "https://i.pravatar.cc/150?img=12",
+  //     avatarUrl: null,
+  //     status: "active",
+  //   },
+  //   {
+  //     classId: "2",
+  //     department: "Software Engineering",
+  //     title: "Web Development",
+  //     students: 60,
+  //     instructor: "Linus Torvalds",
+  //     semester: "Spring 2025",
+  //     themeColor: "#22C55E",
+  //     coverImage:
+  //       "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80",
+  //     avatarUrl: null,
+  //     status: "active",
+  //   },
+  //   {
+  //     classId: "3",
+  //     department: "Artificial Intelligence",
+  //     title: "Machine Learning",
+  //     students: 38,
+  //     instructor: "Andrew Ng",
+  //     semester: "Spring 2025",
+  //     themeColor: "#F59E0B",
+  //     coverImage:
+  //       "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80",
+  //     avatarUrl: null,
+  //     status: "active",
+  //   },
+  //   {
+  //     classId: "4",
+  //     department: "Mathematics",
+  //     title: "Linear Algebra",
+  //     students: 52,
+  //     instructor: "Gilbert Strang",
+  //     semester: "Spring 2025",
+  //     themeColor: "#EF4444",
+  //     coverImage:
+  //       "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80",
+  //     avatarUrl: null,
+  //     status: "active",
+  //   },
+  //   {
+  //     classId: "5",
+  //     department: "Physics",
+  //     title: "Quantum Mechanics",
+  //     students: 28,
+  //     instructor: "Richard Feynman",
+  //     semester: "Spring 2025",
+  //     themeColor: "#8B5CF6",
+  //     coverImage:
+  //       "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+  //     avatarUrl: null,
+  //     status: "archived",
+  //   },
+  //   {
+  //     classId: "6",
+  //     department: "Business",
+  //     title: "Entrepreneurship",
+  //     students: 34,
+  //     instructor: "Elon Musk",
+  //     semester: "Spring 2025",
+  //     themeColor: "#14B8A6",
+  //     coverImage:
+  //       "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80",
+  //     avatarUrl: null,
+  //     status: "active",
+  //   },
+  //   {
+  //     classId: "7",
+  //     department: "Design",
+  //     title: "UI/UX Fundamentals",
+  //     students: 41,
+  //     instructor: "Don Norman",
+  //     semester: "Spring 2025",
+  //     themeColor: "#EC4899",
+  //     coverImage:
+  //       "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80",
+  //     avatarUrl: null,
+  //     status: "active",
+  //   },
+  //   {
+  //     classId: "8",
+  //     department: "Cyber Security",
+  //     title: "Ethical Hacking",
+  //     students: 25,
+  //     instructor: "Kevin Mitnick",
+  //     semester: "Spring 2025",
+  //     themeColor: "#0EA5E9",
+  //     coverImage:
+  //       "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80",
+  //     avatarUrl: null,
+  //     status: "archived",
+  //   },
+  // ];
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
@@ -140,7 +178,7 @@ const Classes: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse" />
                   <p className="text-slate-600 text-xs font-medium">
-                    {classes.length} active sessions
+                    {safeClasses.length} active sessions
                   </p>
                 </div>
               </div>
@@ -220,44 +258,43 @@ const Classes: React.FC = () => {
 
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto pb-24 lg:pb-8">
-        <div className="mx-auto px-4 lg:px-8 py-6">
-          <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {classes.map((classItem) => (
+        <div className="mx-auto px-4 lg:px-8 py-6 relative">
+          <main className="grid gap-3 grid-cols-[repeat(auto-fit,minmax(300px,300px))] justify-start">
+            {filteredClasses.map((cls) => (
               <Link
-                href={`/classes/${classItem.id}/overview`}
-                key={classItem.id}
-                className="group relative rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-1 flex flex-col h-full"
+                href={`/classes/${cls.classId}/overview`}
+                key={cls.classId}
+                className="group relative rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-1 flex flex-col w-full h-full max-w-75"
                 style={{
-                  border: `1px solid ${classItem.themeColor}20`,
-                  boxShadow: `0 2px 10px ${classItem.themeColor}20`,
+                  border: `1px solid ${cls.themeColor}40`,
+                  boxShadow: `0 2px 10px ${cls.themeColor}20`,
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = `${classItem.themeColor}60`;
-                  e.currentTarget.style.boxShadow = `0 4px 50px ${classItem.themeColor}25`;
+                  e.currentTarget.style.borderColor = `${cls.themeColor}60`;
+                  e.currentTarget.style.boxShadow = `0 4px 50px ${cls.themeColor}25`;
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = `${classItem.themeColor}30`;
+                  e.currentTarget.style.borderColor = `${cls.themeColor}40`;
                   e.currentTarget.style.boxShadow = "none";
                 }}
               >
                 {/* --- Top Image/Banner Section --- */}
-                <div className="relative h-32 overflow-hidden bg-slate-100">
+                <div className="group relative h-36 overflow-hidden bg-slate-100">
                   {/* Background Image */}
-
-                  <Avatar className="absolute inset-0 w-full h-full object-cover rounded-none">
-                    <AvatarImage className="object-cover"
-                      src={classItem.coverImage || undefined}
-                      alt={classItem.title}
+                  <Avatar className="absolute inset-0 w-full h-full object-cover rounded-none group-hover:scale-105 transition-transform duration-300">
+                    <AvatarImage
+                      className="object-cover"
+                      src={cls.coverImage || undefined}
+                      alt={cls.title}
                     />
                     <AvatarFallback
-                      className="rounded-none w-full h-full text-4xl font-bold tracking-widest flex items-center justify-center"
+                      className="rounded-none w-full h-full text-4xl font-bold tracking-widest flex items-center justify-center uppercase"
                       style={{
-                        backgroundColor:
-                          `${classItem.themeColor}50` || "#0066FF",
-                        color: classItem.themeColor,
+                        backgroundColor: `${cls.themeColor}50` || "#0066FF",
+                        color: cls.themeColor,
                       }}
                     >
-                      {classItem.title
+                      {cls.title
                         .split(" ")
                         .map((n) => n[0])
                         .join("")}
@@ -266,21 +303,22 @@ const Classes: React.FC = () => {
 
                   {/* Badge: Active/Status */}
                   <div
-                    className="absolute top-3 right-3 text-[11px] font-semibold capitalize tracking-widest px-2 py-0.5 pb-1 rounded-sm text-white"
+                    className="absolute top-3 right-3 text-[11px] font-semibold capitalize! tracking-widest px-2 py-0.5 pb-1 rounded-sm text-white"
                     style={{
-                      backgroundColor: classItem.themeColor || "#0066FF",
+                      backgroundColor: cls.themeColor || "#0066FF",
                     }}
                   >
-                    {classItem.status || "Active"}
+                    {cls.status.charAt(0).toUpperCase() +
+                      cls.status.slice(1).toLowerCase() || "Active"}
                   </div>
 
                   {/* Department Label Overlay */}
                   <div className="absolute bottom-3 left-3 right-3">
                     <span
                       className="inline-block px-2.5 py-0.75 bg-white/90 backdrop-blur-md rounded-sm text-[10px] font-semibold uppercase tracking-wider"
-                      style={{ color: classItem.themeColor || "#0066FF" }}
+                      style={{ color: cls.themeColor || "#0066FF" }}
                     >
-                      {classItem.department}
+                      {cls.department}
                     </span>
                   </div>
                 </div>
@@ -288,48 +326,50 @@ const Classes: React.FC = () => {
                 {/* --- Content Section --- */}
                 <div className="p-4 space-y-3 flex flex-col flex-1 bg-white">
                   {/* Title */}
-                  <h3 className="text-lg font-bold text-[#203044] leading-tight line-clamp-2">
-                    {classItem.title}
+                  <h3 className="text-md font-bold text-[#203044] leading-tight line-clamp-2">
+                    {cls.title}
                   </h3>
 
                   {/* Instructor Info */}
                   <div className="flex items-center gap-2 ml-1">
                     <Avatar className="w-8 h-8 border border-slate-200">
                       <AvatarImage
-                        src={classItem.avatar || undefined}
-                        alt={classItem.instructor}
+                        src={cls.avatarUrl || undefined}
+                        alt={cls.instructor}
                       />
                       <AvatarFallback
-                        className="w-full h-full text-xs font-semibold p-1"
+                        className="w-full h-full text-sm font-semibold text-center p-1"
                         style={{
-                          backgroundColor: classItem.themeColor,
+                          backgroundColor: cls.themeColor,
                           color: "#fff",
                         }}
                       >
-                        {classItem.initials ||
-                          classItem.instructor
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
+                        {cls.instructor
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col">
                       <p className="text-[9px] uppercase font-bold leading-none text-black opacity-60">
                         Instructor
                       </p>
-                      <span className="text-xs font-semibold text-on-surface">
-                        {classItem.instructor}
+                      <span className="text-[13px] font-semibold ">
+                        {cls.instructor}
                       </span>
                     </div>
                   </div>
 
                   {/* Divider and Footer */}
-                  <div className="pt-2 mt-auto border-t border-slate-100 flex items-center justify-between">
+                  <div
+                    className="pt-2 mt-auto flex items-center justify-between"
+                    style={{ borderTop: `1px solid ${cls.themeColor}30` }}
+                  >
                     <div className="flex items-center gap-1.5 text-[#4d5d73]">
                       {/* Material Icon (Using Lucide React if available or standard span) */}
                       <Users size={16} className="text-slate-400" />
                       <span className="text-xs font-semibold">
-                        {classItem.students} Students
+                        {cls.students} Students
                       </span>
                     </div>
 
@@ -337,18 +377,26 @@ const Classes: React.FC = () => {
                     <div
                       className="text-xs font-semibold px-2 py-1 rounded"
                       style={{
-                        backgroundColor:
-                          `${classItem.themeColor}15` || "#0066FF15",
-                        color: classItem.themeColor || "#0066FF",
+                        backgroundColor: `${cls.themeColor}15` || "#0066FF15",
+                        color: cls.themeColor || "#0066FF",
                       }}
                     >
-                      {classItem.semester}
+                      {cls.semester}
                     </div>
                   </div>
                 </div>
               </Link>
             ))}
           </main>
+
+          {/* Empty State */}
+          {!loading && filteredClasses.length === 0 && (
+            <div className="text-center py-20 text-slate-500">
+              No classes found matching your criteria.
+            </div>
+          )}
+
+          <TopLoader isLoading={loading} />
         </div>
       </div>
     </div>
