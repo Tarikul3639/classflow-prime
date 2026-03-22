@@ -11,10 +11,15 @@ import {
   QrCode,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { joinClass } from "@/redux/slices/classes/thunks/join-class.thunk";
+import { resetJoinState } from "@/redux/slices/classes/reducers/join-class.reducer";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { toast } from "sonner";
 
 export default function JoinClassPage() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useAppDispatch();
+  const { isJoining } = useAppSelector((state) => state.classes.joinClass);
   const [code, setCode] = useState(["", "", "", "", "", ""]);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -58,18 +63,27 @@ export default function JoinClassPage() {
     e.preventDefault();
     const joinCode = code.join("");
 
-    if (joinCode.length !== 6) {
-      alert("Please enter a complete 6-character code");
-      return;
-    }
+    await dispatch(joinClass({ joinCode }))
+      .unwrap()
+      .then((response) => {
+        toast.success("Successfully joined the class", {
+          description: response.message || "Successfully joined the class!",
+        });
 
-    setIsLoading(true);
-
-    setTimeout(() => {
-      console.log("Joining with code:", joinCode);
-      setIsLoading(false);
-      router.push("/classes");
-    }, 2000);
+        // Redirect to class page if classId is returned
+        if (response.data.classId) {
+          router.push(`/classes/${response.data.classId}/overview`);
+          dispatch(resetJoinState());
+        }
+      })
+      .catch((err) => {
+        // console.error("Join Error: ", err);
+        toast.error("Failed to join class", {
+          description:
+            err.message || "An error occurred while joining the class",
+          position: "top-center",
+        });
+      });
   };
 
   return (
@@ -137,10 +151,10 @@ export default function JoinClassPage() {
 
                 <button
                   type="submit"
-                  disabled={isLoading || code.join("").length !== 6}
+                  disabled={isJoining || code.join("").length !== 6}
                   className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-xl shadow-lg shadow-primary/20 transition-all text-sm mt-6 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isLoading ? "Joining..." : "Join Class"}
+                  {isJoining ? "Joining..." : "Join Class"}
                 </button>
 
                 <p className="text-xs text-slate-400">

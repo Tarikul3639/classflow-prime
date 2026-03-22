@@ -4,7 +4,7 @@ import { Model, Types, PipelineStage } from 'mongoose';
 
 import { User, UserDocument } from '../../../../database/entities/user.entity';
 
-export interface IGetCurrentUserResponse {
+export interface IUser {
   _id: string;
   name: string;
   email: string;
@@ -19,7 +19,15 @@ export interface IGetCurrentUserResponse {
     role: string;
     status: string;
     joinedAt: Date;
-  }[];
+  }
+}
+
+export interface IGetCurrentUserResponseDto {
+  success: boolean;
+  message: string;
+  data: {
+    user: IUser;
+  }
 }
 
 @Injectable()
@@ -28,7 +36,7 @@ export class GetCurrentUserService {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) { }
 
-  async execute(userId: string): Promise<IGetCurrentUserResponse> {
+  async execute(userId: string): Promise<IGetCurrentUserResponseDto> {
     // 1. Convert string ID to MongoDB ObjectId
     const userObjId = new Types.ObjectId(userId);
 
@@ -228,7 +236,7 @@ export class GetCurrentUserService {
     ];
 
     // 2. Optimized User & Enrollment Fetch using Aggregation
-    const result: IGetCurrentUserResponse[] =
+    const result: IUser[] =
       await this.userModel.aggregate(pipeline);
 
     // DEBUG: Add after aggregation result is obtained:
@@ -242,13 +250,19 @@ export class GetCurrentUserService {
 
     // 3. Final sanitization for response
     return {
-      _id: userData._id.toString(),
-      name: userData.name,
-      email: userData.email,
-      emailVerified: userData.emailVerified,
-      bio: userData.bio,
-      avatarUrl: userData.avatarUrl || undefined,
-      enrolledClasses: userData.enrolledClasses || [],
-    };
+      success: true,
+      message: "User profile fetched successfully",
+      data: {
+        user: {
+          _id: userData._id.toString(),
+          name: userData.name,
+          email: userData.email,
+          emailVerified: userData.emailVerified,
+          bio: userData.bio,
+          avatarUrl: userData.avatarUrl || undefined,
+          enrolledClasses: userData.enrolledClasses || [],
+        }
+      }
+    }
   }
 }

@@ -117,8 +117,11 @@ export class SignUpService {
       };
 
       return {
+        success: true,
         message: 'Signup successful. Verification code sent to email.',
-        user: userData,
+        data: {
+          user: userData,
+        },
       };
     } catch (err: unknown) {
       await session.abortTransaction();

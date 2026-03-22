@@ -35,14 +35,18 @@ export class UpdateProfileService {
 
         const updatedUser = await user.save();
         return {
+            success: true,
             message: `Profile updated for user ${user.email}`,
             data: {
-                _id: updatedUser._id.toString(),
-                name: updatedUser.name,
-                email: updatedUser.email,
-                avatarUrl: updatedUser.avatarUrl || undefined,
-                bio: updatedUser.bio,
-            },
+                user: {
+                    _id: updatedUser._id.toString(),
+                    name: updatedUser.name,
+                    email: updatedUser.email,
+                    avatarUrl: updatedUser.avatarUrl || undefined,
+                    bio: updatedUser.bio,
+                },
+
+            }
         };
     }
 }

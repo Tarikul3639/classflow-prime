@@ -31,9 +31,12 @@ export class ResendSignupVerificationService {
 
   // TODO: Configure OTP expiry time in config
   private get otpExpiryMinutes(): number {
-    return this.configService.get<number>('signupVerification.otpExpiryMinutes', 10);
+    return this.configService.get<number>(
+      'signupVerification.otpExpiryMinutes',
+      10,
+    );
   }
-  
+
   async execute(dto: ResendSignupVerificationDto) {
     const email = dto.email.toLowerCase().trim();
 
@@ -77,11 +80,12 @@ export class ResendSignupVerificationService {
       );
 
       // 6️) Save OTP in transaction
-      const verificationToken: VerificationDocument = new this.verificationModel({
-        identifier: email,
-        value: code,
-        expiresAt,
-      });
+      const verificationToken: VerificationDocument =
+        new this.verificationModel({
+          identifier: email,
+          value: code,
+          expiresAt,
+        });
 
       await verificationToken.save({ session });
 
@@ -96,7 +100,10 @@ export class ResendSignupVerificationService {
       await session.commitTransaction();
       session.endSession();
 
-      return { message: 'Verification code resent successfully' };
+      return {
+        success: true,
+        message: 'Verification code resent successfully',
+      };
     } catch (err) {
       // Abort transaction if any error occurs (email failed or save failed)
       await session.abortTransaction();

@@ -62,7 +62,24 @@ export class UpdateProfileDto {
  * DTO for the response after updating user profile
  */
 
+export class IUser {
+    _id: string
+    name: string;
+    email: string
+    avatarUrl?: string;
+    bio?: string;
+}
+
+/**
+ * DTO for the response after updating user profile
+ */
+
 export class UpdateProfileResponseDto {
+    @ApiProperty({
+        example: true,
+        description: 'Indicates if the profile update was successful',
+    })
+    success: boolean;
 
     @ApiProperty({
         example: 'Profile updated for user',
@@ -81,10 +98,6 @@ export class UpdateProfileResponseDto {
         description: 'Updated user profile data',
     })
     data: {
-        _id: string;
-        name?: string;
-        email?: string;
-        avatarUrl?: string;
-        bio?: string;
+        user: IUser;
     };
 }

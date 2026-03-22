@@ -68,8 +68,9 @@ export class FetchClassesService {
         const classes = await this.classModel.aggregate(pipeline).exec();
 
         return {
+            success: true,
             message: 'Classes fetched successfully',
-            classes: classes,
+            data: { classes }
         };
     }
 }

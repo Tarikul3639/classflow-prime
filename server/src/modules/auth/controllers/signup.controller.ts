@@ -3,11 +3,8 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
-  Headers,
-  Ip,
   Post,
   Res,
-  Req,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
@@ -15,7 +12,7 @@ import type { Request, Response } from 'express';
 import { Public } from '../../../shared/decorators/public.decorator';
 import { RequestInfo } from '../../../shared/decorators/request-info.decorator';
 import type { IRequestInfo } from '../../../shared/decorators/request-info.decorator';
-import { setAuthCookies } from '../../../shared/utils/auth-cookies.util';
+import { IAuthTokens, setAuthCookies } from '../../../shared/utils/auth-cookies.util';
 
 import { SignUpDto } from '../dto/signup/signup.dto';
 import { VerifySignupEmailDto } from '../dto/signup/verify-signup-email.dto';
@@ -86,13 +83,17 @@ export class SignupController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const result = await this.verifySignupEmailService.execute(dto, info.ip, info.userAgent);
+    
     // Set HttpOnly cookies with the tokens
-    setAuthCookies(res, result.tokens);
+    setAuthCookies(res, result.data.tokens);
 
     // Optional: return user info without tokens since they are in cookies
     return {
+      success: result.success,
       message: result.message,
-      user: result.user,
+      data: {
+        user: result.data.user,
+      },
     };
   }
 }

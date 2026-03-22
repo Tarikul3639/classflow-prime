@@ -9,7 +9,9 @@ import type { IUser } from '../profile.types'
 interface UpdateProfileResponse {
     success: boolean;
     message: string;
-    data: IUser;
+    data: {
+        user: IUser;
+    };
 }
 
 interface UpdateProfilePayload {

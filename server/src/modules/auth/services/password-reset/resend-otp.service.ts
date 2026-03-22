@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+    BadRequestException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ConfigService } from '@nestjs/config';
 import { Model } from 'mongoose';
@@ -7,9 +11,15 @@ import ms, { StringValue } from 'ms';
 import { RequestPasswordResetDto } from '../../dto/password-reset/request-password-reset.dto';
 
 import { User, UserDocument } from 'src/database/entities/user.entity';
-import { Throttle, ThrottleDocument } from 'src/database/entities/throttle.entity';
+import {
+    Throttle,
+    ThrottleDocument,
+} from 'src/database/entities/throttle.entity';
 import { ThrottlePurpose } from 'src/database/interface/throttle.interface';
-import { Verification, VerificationDocument } from 'src/database/entities/verification.entity';
+import {
+    Verification,
+    VerificationDocument,
+} from 'src/database/entities/verification.entity';
 
 import { MailService } from 'src/modules/mail/services/mail.service';
 
@@ -17,20 +27,28 @@ import { MailService } from 'src/modules/mail/services/mail.service';
 export class ResendOtpService {
     constructor(
         @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-        @InjectModel(Throttle.name) private readonly throttleModel: Model<ThrottleDocument>,
-        @InjectModel(Verification.name) private readonly verificationModel: Model<VerificationDocument>,
+        @InjectModel(Throttle.name)
+        private readonly throttleModel: Model<ThrottleDocument>,
+        @InjectModel(Verification.name)
+        private readonly verificationModel: Model<VerificationDocument>,
         private readonly configService: ConfigService,
         private readonly mailService: MailService,
     ) { }
 
     // Duration for how long the OTP will remain valid
     private get otpExpiryDuration(): StringValue {
-        return this.configService.get<StringValue>('auth.passwordReset.otpExpiryDuration', '15m');
+        return this.configService.get<StringValue>(
+            'auth.passwordReset.otpExpiryDuration',
+            '15m',
+        );
     }
 
     // Duration the user must wait before resending
     private get cooldownDuration(): StringValue {
-        return this.configService.get<StringValue>('auth.passwordReset.cooldownDuration', '60s');
+        return this.configService.get<StringValue>(
+            'auth.passwordReset.cooldownDuration',
+            '60s',
+        );
     }
 
     async execute(dto: RequestPasswordResetDto, ip: string, userAgent: string) {
@@ -58,8 +76,12 @@ export class ResendOtpService {
                 .session(session);
 
             if (throttle && throttle.isBlocked()) {
-                const retryAfter = Math.ceil((throttle.expiresAt!.getTime() - Date.now()) / 1000);
-                throw new BadRequestException(`Too many requests. Please try again after ${retryAfter} seconds.`);
+                const retryAfter = Math.ceil(
+                    (throttle.expiresAt!.getTime() - Date.now()) / 1000,
+                );
+                throw new BadRequestException(
+                    `Too many requests. Please try again after ${retryAfter} seconds.`,
+                );
             }
 
             // 4️) Security: Generate new 6-digit OTP
@@ -98,8 +120,10 @@ export class ResendOtpService {
                 otpCode, // fixed: using the correct variable name
             );
 
-            return { message: 'Password reset code resent successfully' };
-
+            return {
+                success: true,
+                message: 'Password reset code resent successfully',
+            };
         } catch (error) {
             // 9) Exception Handling: Rollback if any step fails
             await session.abortTransaction();

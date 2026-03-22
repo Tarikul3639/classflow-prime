@@ -11,22 +11,28 @@ import { map, Observable } from 'rxjs';
  * Transformed response: { status: 'success', data: { id: 1, name: 'John' } }
  * This allows for a standardized API response structure across the application.
  */
-export type ResponseFormat<T> = {
+export interface IApiResponse<T> {
     success: boolean;
+    message: string | null;
+    data: T;
+}
+export interface IServiceResponse<T> {
+    success?: boolean;
     message?: string;
     data: T;
-};
+}
 @Injectable()
-export class TransformInterceptor<T> implements NestInterceptor<T, ResponseFormat<T>> {
-    intercept(context: ExecutionContext, next: CallHandler): Observable<ResponseFormat<T>> {
-        return next.handle().pipe(
-            map((response: any) => {
-                const { message, ...rest } = response; // Extract 'message' from the original response if it exists
+export class TransformInterceptor<T> implements NestInterceptor<IServiceResponse<T>, IApiResponse<T>> {
+    intercept(context: ExecutionContext, next: CallHandler): Observable<IApiResponse<T>> {
+        const response = context.switchToHttp().getResponse();
+        const statusCode = response.statusCode;
 
+        return next.handle().pipe(
+            map((res: IServiceResponse<T>) => {
                 return {
-                    success: true,
-                    message: message || null,
-                    data: rest, // Remove 'message' from the original response and put the rest in 'data'
+                    success: res.success ?? (statusCode >= 200 && statusCode < 300),
+                    message: res.message ?? null,
+                    data: res.data,
                 };
             }),
         );

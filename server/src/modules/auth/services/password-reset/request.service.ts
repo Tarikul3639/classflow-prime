@@ -12,10 +12,19 @@ import ms, { StringValue } from 'ms';
 import { RequestPasswordResetDto } from '../../dto/password-reset/request-password-reset.dto';
 
 import { User, UserDocument } from 'src/database/entities/user.entity';
-import { Throttle, ThrottleDocument } from 'src/database/entities/throttle.entity';
-import { Verification, VerificationDocument } from 'src/database/entities/verification.entity';
+import {
+    Throttle,
+    ThrottleDocument,
+} from 'src/database/entities/throttle.entity';
+import {
+    Verification,
+    VerificationDocument,
+} from 'src/database/entities/verification.entity';
 
-import { ThrottlePurpose, IThrottle } from 'src/database/interface/throttle.interface';
+import {
+    ThrottlePurpose,
+    IThrottle,
+} from 'src/database/interface/throttle.interface';
 import { MailService } from 'src/modules/mail/services/mail.service';
 
 @Injectable()
@@ -97,14 +106,17 @@ export class RequestService {
             await session.commitTransaction();
 
             // 8️) Communication: Dispatch Password Reset Email
-            // Note: Mail service handle safe approach after transaction 
+            // Note: Mail service handle safe approach after transaction
             await this.mailService.sendPasswordResetEmail(
                 user.email,
                 user.name,
                 otpCode,
             );
 
-            return { message: 'Password reset code sent to your email' };
+            return {
+                success: true,
+                message: 'Password reset code sent to your email',
+            };
         } catch (error) {
             // 9) Exception Handling: Rollback all changes if any step fails
             await session.abortTransaction();

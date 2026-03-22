@@ -1,9 +1,11 @@
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Class, ClassDocument } from 'src/database/entities/class.entity';
 import { CreateClassResponseDto, CreateClassRequestDto } from '../dto/create-class.dto';
 import { IClass, ClassStatus } from 'src/database/interface/class.interface';
 
+@Injectable()
 export class CreateClassService {
     constructor(
         @InjectModel(Class.name)
@@ -31,8 +33,11 @@ export class CreateClassService {
         await newClass.save();
 
         return {
+            success: true,
             message: 'Class created successfully',
-            classId: newClass._id.toString(),
+            data: {
+                classId: newClass._id.toString(),
+            }
         };
     }
 

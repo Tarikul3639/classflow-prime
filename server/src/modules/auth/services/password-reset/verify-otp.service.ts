@@ -106,8 +106,11 @@ export class VerifyOtpService {
      * - Frontend must send this token in next request
      */
     return {
+      success: true,
       message: 'Reset code verified successfully',
-      resetToken: passwordResetToken,
+      data: {
+        resetToken: passwordResetToken,
+      }
     };
   }
 }

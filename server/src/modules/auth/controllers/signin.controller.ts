@@ -41,12 +41,15 @@ export class SigninController {
     const result = await this.signInService.execute(dto, info.ip, info.userAgent);
 
     // set HttpOnly cookies here (HTTP layer concern)
-    setAuthCookies(res, result.tokens);
+    setAuthCookies(res, result.data.tokens);
 
     // Optional: tokens removed from response body since they are in cookies, but can be included if needed by frontend
     return {
+      success: result.success,
       message: result.message,
-      user: result.user,
+      data: {
+        user: result.data.user,
+      },
     };
   }
 }

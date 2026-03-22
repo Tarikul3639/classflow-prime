@@ -24,12 +24,13 @@ import { TokenService } from '../token/token.service';
 import { EmailValidator } from 'src/shared/utils/email-validator.util';
 
 export class SignUpResponseDto {
+    success: boolean;
     message: string;
-    user: Partial<IUser> | null;
-    tokens: ITokens;
+    data: {
+        user: IUser | null;
+        tokens: ITokens;
+    };
 }
-
-type Ctx = { ip: string; userAgent?: string };
 
 @Injectable()
 export class VerifySignupEmailService {
@@ -61,11 +62,7 @@ export class VerifySignupEmailService {
 
         // 4️) Already verified?
         if (user.emailVerified) {
-            return {
-                message: 'Email already verified',
-                user: null,
-                tokens: { accessToken: '', refreshToken: '' },
-            } as SignUpResponseDto;
+            throw new BadRequestException('Email is already verified');
         }
 
         // 5️) Load verification token
@@ -135,9 +132,12 @@ export class VerifySignupEmailService {
                 emailVerified: user.emailVerified,
             };
             return {
+                success: true,
                 message: 'Email verified successfully',
-                user: userData,
-                tokens,
+                data: {
+                    user: userData,
+                    tokens,
+                },
             } as SignUpResponseDto;
         } catch (err: unknown) {
             await mongoSession.abortTransaction();

@@ -8,11 +8,16 @@ import { CreateClassService } from './services/create-class.services';
 import { FetchClassesController } from './controllers/fetch-classes.controller';
 import { FetchClassesService } from './services/fetch-classes.services';
 
+import { JoinClassService } from './services/join-class.service';
+import { JoinClassController } from './controllers/join-class.controller';
+import { Enrollment, EnrollmentSchema } from 'src/database/entities/enrollment.entity';
+
 @Module({
     imports: [
         MongooseModule.forFeature([{ name: Class.name, schema: ClassSchema }]),
+        MongooseModule.forFeature([{ name: Enrollment.name, schema: EnrollmentSchema }]),
     ],
-    controllers: [CreateClassController, FetchClassesController],
-    providers: [CreateClassService, FetchClassesService],
+    controllers: [CreateClassController, FetchClassesController, JoinClassController],
+    providers: [CreateClassService, FetchClassesService, JoinClassService],
 })
 export class ClassModule { }

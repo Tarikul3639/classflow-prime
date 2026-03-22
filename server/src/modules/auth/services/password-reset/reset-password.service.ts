@@ -133,6 +133,7 @@ export class ResetPasswordService {
             }
 
             return {
+                success: true,
                 message:
                     'Password reset successfully. Please login with your new password.',
             };

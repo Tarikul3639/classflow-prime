@@ -13,9 +13,12 @@ import { ITokens } from '../token/token.types';
 import { IUser } from 'src/database/interface/user.interface';
 
 export class SignInResponseDto {
+  success: boolean;
   message: string;
-  user: IUser;
-  tokens: ITokens;
+  data: {
+    user: IUser;
+    tokens: ITokens;
+  };
 }
 
 @Injectable()
@@ -80,20 +83,23 @@ export class SignInService {
     );
 
     // DEBUG: Add near SignInService after tokens are generated:
-console.log('[DEBUG sign-in] refreshToken (truncated):', tokens.refreshToken?.slice(0, 50));
+    console.log('[DEBUG sign-in] refreshToken (truncated):', tokens.refreshToken?.slice(0, 50));
 
     return {
+      success: true,
       message: 'Signed in successfully',
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        emailVerified: user.emailVerified,
-        role: user.role,
-        avatarUrl: user.avatarUrl,
+      data: {
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          emailVerified: user.emailVerified,
+          role: user.role,
+          avatarUrl: user.avatarUrl,
+        },
+        tokens,
       },
-      tokens,
-    };
+    }
   }
 
   /**

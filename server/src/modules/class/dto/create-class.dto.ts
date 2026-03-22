@@ -94,10 +94,18 @@ export class CreateClassRequestDto implements ICreateClassDto {
  * Includes a success message and the ID of the newly created class
  */
 
+class CreateClassDataDto {
+  @ApiProperty({ example: '65f1a2b3c4d5e6f7a8b9c0d1' })
+  classId: string;
+}
+
 export class CreateClassResponseDto {
+  @ApiProperty({ example: true })
+  success: boolean;
+
   @ApiProperty({ example: 'Class created successfully' })
   message: string;
 
-  @ApiProperty({ example: '642f9d3e8f1b2c0012345678' })
-  classId: string;
+  @ApiProperty({ type: CreateClassDataDto })
+  data: CreateClassDataDto;
 }
