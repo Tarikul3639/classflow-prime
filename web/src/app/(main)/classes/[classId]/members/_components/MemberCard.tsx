@@ -9,7 +9,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import MemberActionMenu from "./MemberActionMenu";
-import { isAdmin } from "@/redux/selectors/selectors";
 
 interface Member {
   id: string;

@@ -38,10 +38,10 @@ export const userSlice = createSlice({
                 state.status.loading = false;
                 state.status.message = "Profile updated";
                 if (state.user) {
-                    state.user.name = action.payload.data.name;
-                    state.user.email = action.payload.data.email;
-                    state.user.bio = action.payload.data.bio;
-                    state.user.avatarUrl = action.payload.data.avatarUrl;
+                    state.user.name = action.payload.data.user.name;
+                    state.user.email = action.payload.data.user.email;
+                    state.user.bio = action.payload.data.user.bio;
+                    state.user.avatarUrl = action.payload.data.user.avatarUrl;
                 } // Update user data with the updated profile
             })
             .addCase(meThunk.rejected, (state, action) => {

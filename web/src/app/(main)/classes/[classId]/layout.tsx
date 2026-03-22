@@ -1,19 +1,20 @@
 "use client";
 
-import React from "react";
 import Link from "next/link";
 import { ArrowLeft, Share2 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
 
-interface ClassLayoutProps {
+export default function ClassLayout({
+  children,
+}: {
   children: React.ReactNode;
-  params: { classId: string };
-}
-
-export default function ClassLayout({ children, params }: ClassLayoutProps) {
+}) {
   const pathname = usePathname();
   const router = useRouter();
+  const params = useParams();
+  const classId = params.classId as string;
 
   const tabs = [
     {
@@ -45,7 +46,7 @@ export default function ClassLayout({ children, params }: ClassLayoutProps) {
       id: "settings",
       label: "Settings",
       href: `/classes/${params.classId}/settings`,
-    }
+    },
   ];
 
   const isActiveTab = (href: string) => pathname === href;
