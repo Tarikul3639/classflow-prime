@@ -1,17 +1,18 @@
 import axios, { AxiosError } from "axios";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "/api/v2";
+// NEXT_PUBLIC_ prefix = accessible on both server and browser
+// Without NEXT_PUBLIC_ prefix = server only, undefined in browser
+const API_PREFIX = process.env.NEXT_PUBLIC_API_PREFIX || "/api/v2";
 
 /**
-  * Axios instance with base URL and credentials enabled.
-  * withCredentials: true is crucial for sending cookies (accessToken, refreshToken) with each request.
-  * This allows the server to read tokens from cookies for authentication/authorization.
+ * Axios instance with base URL and credentials enabled.
+ * withCredentials: true is crucial for sending cookies (accessToken, refreshToken) with each request.
+ * This allows the server to read tokens from cookies for authentication/authorization.
  */
 export const apiClient = axios.create({
-  baseURL: API_BASE_URL,
-  withCredentials: true, // important for cookies
-  timeout: 10000, // 10 seconds
+  baseURL: API_PREFIX,
+  withCredentials: true,
+  timeout: 10000,
 });
 
 /**
@@ -23,14 +24,13 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     const message = getErrorMessage(error);
-    
+
     // Example: Triggering a toast globally
-    // toast.error(message); 
-    
+    // toast.error(message);
+
     return Promise.reject(error instanceof AxiosError ? error : new Error(message));
   }
 );
-
 
 /**
  * Helper to get error message (AxiosError based)
