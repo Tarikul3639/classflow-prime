@@ -13,8 +13,8 @@ import type { Request, Response } from 'express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { Public } from '../../../shared/decorators/public.decorator';
-import { RequestInfo } from 'src/shared/decorators/request-info.decorator';
-import type { IRequestInfo } from 'src/shared/decorators/request-info.decorator';
+import { RequestInfo } from '../../../shared/decorators/request-info.decorator';
+import type { IRequestInfo } from '../../../shared/decorators/request-info.decorator';
 import { setAuthCookies } from '../../../shared/utils/auth-cookies.util';
 
 import { SignInDto } from '../dto/signin/signin.dto';

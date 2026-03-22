@@ -8,9 +8,9 @@ import ms from 'ms';
 
 import type { IJwtPayload } from '../../interfaces/jwt-payload.interface';
 import type { ITokens } from './token.types';
-import { User, UserDocument } from 'src/database/entities/user.entity';
-import { UserRole } from 'src/database/interface/user.interface';
-import { Session, SessionDocument } from 'src/database/entities/session.entity';
+import { User, UserDocument } from '../../../../database/entities/user.entity';
+import { UserRole } from '../../../../database/interface/user.interface';
+import { Session, SessionDocument } from '../../../../database/entities/session.entity';
 
 @Injectable()
 export class TokenService {

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Class, ClassDocument } from 'src/database/entities/class.entity';
+import { Class, ClassDocument } from '../../../database/entities/class.entity';
 import { CreateClassResponseDto, CreateClassRequestDto } from '../dto/create-class.dto';
-import { IClass, ClassStatus } from 'src/database/interface/class.interface';
+import { IClass, ClassStatus } from '../../../database/interface/class.interface';
 
 @Injectable()
 export class CreateClassService {

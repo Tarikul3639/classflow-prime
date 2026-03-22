@@ -7,8 +7,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import type { Model } from 'mongoose';
 
 import { UpdateProfileDto, UpdateProfileResponseDto } from '../../dto/update-profile.dto';
-import { User, UserDocument } from 'src/database/entities/user.entity';
-import type { IUser } from 'src/database/interface/user.interface';
+import { User, UserDocument } from '../../../../database/entities/user.entity';
+import type { IUser } from '../../../../database/interface/user.interface';
 
 @Injectable()
 export class UpdateProfileService {

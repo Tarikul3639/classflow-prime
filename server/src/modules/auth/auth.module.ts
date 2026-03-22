@@ -39,19 +39,19 @@ import { ResetPasswordService } from './services/password-reset/reset-password.s
 // ------------------------------------------------------
 // -------------------- ENTITIES ------------------------
 // ------------------------------------------------------
-import { User, UserSchema } from 'src/database/entities/user.entity';
+import { User, UserSchema } from '../../database/entities/user.entity';
 import {
   Throttle,
   ThrottleSchema,
-} from 'src/database/entities/throttle.entity';
-import { Account, AccountSchema } from 'src/database/entities/account.entity';
-import { Session, SessionSchema } from 'src/database/entities/session.entity';
-import { Verification, VerificationSchema } from 'src/database/entities/verification.entity';
+} from '../../database/entities/throttle.entity';
+import { Account, AccountSchema } from '../../database/entities/account.entity';
+import { Session, SessionSchema } from '../../database/entities/session.entity';
+import { Verification, VerificationSchema } from '../../database/entities/verification.entity';
 
 // ------------------------------------------------------
 // -------------------- MODULES -------------------------
 // ------------------------------------------------------
-import { MailModule } from 'src/modules/mail/mail.module';
+import { MailModule } from '../../modules/mail/mail.module';
 
 @Module({
   imports: [

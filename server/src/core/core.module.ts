@@ -6,7 +6,7 @@ import { LoggerMiddleware } from './middleware/logger.middleware';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { TransformInterceptor } from './interceptors/transform.interceptor';
-import { AuthModule } from 'src/modules/auth/auth.module';
+import { AuthModule } from '../modules/auth/auth.module';
 
 @Module({
   imports: [AuthModule, JwtModule.register({})],

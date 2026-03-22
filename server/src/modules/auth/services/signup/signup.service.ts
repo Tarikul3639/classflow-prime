@@ -8,12 +8,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import type { Model } from 'mongoose';
 
 import { SignUpDto } from '../../dto/signup/signup.dto';
-import { User, UserDocument } from 'src/database/entities/user.entity';
-import { Account, AccountDocument } from 'src/database/entities/account.entity';
-import { AccountProvider } from 'src/database/interface/account.interface';
-import { Verification, VerificationDocument } from 'src/database/entities/verification.entity';
-import { IUser } from 'src/database/interface/user.interface';
-import { IVerification } from 'src/database/interface/verification.interface';
+import { User, UserDocument } from '../../../../database/entities/user.entity';
+import { Account, AccountDocument } from '../../../../database/entities/account.entity';
+import { AccountProvider } from '../../../../database/interface/account.interface';
+import { Verification, VerificationDocument } from '../../../../database/entities/verification.entity';
+import { IUser } from '../../../../database/interface/user.interface';
+import { IVerification } from '../../../../database/interface/verification.interface';
 
 import { MailService } from '../../../../modules/mail/services/mail.service';
 import { EmailValidator } from '../../../../shared/utils/email-validator.util';

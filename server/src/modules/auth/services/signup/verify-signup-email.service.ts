@@ -9,19 +9,19 @@ import { InjectModel } from '@nestjs/mongoose';
 import type { Model } from 'mongoose';
 
 import { VerifySignupEmailDto } from '../../dto/signup/verify-signup-email.dto';
-import { User, UserDocument } from 'src/database/entities/user.entity';
-import { IUser } from 'src/database/interface/user.interface';
-import { Account, AccountDocument } from 'src/database/entities/account.entity';
-import { AccountProvider } from 'src/database/interface/account.interface';
+import { User, UserDocument } from '../../../../database/entities/user.entity';
+import { IUser } from '../../../../database/interface/user.interface';
+import { Account, AccountDocument } from '../../../../database/entities/account.entity';
+import { AccountProvider } from '../../../../database/interface/account.interface';
 import {
     Verification,
     VerificationDocument,
-} from 'src/database/entities/verification.entity';
+} from '../../../../database/entities/verification.entity';
 import { ITokens } from '../token/token.types';
 
 import { MailService } from '../../../../modules/mail/services/mail.service';
 import { TokenService } from '../token/token.service';
-import { EmailValidator } from 'src/shared/utils/email-validator.util';
+import { EmailValidator } from '../../../../shared/utils/email-validator.util';
 
 export class SignUpResponseDto {
     success: boolean;

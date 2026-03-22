@@ -9,17 +9,17 @@ import { Model } from 'mongoose';
 
 import { ResetPasswordDto } from '../../dto/password-reset/reset-password.dto';
 
-import { User, UserDocument } from 'src/database/entities/user.entity';
-import { Account, AccountDocument } from 'src/database/entities/account.entity';
-import { Session, SessionDocument } from 'src/database/entities/session.entity';
+import { User, UserDocument } from '../../../../database/entities/user.entity';
+import { Account, AccountDocument } from '../../../../database/entities/account.entity';
+import { Session, SessionDocument } from '../../../../database/entities/session.entity';
 import {
     Verification,
     VerificationDocument,
-} from 'src/database/entities/verification.entity';
+} from '../../../../database/entities/verification.entity';
 
-import { AccountProvider } from 'src/database/interface/account.interface';
+import { AccountProvider } from '../../../../database/interface/account.interface';
 
-import { MailService } from 'src/modules/mail/services/mail.service';
+import { MailService } from '../../../../modules/mail/services/mail.service';
 
 /**
  * Service: ResetPasswordService

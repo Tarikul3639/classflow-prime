@@ -7,7 +7,7 @@ import {
 } from '@nestjs/swagger';
 
 import { CurrentUser } from '../../../shared/decorators/current-user.decorator';
-import type { IJwtPayload } from 'src/modules/auth/interfaces/jwt-payload.interface';
+import type { IJwtPayload } from '../../../modules/auth/interfaces/jwt-payload.interface';
 
 import { UpdateProfileDto } from '../dto/update-profile.dto';
 import { UpdateProfileService } from '../services/update/update-profile.service';

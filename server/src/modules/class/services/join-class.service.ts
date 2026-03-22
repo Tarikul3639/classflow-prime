@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types, PipelineStage } from "mongoose";
-import { Class, ClassDocument } from "src/database/entities/class.entity";
-import { Enrollment, EnrollmentDocument } from "src/database/entities/enrollment.entity";
+import { Class, ClassDocument } from "../../../database/entities/class.entity";
+import { Enrollment, EnrollmentDocument } from "../../../database/entities/enrollment.entity";
 import { JoinClassRequestDto, JoinClassResponseDto } from "../dto/join-class.dto";
-import { EnrollmentRole } from 'src/database/interface/enrollment.interface';
+import { EnrollmentRole } from '../../../database/interface/enrollment.interface';
 
 @Injectable()
 export class JoinClassService {

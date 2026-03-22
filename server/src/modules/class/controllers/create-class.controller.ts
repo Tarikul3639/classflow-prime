@@ -4,7 +4,7 @@ import { CreateClassRequestDto, CreateClassResponseDto } from '../dto/create-cla
 import { CreateClassService } from '../services/create-class.services';
 
 import { CurrentUser } from '../../../shared/decorators/current-user.decorator';
-import type { IJwtPayload } from 'src/modules/auth/interfaces/jwt-payload.interface';
+import type { IJwtPayload } from '../../../modules/auth/interfaces/jwt-payload.interface';
 
 @ApiTags('Class')
 @Controller('classes')

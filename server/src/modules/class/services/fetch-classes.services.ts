@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types, PipelineStage } from 'mongoose';
-import { Class, ClassDocument } from 'src/database/entities/class.entity';
+import { Class, ClassDocument } from '../../../database/entities/class.entity';
 import { FetchClassesResponseDto } from '../dto/fetch-classes.dto';
 
 @Injectable()

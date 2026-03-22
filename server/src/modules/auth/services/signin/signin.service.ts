@@ -4,13 +4,13 @@ import type { Model } from 'mongoose';
 
 import { SignInDto } from '../../dto/signin/signin.dto';
 import { TokenService } from '../token/token.service';
-import { User, UserDocument } from 'src/database/entities/user.entity';
-import { Account, AccountDocument } from 'src/database/entities/account.entity';
-import { AccountProvider } from 'src/database/interface/account.interface';
-import { ThrottlePurpose } from 'src/database/interface/throttle.interface';
+import { User, UserDocument } from '../../../../database/entities/user.entity';
+import { Account, AccountDocument } from '../../../../database/entities/account.entity';
+import { AccountProvider } from '../../../../database/interface/account.interface';
+import { ThrottlePurpose } from '../../../../database/interface/throttle.interface';
 import { AuthThrottleService } from '../throttle/auth-throttle.service';
 import { ITokens } from '../token/token.types';
-import { IUser } from 'src/database/interface/user.interface';
+import { IUser } from '../../../../database/interface/user.interface';
 
 export class SignInResponseDto {
   success: boolean;

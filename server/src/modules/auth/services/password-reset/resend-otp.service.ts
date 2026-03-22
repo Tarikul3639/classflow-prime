@@ -10,18 +10,18 @@ import ms, { StringValue } from 'ms';
 
 import { RequestPasswordResetDto } from '../../dto/password-reset/request-password-reset.dto';
 
-import { User, UserDocument } from 'src/database/entities/user.entity';
+import { User, UserDocument } from '../../../../database/entities/user.entity';
 import {
     Throttle,
     ThrottleDocument,
-} from 'src/database/entities/throttle.entity';
-import { ThrottlePurpose } from 'src/database/interface/throttle.interface';
+} from '../../../../database/entities/throttle.entity';
+import { ThrottlePurpose } from '../../../../database/interface/throttle.interface';
 import {
     Verification,
     VerificationDocument,
-} from 'src/database/entities/verification.entity';
+} from '../../../../database/entities/verification.entity';
 
-import { MailService } from 'src/modules/mail/services/mail.service';
+import { MailService } from '../../../../modules/mail/services/mail.service';
 
 @Injectable()
 export class ResendOtpService {
