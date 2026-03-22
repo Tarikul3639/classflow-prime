@@ -93,7 +93,6 @@ export class SignUpService {
       const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 min
 
       const verificationToken: VerificationDocument & IVerification = new this.verificationModel({
-        userId: user._id,
         identifier: email,
         value: code,
         expiresAt,

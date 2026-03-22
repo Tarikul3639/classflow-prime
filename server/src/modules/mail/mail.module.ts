@@ -25,7 +25,7 @@ import { MailService } from './services/mail.service';
           from: `"ClassFlow" <${config.get<string>('mail.from')}>`,
         },
         template: {
-          dir: join(process.cwd(), '../../../modules/mail/templates'),
+          dir: join(__dirname, 'templates'),
           adapter: new HandlebarsAdapter(),
           options: {
             strict: true,
@@ -37,4 +37,4 @@ import { MailService } from './services/mail.service';
   providers: [MailService],
   exports: [MailService],
 })
-export class MailModule {}
+export class MailModule { }

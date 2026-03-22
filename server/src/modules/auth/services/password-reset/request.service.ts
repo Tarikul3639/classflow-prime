@@ -23,7 +23,6 @@ import {
 
 import {
     ThrottlePurpose,
-    IThrottle,
 } from '../../../../database/interface/throttle.interface';
 import { MailService } from '../../../../modules/mail/services/mail.service';
 
