@@ -27,7 +27,7 @@ interface IClassFormData {
     coverImage?: string;
 
     about?: string;
-    allowJoin?: boolean;
+    allowEnroll?: boolean;
 }
 
 interface CreateClassState extends IRequestStatus {
@@ -42,7 +42,7 @@ const initialState: CreateClassState = {
         themeColor: "#3B82F6", // Default blue
         coverImage: "https://shorturl.at/ccHJp",
         about: "",
-        allowJoin: true,
+        allowEnroll: true,
     },
     loading: false,
     success: false,

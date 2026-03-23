@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CreateClassRequestDto, CreateClassResponseDto } from '../dto/create-class.dto';
-import { CreateClassService } from '../services/create-class.services';
+import { CreateClassRequestDto } from '../dto/create-class.dto';
+import { CreateClassService } from '../services/create-class.service';
 
 import { CurrentUser } from '../../../shared/decorators/current-user.decorator';
 import type { IJwtPayload } from '../../../modules/auth/interfaces/jwt-payload.interface';

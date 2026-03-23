@@ -66,7 +66,7 @@ const Notifications: React.FC = () => {
       id: "3",
       type: "member",
       title: "New Study Group Request",
-      description: 'Sarah Jenkins wants to join your "Final Prep" study group.',
+      description: 'Sarah Jenkins wants to enroll your "Final Prep" study group.',
       timestamp: "8 hours ago",
       date: "today",
       isRead: true,

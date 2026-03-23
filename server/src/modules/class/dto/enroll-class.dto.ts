@@ -3,26 +3,26 @@ import { IsNotEmpty, IsString, Length, IsBoolean, IsOptional, ValidateNested } f
 import { Type } from "class-transformer";
 
 /**
- * Request DTO for joining a class
+ * Request DTO for enrolling a class
  */
-export class JoinClassRequestDto {
+export class EnrollClassRequestDto {
     @ApiProperty({
         example: "ABC123",
-        description: "6-character join code for the class",
+        description: "6-character enroll code for the class",
     })
     @IsString()
-    @IsNotEmpty({ message: "Join code is required" })
-    @Length(6, 6, { message: "Join code must be exactly 6 characters" })
-    joinCode: string;
+    @IsNotEmpty({ message: "Enroll code is required" })
+    @Length(6, 6, { message: "Enroll code must be exactly 6 characters" })
+    enrollCode: string;
 }
 
 /**
  * Nested data object for the response
  */
-class JoinClassDataDto {
+class EnrollClassDataDto {
     @ApiProperty({
         example: "65f1a2b3c4d5e6f7a8b9c0d1",
-        description: "The unique ID of the class, or null if join failed",
+        description: "The unique ID of the class, or null if enroll failed",
         nullable: true,
     })
     @IsOptional()
@@ -31,28 +31,28 @@ class JoinClassDataDto {
 }
 
 /**
- * Response DTO for joining a class
+ * Response DTO for enrolling a class
  */
-export class JoinClassResponseDto {
+export class EnrollClassResponseDto {
     @ApiProperty({
         example: true,
-        description: "Indicates if the join operation was successful",
+        description: "Indicates if the enroll operation was successful",
     })
     @IsBoolean()
     success: boolean;
 
     @ApiProperty({
-        example: "Successfully joined the class",
+        example: "Successfully enrolled the class",
         description: "Message providing additional information",
     })
     @IsString()
     message: string;
 
     @ApiProperty({
-        description: "Data returned upon joining",
-        type: JoinClassDataDto,
+        description: "Data returned upon enrolling",
+        type: EnrollClassDataDto,
     })
     @ValidateNested()
-    @Type(() => JoinClassDataDto)
-    data: JoinClassDataDto;
+    @Type(() => EnrollClassDataDto)
+    data: EnrollClassDataDto;
 }

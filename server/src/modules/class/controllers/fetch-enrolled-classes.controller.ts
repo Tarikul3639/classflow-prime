@@ -3,9 +3,9 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { CurrentUser } from '../../../shared/decorators/current-user.decorator';
 import type { IJwtPayload } from '../../../modules/auth/interfaces/jwt-payload.interface';
-import { FetchClassesResponseDto } from '../dto/fetch-classes.dto';
+import { FetchClassesResponseDto } from '../dto/fetch-enrolled-classes.dto';
 
-import { FetchClassesService } from '../services/fetch-classes.services';
+import { FetchClassesService } from '../services/fetch-enrolled-classes.service';
 
 @ApiTags('Class')
 @Controller('classes')

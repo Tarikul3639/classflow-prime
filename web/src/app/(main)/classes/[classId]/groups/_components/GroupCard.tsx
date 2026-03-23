@@ -46,12 +46,12 @@ export const GroupCard = ({ group }: { group: Group }) => {
         {group.description}
       </p>
 
-      {/* Join Button */}
+      {/* Enroll Button */}
       <button
         onClick={() => group.link && window.open(group.link, "_blank")}
         className="w-full bg-primary hover:bg-primary/90 text-white text-[12px] md:text-[13px] lg:text-[14px] font-semibold py-2.5 px-4 rounded-lg transition-all shadow-md shadow-blue-200 flex items-center justify-center gap-2 cursor-pointer"
       >
-        Join Group
+        Enroll Group
         <ExternalLink size={18} />
       </button>
     </div>

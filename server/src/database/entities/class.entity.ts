@@ -16,7 +16,7 @@ export class Class implements IClass {
     name: string;
 
     @Prop({ required: true, unique: true })
-    joinCode: string; // Teacher generated code
+    enrollCode: string; // Teacher generated code
 
     @Prop({
         type: Types.ObjectId,
@@ -71,7 +71,7 @@ export class Class implements IClass {
     status: ClassStatus;
 
     @Prop({ default: true })
-    allowJoin: boolean;
+    allowEnroll: boolean;
 
     @Prop({ default: false })
     isArchived: boolean;

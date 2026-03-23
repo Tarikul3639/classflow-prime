@@ -11,10 +11,10 @@ interface ClassProps {
   coverImage?: string;
   role: string;
   status: string;
-  joinedAt: Date;
+  enrolledAt: Date;
 }
 
-export default function JoinedClasses({ classes }: { classes: ClassProps[] }) {
+export default function EnrolledClasses({ classes }: { classes: ClassProps[] }) {
   // const cls: ClassProps[] = [
   //   {
   //     classId: "CLS101",
@@ -23,7 +23,7 @@ export default function JoinedClasses({ classes }: { classes: ClassProps[] }) {
   //     coverImage: "https://example.com/images/math.jpg",
   //     role: "student",
   //     status: "active",
-  //     joinedAt: new Date("2025-01-10T09:30:00Z"),
+  //     enrolledAt: new Date("2025-01-10T09:30:00Z"),
   //   },
   //   {
   //     classId: "CLS102",
@@ -32,7 +32,7 @@ export default function JoinedClasses({ classes }: { classes: ClassProps[] }) {
   //     coverImage: "https://example.com/images/physics.jpg",
   //     role: "teacher",
   //     status: "active",
-  //     joinedAt: new Date("2025-02-05T11:00:00Z"),
+  //     enrolledAt: new Date("2025-02-05T11:00:00Z"),
   //   },
   //   {
   //     classId: "CLS103",
@@ -41,7 +41,7 @@ export default function JoinedClasses({ classes }: { classes: ClassProps[] }) {
   //     coverImage: "https://example.com/images/chemistry.jpg",
   //     role: "student",
   //     status: "ended",
-  //     joinedAt: new Date("2025-03-01T14:15:00Z"),
+  //     enrolledAt: new Date("2025-03-01T14:15:00Z"),
   //   },
   //   {
   //     classId: "CLS104",
@@ -50,7 +50,7 @@ export default function JoinedClasses({ classes }: { classes: ClassProps[] }) {
   //     coverImage: "https://example.com/images/english.jpg",
   //     role: "admin",
   //     status: "active",
-  //     joinedAt: new Date("2025-01-20T08:00:00Z"),
+  //     enrolledAt: new Date("2025-01-20T08:00:00Z"),
   //   },
   //   {
   //     classId: "CLS105",
@@ -59,14 +59,14 @@ export default function JoinedClasses({ classes }: { classes: ClassProps[] }) {
   //     coverImage: "https://example.com/images/cs.jpg",
   //     role: "student",
   //     status: "ended",
-  //     joinedAt: new Date("2025-03-15T16:45:00Z"),
+  //     enrolledAt: new Date("2025-03-15T16:45:00Z"),
   //   },
   // ];
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-base font-bold text-slate-900">Joined Classes</h3>
+        <h3 className="text-base font-bold text-slate-900">Enrolled Classes</h3>
         <Link
           href="/classes"
           className="text-primary text-xs font-bold hover:underline"

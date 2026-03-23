@@ -11,15 +11,15 @@ import {
   QrCode,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { joinClass } from "@/redux/slices/classes/thunks/join-class.thunk";
-import { resetJoinState } from "@/redux/slices/classes/reducers/join-class.reducer";
+import { enrollClass } from "@/redux/slices/classes/thunks/enroll-class.thunk";
+import { resetEnrollState } from "@/redux/slices/classes/reducers/enroll-class.reducer";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { toast } from "sonner";
 
-export default function JoinClassPage() {
+export default function EnrollClassPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { isJoining } = useAppSelector((state) => state.classes.joinClass);
+  const { isEnrolling } = useAppSelector((state) => state.classes.enrollClass);
   const [code, setCode] = useState(["", "", "", "", "", ""]);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -61,26 +61,26 @@ export default function JoinClassPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const joinCode = code.join("");
+    const enrollCode = code.join("");
 
-    await dispatch(joinClass({ joinCode }))
+    await dispatch(enrollClass({ enrollCode }))
       .unwrap()
       .then((response) => {
-        toast.success("Successfully joined the class", {
-          description: response.message || "Successfully joined the class!",
+        toast.success("Successfully enrolled the class", {
+          description: response.message || "Successfully enrolled the class!",
         });
 
         // Redirect to class page if classId is returned
         if (response.data.classId) {
           router.push(`/classes/${response.data.classId}/overview`);
-          dispatch(resetJoinState());
+          dispatch(resetEnrollState());
         }
       })
       .catch((err) => {
-        // console.error("Join Error: ", err);
-        toast.error("Failed to join class", {
+        // console.error("Enroll Error: ", err);
+        toast.error("Failed to enroll class", {
           description:
-            err.message || "An error occurred while joining the class",
+            err.message || "An error occurred while enrolling the class",
           position: "top-center",
         });
       });
@@ -101,7 +101,7 @@ export default function JoinClassPage() {
             />
           </button>
           <div>
-            <h1 className="text-lg font-bold text-slate-900">Join a Class</h1>
+            <h1 className="text-lg font-bold text-slate-900">Enroll a Class</h1>
             <p className="text-slate-500 text-xs hidden md:block">
               Enter the code provided by your instructor
             </p>
@@ -112,7 +112,7 @@ export default function JoinClassPage() {
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto p-4 md:p-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-full">
-          {/* Left Column - Join Form */}
+          {/* Left Column - Enroll Form */}
           <div className="lg:col-span-2">
             <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-100 min-h-100 flex flex-col justify-center">
               <form
@@ -151,14 +151,14 @@ export default function JoinClassPage() {
 
                 <button
                   type="submit"
-                  disabled={isJoining || code.join("").length !== 6}
+                  disabled={isEnrolling || code.join("").length !== 6}
                   className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-xl shadow-lg shadow-primary/20 transition-all text-sm mt-6 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isJoining ? "Joining..." : "Join Class"}
+                  {isEnrolling ? "Enrolling..." : "Enroll Class"}
                 </button>
 
                 <p className="text-xs text-slate-400">
-                  By joining, you agree to the classroom's terms and policies.
+                  By enrolling, you agree to the classroom's terms and policies.
                 </p>
               </form>
             </div>

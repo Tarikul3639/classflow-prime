@@ -10,5 +10,5 @@ export interface IEnrollment {
     userId: Types.ObjectId;
     classId: Types.ObjectId;
     role: EnrollmentRole;
-    joinedAt: Date;
+    enrolledAt: Date;
 }

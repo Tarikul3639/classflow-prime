@@ -29,7 +29,7 @@ export const EmailInputStep: React.FC<StepEmailInputProps> = ({
           Create Account
         </h1>
         <p className="text-slate-700 text-xs md:text-sm font-medium mt-1.5">
-          Join ClassFlow to track your progress effortlessly.
+          Enroll ClassFlow to track your progress effortlessly.
         </p>
       </div>
 

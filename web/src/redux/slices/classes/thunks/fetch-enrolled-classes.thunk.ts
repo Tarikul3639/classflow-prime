@@ -15,7 +15,7 @@ export interface IClass {
     status: "active" | "archived";
 }
 
-interface FetchClassesResponse {
+interface FetchEnrolledClassesResponse {
     success: boolean;
     message: string;
     data: {
@@ -23,13 +23,13 @@ interface FetchClassesResponse {
     };
 }
 
-export const fetchClasses = createAsyncThunk<
+export const fetchEnrolledClasses = createAsyncThunk<
     IClass[],
     void,
     { rejectValue: { message: string } }
 >("classes/fetchAll", async (_, { rejectWithValue }) => {
     try {
-        const { data } = await apiClient.get<FetchClassesResponse>("/classes");
+        const { data } = await apiClient.get<FetchEnrolledClassesResponse>("/classes");
         console.log("API Response:", data);
 
         if (!data.success) {

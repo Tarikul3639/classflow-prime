@@ -18,7 +18,7 @@ export interface IUser {
     coverImage?: string;
     role: string;
     status: string;
-    joinedAt: Date;
+    enrolledAt: Date;
   }
 }
 
@@ -44,7 +44,7 @@ export class GetCurrentUserService {
     //   // Stage 1: Match the specific user
     //   { $match: { _id: userObjId } },
 
-    //   // Stage 2: Join with Enrollments
+    //   // Stage 2: Enroll with Enrollments
     //   {
     //     $lookup: {
     //       from: 'enrollments', // NOTE: collection name in DB
@@ -54,7 +54,7 @@ export class GetCurrentUserService {
     //     },
     //   },
 
-    //   // Stage 3: Join with Classes (Nested Lookup)
+    //   // Stage 3: Enroll with Classes (Nested Lookup)
     //   {
     //     $lookup: {
     //       from: 'classes',
@@ -87,7 +87,7 @@ export class GetCurrentUserService {
     //           in: {
     //             classId: '$$enroll.classId',
     //             role: '$$enroll.role',
-    //             joinedAt: '$$enroll.joinedAt',
+    //             enrolledAt: '$$enroll.enrolledAt',
     //             // Find matching class name and status from classDetails array
     //             className: {
     //               $arrayElemAt: [
@@ -212,7 +212,7 @@ export class GetCurrentUserService {
               $project: {
                 classId: 1,
                 role: 1,
-                joinedAt: 1,
+                enrolledAt: 1,
                 className: '$classDetails.name',
                 status: '$classDetails.status',
                 themeColor: '$classDetails.themeColor',

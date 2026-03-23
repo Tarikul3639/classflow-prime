@@ -3,11 +3,11 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types, PipelineStage } from "mongoose";
 import { Class, ClassDocument } from "../../../database/entities/class.entity";
 import { Enrollment, EnrollmentDocument } from "../../../database/entities/enrollment.entity";
-import { JoinClassRequestDto, JoinClassResponseDto } from "../dto/join-class.dto";
+import { EnrollClassRequestDto, EnrollClassResponseDto } from "../dto/enroll-class.dto";
 import { EnrollmentRole } from '../../../database/interface/enrollment.interface';
 
 @Injectable()
-export class JoinClassService {
+export class EnrollClassService {
     constructor(
         @InjectModel(Class.name)
         private readonly classModel: Model<ClassDocument>,
@@ -15,12 +15,12 @@ export class JoinClassService {
         private readonly enrollmentModel: Model<EnrollmentDocument>,
     ) { }
 
-    async execute(userId: string, dto: JoinClassRequestDto): Promise<JoinClassResponseDto> {
+    async execute(userId: string, dto: EnrollClassRequestDto): Promise<EnrollClassResponseDto> {
         const userObjId = new Types.ObjectId(userId);
 
         // 1. Single Pipeline Validation
         const pipeline: PipelineStage[] = [
-            { $match: { joinCode: dto.joinCode } },
+            { $match: { enrollCode: dto.enrollCode } },
             {
                 $lookup: {
                     from: 'enrollments',
@@ -43,7 +43,7 @@ export class JoinClassService {
             {
                 $project: {
                     name: 1,
-                    allowJoin: 1,
+                    allowEnroll: 1,
                     isArchived: 1,
                     instructorId: 1,
                     assistantIds: 1,
@@ -64,7 +64,7 @@ export class JoinClassService {
         if (!classInfo) {
             return {
                 success: false,
-                message: "Invalid join code. Class not found.",
+                message: "Invalid enroll code. Class not found.",
                 data: { classId: null }
             };
         }
@@ -80,15 +80,15 @@ export class JoinClassService {
         if (classInfo.isInstructor) {
             return {
                 success: false,
-                message: "Teacher or Assistants cannot join as students.",
+                message: "Teacher or Assistants cannot enroll as students.",
                 data: { classId: classInfo._id.toString() }
             };
         }
 
-        if (!classInfo.allowJoin || classInfo.isArchived) {
+        if (!classInfo.allowEnroll || classInfo.isArchived) {
             return {
                 success: false,
-                message: "This class is currently closed for new joins.",
+                message: "This class is currently closed for new enrolls.",
                 data: { classId: classInfo._id.toString() }
             };
         }
@@ -99,12 +99,12 @@ export class JoinClassService {
                 userId: userObjId,
                 classId: classInfo._id,
                 role: EnrollmentRole.LEARNER,
-                joinedAt: new Date()
+                enrolledAt: new Date()
             });
 
             return {
                 success: true,
-                message: `Successfully joined ${classInfo.name}`,
+                message: `Successfully enrolled ${classInfo.name}`,
                 data: { classId: classInfo._id.toString() }
             };
         } catch (error) {

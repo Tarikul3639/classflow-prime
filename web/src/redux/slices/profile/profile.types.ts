@@ -25,6 +25,6 @@ export type IUser = {
         coverImage?: string;
         role: string;
         status: string;
-        joinedAt: Date;
+        enrolledAt: Date;
     }[];
 };

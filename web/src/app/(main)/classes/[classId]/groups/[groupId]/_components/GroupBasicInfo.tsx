@@ -41,7 +41,7 @@ export default function GroupBasicInfo({
         value={formData.description}
         onChange={onInputChange}
         placeholder="Provide a brief description of the group's purpose, rules, or any other relevant information for students."
-        description="This will help students understand the purpose of the group and any guidelines they should follow when joining."
+        description="This will help students understand the purpose of the group and any guidelines they should follow when enrolling."
       />
     </div>
   );

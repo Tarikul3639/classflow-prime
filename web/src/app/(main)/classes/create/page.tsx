@@ -285,7 +285,7 @@ export default function CreateClassPage() {
 
             {/* Right Column - Settings & Actions */}
             <div className="space-y-6">
-              {/* Join via Code Toggle */}
+              {/* Enroll via Code Toggle */}
               <div className="bg-white rounded-3xl border border-slate-200/80 p-6">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center shrink-0">
@@ -293,7 +293,7 @@ export default function CreateClassPage() {
                   </div>
                   <div className="flex-1">
                     <p className="text-base font-bold text-slate-900">
-                      Join via Code
+                      Enroll via Code
                     </p>
                     <p className="text-xs text-slate-500 mt-0.5">
                       Enable enrollment link
@@ -302,10 +302,10 @@ export default function CreateClassPage() {
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={formData.allowJoin}
+                      checked={formData.allowEnroll}
                       onChange={(e) =>
                         despatch(
-                          updateFormData({ allowJoin: e.target.checked }),
+                          updateFormData({ allowEnroll: e.target.checked }),
                         )
                       }
                       className="sr-only peer"
@@ -314,7 +314,7 @@ export default function CreateClassPage() {
                   </label>
                 </div>
                 <p className="text-xs text-slate-500 leading-relaxed">
-                  Students can automatically join using a secure link or code
+                  Students can automatically enroll using a secure link or code
                   that you'll receive after creating the class.
                 </p>
               </div>

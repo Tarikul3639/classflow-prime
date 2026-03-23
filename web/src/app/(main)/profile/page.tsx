@@ -6,7 +6,7 @@ import ProfileHeader from "./_components/ProfileHeader";
 import ProfilePicture from "./_components/ProfilePicture";
 import PersonalInformation from "./_components/PersonalInformation";
 import LogoutButton from "./_components/LogoutButton";
-import JoinedClasses from "./_components/JoinedClasses";
+import EnrolledClasses from "./_components/EnrolledClasses";
 import Preferences from "./_components/Preferences";
 import VersionInfo from "./_components/VersionInfo";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
@@ -130,7 +130,7 @@ const ProfileSettings: React.FC = () => {
             {/* Right Column - Classes & Preferences */}
             <div className="lg:col-span-7 space-y-5">
               {user.enrolledClasses.length > 0 && (
-                <JoinedClasses classes={user.enrolledClasses} />
+                <EnrolledClasses classes={user.enrolledClasses} />
               )}
 
               <Preferences

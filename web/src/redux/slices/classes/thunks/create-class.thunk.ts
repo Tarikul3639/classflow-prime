@@ -14,7 +14,7 @@ interface CreateClassPayload {
     about?: string;
     coverImage?: string;
     themeColor?: string;
-    allowJoin?: boolean;
+    allowEnroll?: boolean;
 }
 
 interface CreateClassResponse {

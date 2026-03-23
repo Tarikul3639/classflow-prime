@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchClasses, IClass } from "../thunks/fetch-classes.thunk";
+import { fetchEnrolledClasses, IClass } from "../thunks/fetch-enrolled-classes.thunk";
 
 interface ClassesState {
     classes: IClass[];
@@ -13,26 +13,26 @@ const initialState: ClassesState = {
     error: null,
 };
 
-export const fetchClassesSlice = createSlice({
-    name: "fetchClasses",
+export const fetchEnrolledClassesSlice = createSlice({
+    name: "fetchEnrolledClasses",
     initialState,
     reducers: {}, // You can keep this empty for now
     extraReducers: (builder) => {
         builder
-            .addCase(fetchClasses.pending, (state) => {
+            .addCase(fetchEnrolledClasses.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(fetchClasses.fulfilled, (state, action) => {
+            .addCase(fetchEnrolledClasses.fulfilled, (state, action) => {
                 state.loading = false;
                 console.log("Saving to Redux State:", action.payload);
                 state.classes = action.payload;
             })
-            .addCase(fetchClasses.rejected, (state, action) => {
+            .addCase(fetchEnrolledClasses.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload?.message || "Failed to fetch classes";
             });
     },
 });
 
-export default fetchClassesSlice.reducer;
+export default fetchEnrolledClassesSlice.reducer;

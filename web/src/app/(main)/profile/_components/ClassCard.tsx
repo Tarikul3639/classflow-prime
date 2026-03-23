@@ -7,7 +7,7 @@ interface ClassCardProps {
   coverImage?: string;
   role: string;
   status: string;
-  joinedAt: Date;
+  enrolledAt: Date;
 }
 
 export default function ClassCard({
@@ -15,7 +15,7 @@ export default function ClassCard({
   themeColor,
   role,
   status,
-  joinedAt,
+  enrolledAt,
 }: ClassCardProps) {
   const isEnded = status === "ended";
 
@@ -40,7 +40,7 @@ export default function ClassCard({
           <p className="font-bold text-slate-900 text-sm">{name}</p>
           <p className="text-xs text-slate-500 capitalize">
             {role} •{" "}
-            {new Date(joinedAt).toLocaleDateString(undefined, {
+            {new Date(enrolledAt).toLocaleDateString(undefined, {
               year: "numeric",
               month: "short",
             })}

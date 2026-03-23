@@ -45,7 +45,7 @@ export default function GroupLinkInput({
         value={formData.link}
         onChange={onInputChange}
         placeholder="e.g., https://chat.whatsapp.com/..."
-        description="Paste the invite link that students can use to join the group."
+        description="Paste the invite link that students can use to enroll the group."
         required
         icon={LinkIcon}
       />

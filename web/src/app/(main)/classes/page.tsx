@@ -6,8 +6,8 @@ import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   IClass,
-  fetchClasses,
-} from "@/redux/slices/classes/thunks/fetch-classes.thunk";
+  fetchEnrolledClasses,
+} from "@/redux/slices/classes/thunks/fetch-enrolled-classes.thunk";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { toast } from "sonner";
 import { TopLoader } from "@/components/ui/TopLoader";
@@ -17,7 +17,7 @@ const Classes: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const dispatch = useAppDispatch();
   const { classes, loading } = useAppSelector(
-    (state) => state.classes.fetchClasses,
+    (state) => state.classes.fetchEnrolledClasses,
   );
 
   const filters = [
@@ -29,7 +29,7 @@ const Classes: React.FC = () => {
   useEffect(() => {
     if (classes.length > 0) return; // Don't fetch again if we already have classes in state
     setTimeout(() => {}, 5000);
-    dispatch(fetchClasses())
+    dispatch(fetchEnrolledClasses())
       .unwrap()
       .then(() => {
         // toast.success("Classes loaded successfully");
@@ -187,11 +187,11 @@ const Classes: React.FC = () => {
             {/* Desktop Buttons */}
             <div className="hidden md:flex items-center gap-2">
               <Link
-                href="/classes/join"
+                href="/classes/enroll"
                 className="flex items-center gap-2 bg-white border border-slate-300 text-slate-600 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-100 transition-colors cursor-pointer"
               >
                 <UserPlus size={18} />
-                <span>Join</span>
+                <span>Enroll</span>
               </Link>
               <Link
                 href="/classes/create"
@@ -205,7 +205,7 @@ const Classes: React.FC = () => {
             {/* Mobile Buttons */}
             <div className="md:hidden flex items-center gap-2">
               <Link
-                href="/classes/join"
+                href="/classes/enroll"
                 className="flex items-center justify-center w-10 h-10 bg-white border border-slate-300 text-slate-600 rounded-lg hover:bg-slate-100 transition-colors shadow-sm"
               >
                 <UserPlus size={18} />

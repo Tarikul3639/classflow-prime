@@ -16,7 +16,7 @@ export class ClassGroup implements IClassGroup {
     description: string;
 
     @Prop({ required: true })
-    link: string; // Group join link
+    link: string; // Group enroll link
 
     @Prop({
         required: true,

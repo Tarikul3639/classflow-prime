@@ -13,8 +13,8 @@ export class CreateClassService {
     ) { }
 
     async execute(userId: string, dto: CreateClassRequestDto): Promise<CreateClassResponseDto> {
-        // Generate uppercase, unique join code
-        const joinCode = await this.generateUniqueJoinCode();
+        // Generate uppercase, unique enroll code
+        const enrollCode = await this.generateUniqueEnrollCode();
 
         const newClass = new this.classModel<IClass>({
             name: dto.className,
@@ -23,11 +23,11 @@ export class CreateClassService {
             about: dto.about,
             coverImage: dto.coverImage,
             themeColor: dto.themeColor || '#3B82F6',
-            allowJoin: dto.allowJoin ?? true,
+            allowEnroll: dto.allowEnroll ?? true,
             instructorId: new Types.ObjectId(userId),
             status: ClassStatus.ACTIVE,
             tags: [],          // default empty array
-            joinCode,
+            enrollCode,
         });
 
         await newClass.save();
@@ -41,8 +41,8 @@ export class CreateClassService {
         };
     }
 
-    // Utility: generate unique uppercase join code
-    private async generateUniqueJoinCode(): Promise<string> {
+    // Utility: generate unique uppercase enroll code
+    private async generateUniqueEnrollCode(): Promise<string> {
         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         const ClassModel = this.classModel;
 
@@ -54,7 +54,7 @@ export class CreateClassService {
                 characters.charAt(Math.floor(Math.random() * characters.length))
             ).join('');
 
-            exists = !!(await ClassModel.exists({ joinCode: code }));
+            exists = !!(await ClassModel.exists({ enrollCode: code }));
         }
 
         return code;

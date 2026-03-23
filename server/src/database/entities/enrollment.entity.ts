@@ -22,7 +22,7 @@ export class Enrollment implements IEnrollment {
     role: EnrollmentRole;
 
     @Prop({ default: Date.now, index: true })
-    joinedAt: Date;
+    enrolledAt: Date;
 }
 
 export const EnrollmentSchema = SchemaFactory.createForClass(Enrollment);

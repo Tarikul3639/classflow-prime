@@ -14,7 +14,7 @@ export interface IClassGroup {
     classId: Types.ObjectId; // Which class this group belongs to
     name: string; // Group name (e.g., "Project Team A")
     description?: string; // Optional description of the group
-    link: string; // Group join link
+    link: string; // Group enroll link
     platform: GroupPlatform; // Platform of the group
 
     // Frontend-er UI config (just for better visuals, no functional impact)
