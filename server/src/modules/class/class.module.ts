@@ -18,6 +18,9 @@ import {
 import { FetchClassController } from './controllers/fetch-class.controller';
 import { FetchClassService } from './services/fetch-class.service';
 
+import { FetchClassOverviewController } from './controllers/fetch-class-overview.controller';
+import { FetchClassOverviewService } from './services/fetch-class-overview.service';
+
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Class.name, schema: ClassSchema }]),
@@ -30,12 +33,14 @@ import { FetchClassService } from './services/fetch-class.service';
     FetchClassesController,
     EnrollClassController,
     FetchClassController,
+    FetchClassOverviewController,
   ],
   providers: [
     CreateClassService,
     FetchClassesService,
     EnrollClassService,
     FetchClassService,
+    FetchClassOverviewService,
   ],
 })
-export class ClassModule {}
+export class ClassModule { }
