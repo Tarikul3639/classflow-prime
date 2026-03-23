@@ -1,26 +1,35 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { LayoutDashboard, GraduationCap, Bell, User, BookOpen } from "lucide-react";
+import {
+  LayoutDashboard,
+  GraduationCap,
+  Bell,
+  User,
+  BookOpen,
+} from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
+import { useAppSelector } from "@/redux/hooks";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export const Sidebar: React.FC = () => {
   const pathname = usePathname();
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isLocked, setIsLocked] = useState(false); // click-to-lock state
+  const [isLocked, setIsLocked] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
 
-  // detect clicks outside
+  const user = useAppSelector((state) => state.profile.user.user);
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
         sidebarRef.current &&
         !sidebarRef.current.contains(event.target as Node)
       ) {
-        setIsExpanded(false); // collapse if not locked
-        setIsLocked(false); // optional: unlock on outside click
+        setIsExpanded(false);
+        setIsLocked(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -28,12 +37,7 @@ export const Sidebar: React.FC = () => {
   }, []);
 
   const menuItems = [
-    {
-      id: "dashboard",
-      label: "Dashboard",
-      icon: LayoutDashboard,
-      href: "/",
-    },
+    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, href: "/" },
     { id: "classes", label: "Classes", icon: BookOpen, href: "/classes" },
     {
       id: "notifications",
@@ -52,17 +56,13 @@ export const Sidebar: React.FC = () => {
       }`}
       onMouseEnter={() => !isLocked && setIsExpanded(true)}
       onMouseLeave={() => !isLocked && setIsExpanded(false)}
-      onClick={() => setIsLocked(!isLocked)} // toggle lock on click
+      onClick={() => setIsLocked(!isLocked)}
     >
       {/* Logo Header */}
       <div className="px-5 py-5 border-b border-slate-200">
         <Link href="/" className="flex items-center gap-3">
-          {/* Icon Container */}
-          <div className="relative bg-linear-to-br from-[#399aef] to-[#2b8ad8] p-2 rounded-lg text-white shadow-lg group-hover:shadow-xl group-hover:shadow-blue-500/30 transition-all duration-300">
-            <GraduationCap
-              size={22}
-              className="group-hover:rotate-6 transition-transform duration-300"
-            />
+          <div className="relative bg-linear-to-br from-[#399aef] to-[#2b8ad8] p-2 rounded-lg text-white shadow-lg transition-all duration-300">
+            <GraduationCap size={24} />
           </div>
           <AnimatePresence>
             {isExpanded && (
@@ -72,12 +72,10 @@ export const Sidebar: React.FC = () => {
                 exit={{ opacity: 0, width: 0 }}
                 className="flex items-center group text-2xl font-bold tracking-tight text-slate-900 whitespace-nowrap"
               >
-                <span className="tracking-tight bg-linear-to-r from-[#111518] via-[#399aef] to-[#111518] bg-clip-text text-transparent bg-size-[200%_100%] group-hover:bg-size-[100%_100%] animate-gradient transition-all duration-500">
+                <span className="tracking-tight bg-linear-to-r from-[#111518] via-[#399aef] to-[#111518] bg-clip-text text-transparent">
                   Class
                 </span>
-                <span className="tracking-tight text-[#399aef] group-hover:text-[#2b8ad8] transition-colors duration-300">
-                  Flow
-                </span>
+                <span className="tracking-tight text-[#399aef]">Flow</span>
               </motion.span>
             )}
           </AnimatePresence>
@@ -94,13 +92,22 @@ export const Sidebar: React.FC = () => {
             <Link
               key={item.id}
               href={item.href}
-              className={`flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-200 ${
+              className={`relative flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 ${
                 isActive
-                  ? "bg-blue-50 text-primary font-medium"
-                  : "text-slate-700 hover:bg-slate-100"
+                  ? "text-primary cursor-default"
+                  : "text-slate-500 hover:text-slate-800 hover:bg-slate-200/60"
               }`}
               title={!isExpanded ? item.label : undefined}
             >
+              {/* Active left bar */}
+              {isActive && (
+                <motion.div
+                  layoutId="activeBar"
+                  className="absolute left-0 top-2 bottom-2 w-1 rounded-full bg-primary"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                />
+              )}
+
               <Icon
                 size={22}
                 strokeWidth={isActive ? 2.5 : 2}
@@ -112,7 +119,9 @@ export const Sidebar: React.FC = () => {
                     initial={{ opacity: 0, width: 0 }}
                     animate={{ opacity: 1, width: "100%" }}
                     exit={{ opacity: 0, width: 0 }}
-                    className="text-sm whitespace-nowrap"
+                    className={`text-sm whitespace-nowrap ${
+                      isActive ? "font-semibold" : "font-medium"
+                    }`}
                   >
                     {item.label}
                   </motion.span>
@@ -125,23 +134,39 @@ export const Sidebar: React.FC = () => {
 
       {/* Bottom Section */}
       <div className="border-t border-slate-200">
-        <div className="px-6 py-4 border-t border-slate-200">
+        <div className="px-4 py-4">
           <div className="flex items-center gap-3">
-            <div
-              className="h-10 w-10 rounded-full bg-cover bg-center ring-2 ring-slate-100 shrink-0"
-              style={{
-                backgroundImage:
-                  "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBfpo-xwmdOuSDI11UFt6Uo-zfOAy0Arx84Ltb0WBcuo7hd6utRBeV68VO53qJ2K_2wLk79hF5M0zFDzC_0OVL8mkdBPcvkIWi4f5DA-obHsl5ApQ9Y9n2aDJmfy-TJOvmTvNmQCSqayLMtIrc0LYIiilkEyWdjn_HnZPOSXzqB1c7x69bka7oB3xaF-RmiadEcUbY4C9MPWnu6UgasrRPBIkkbv0G9ejPS6E399yybBWRW2TtyMPZd7_-yOmvsBZ2KuGhtRJl1R7nO')",
-              }}
-            />
-            <div className="flex-1 overflow-hidden">
-              <p className="text-sm font-semibold truncate text-slate-900">
-                Alex Johnson
-              </p>
-              <p className="text-xs text-slate-500 truncate">
-                alex.johnson@classflow.edu
-              </p>
-            </div>
+            <Avatar className="h-10 w-10 bg-primary/50">
+              <AvatarImage
+                src={user?.avatarUrl || "/default-avatar.png"}
+                alt="User Avatar"
+              />
+              <AvatarFallback className="bg-primary text-white uppercase font-bold tracking-widest">
+                {user?.name
+                  ? user.name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                  : "NA"}
+              </AvatarFallback>
+            </Avatar>
+            <AnimatePresence>
+              {isExpanded && (
+                <motion.div
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: "100%" }}
+                  exit={{ opacity: 0, width: 0 }}
+                  className="flex-1 overflow-hidden"
+                >
+                  <p className="text-sm font-semibold truncate text-slate-900">
+                    {user?.name}
+                  </p>
+                  <p className="text-xs text-slate-500 truncate">
+                    {user?.email}
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>

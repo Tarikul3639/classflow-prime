@@ -54,112 +54,6 @@ const Classes: React.FC = () => {
         cls.classId.toLowerCase().includes(searchQuery.toLowerCase()),
     );
 
-  // const classes:IClass[] = [
-  //   {
-  //     classId: "1",
-  //     department: "Computer Science",
-  //     title: "Data Structures & Algorithms",
-  //     students: 45,
-  //     instructor: "Prof. Alan Turing",
-  //     semester: "Spring 2025",
-  //     themeColor: "#3A8BFF",
-  //     coverImage: "https://i.pravatar.cc/150?img=12",
-  //     avatarUrl: null,
-  //     status: "active",
-  //   },
-  //   {
-  //     classId: "2",
-  //     department: "Software Engineering",
-  //     title: "Web Development",
-  //     students: 60,
-  //     instructor: "Linus Torvalds",
-  //     semester: "Spring 2025",
-  //     themeColor: "#22C55E",
-  //     coverImage:
-  //       "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80",
-  //     avatarUrl: null,
-  //     status: "active",
-  //   },
-  //   {
-  //     classId: "3",
-  //     department: "Artificial Intelligence",
-  //     title: "Machine Learning",
-  //     students: 38,
-  //     instructor: "Andrew Ng",
-  //     semester: "Spring 2025",
-  //     themeColor: "#F59E0B",
-  //     coverImage:
-  //       "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80",
-  //     avatarUrl: null,
-  //     status: "active",
-  //   },
-  //   {
-  //     classId: "4",
-  //     department: "Mathematics",
-  //     title: "Linear Algebra",
-  //     students: 52,
-  //     instructor: "Gilbert Strang",
-  //     semester: "Spring 2025",
-  //     themeColor: "#EF4444",
-  //     coverImage:
-  //       "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80",
-  //     avatarUrl: null,
-  //     status: "active",
-  //   },
-  //   {
-  //     classId: "5",
-  //     department: "Physics",
-  //     title: "Quantum Mechanics",
-  //     students: 28,
-  //     instructor: "Richard Feynman",
-  //     semester: "Spring 2025",
-  //     themeColor: "#8B5CF6",
-  //     coverImage:
-  //       "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
-  //     avatarUrl: null,
-  //     status: "archived",
-  //   },
-  //   {
-  //     classId: "6",
-  //     department: "Business",
-  //     title: "Entrepreneurship",
-  //     students: 34,
-  //     instructor: "Elon Musk",
-  //     semester: "Spring 2025",
-  //     themeColor: "#14B8A6",
-  //     coverImage:
-  //       "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80",
-  //     avatarUrl: null,
-  //     status: "active",
-  //   },
-  //   {
-  //     classId: "7",
-  //     department: "Design",
-  //     title: "UI/UX Fundamentals",
-  //     students: 41,
-  //     instructor: "Don Norman",
-  //     semester: "Spring 2025",
-  //     themeColor: "#EC4899",
-  //     coverImage:
-  //       "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80",
-  //     avatarUrl: null,
-  //     status: "active",
-  //   },
-  //   {
-  //     classId: "8",
-  //     department: "Cyber Security",
-  //     title: "Ethical Hacking",
-  //     students: 25,
-  //     instructor: "Kevin Mitnick",
-  //     semester: "Spring 2025",
-  //     themeColor: "#0EA5E9",
-  //     coverImage:
-  //       "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80",
-  //     avatarUrl: null,
-  //     status: "archived",
-  //   },
-  // ];
-
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
       {/* Sticky Header */}
@@ -259,12 +153,12 @@ const Classes: React.FC = () => {
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto pb-24 lg:pb-8">
         <div className="mx-auto px-4 lg:px-8 py-6 relative">
-          <main className="grid gap-3 grid-cols-[repeat(auto-fit,minmax(300px,300px))] justify-start">
+          <main className="grid gap-3 grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] md:grid-cols-[repeat(auto-fit,minmax(300px,300px))] justify-start">
             {filteredClasses.map((cls) => (
               <Link
                 href={`/classes/${cls.classId}/overview`}
                 key={cls.classId}
-                className="group relative rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-1 flex flex-col w-full h-full max-w-75"
+                className="group relative rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-1 flex flex-col w-full h-full sm:max-w-75 sm:min-w-70"
                 style={{
                   border: `1px solid ${cls.themeColor}40`,
                   boxShadow: `0 2px 10px ${cls.themeColor}20`,
@@ -279,7 +173,7 @@ const Classes: React.FC = () => {
                 }}
               >
                 {/* Banner */}
-                <div className="relative h-36 overflow-hidden bg-slate-100">
+                <div className="relative h-28 sm:h-36 overflow-hidden bg-slate-100">
                   <Avatar className="absolute inset-0 w-full h-full object-cover rounded-none group-hover:scale-105 transition-transform duration-300">
                     <AvatarImage
                       className="object-cover"
@@ -349,7 +243,7 @@ const Classes: React.FC = () => {
 
                 {/* Content */}
                 <div
-                  className="relative p-4 flex flex-col flex-1 bg-white overflow-hidden gap-3"
+                  className="relative p-4 flex flex-col flex-1 bg-white overflow-hidden gap-2 sm:gap-3"
                   style={{
                     borderTop: `2px solid ${cls.themeColor}`,
                     background: `linear-gradient(160deg, ${cls.themeColor}08 0%, #ffffff 40%)`,
