@@ -278,9 +278,8 @@ const Classes: React.FC = () => {
                   e.currentTarget.style.boxShadow = "none";
                 }}
               >
-                {/* --- Top Image/Banner Section --- */}
-                <div className="group relative h-36 overflow-hidden bg-slate-100">
-                  {/* Background Image */}
+                {/* Banner */}
+                <div className="relative h-36 overflow-hidden bg-slate-100">
                   <Avatar className="absolute inset-0 w-full h-full object-cover rounded-none group-hover:scale-105 transition-transform duration-300">
                     <AvatarImage
                       className="object-cover"
@@ -290,7 +289,7 @@ const Classes: React.FC = () => {
                     <AvatarFallback
                       className="rounded-none w-full h-full text-4xl font-bold tracking-widest flex items-center justify-center uppercase"
                       style={{
-                        backgroundColor: `${cls.themeColor}50` || "#0066FF",
+                        backgroundColor: `${cls.themeColor}50`,
                         color: cls.themeColor,
                       }}
                     >
@@ -301,36 +300,71 @@ const Classes: React.FC = () => {
                     </AvatarFallback>
                   </Avatar>
 
-                  {/* Badge: Active/Status */}
+                  {/* Concentric rings effect */}
+                  <svg
+                    className="absolute inset-0 w-full h-full pointer-events-none"
+                    viewBox="0 0 200 144"
+                    preserveAspectRatio="none"
+                  >
+                    <circle
+                      cx="170"
+                      cy="-10"
+                      r="100"
+                      fill="rgba(255,255,255,0.07)"
+                    />
+                    <circle
+                      cx="170"
+                      cy="-10"
+                      r="70"
+                      fill="rgba(255,255,255,0.06)"
+                    />
+                    <circle
+                      cx="170"
+                      cy="-10"
+                      r="40"
+                      fill="rgba(255,255,255,0.06)"
+                    />
+                  </svg>
+
+                  {/* Status Badge */}
                   <div
-                    className="absolute top-3 right-3 text-[11px] font-semibold capitalize! tracking-widest px-2 py-0.5 pb-1 rounded-sm text-white"
-                    style={{
-                      backgroundColor: cls.themeColor || "#0066FF",
-                    }}
+                    className="absolute top-3 right-3 text-[11px] font-semibold tracking-widest px-2 py-0.5 pb-1 rounded-sm text-white"
+                    style={{ backgroundColor: cls.themeColor }}
                   >
                     {cls.status.charAt(0).toUpperCase() +
-                      cls.status.slice(1).toLowerCase() || "Active"}
+                      cls.status.slice(1).toLowerCase()}
                   </div>
 
-                  {/* Department Label Overlay */}
+                  {/* Department Label */}
                   <div className="absolute bottom-3 left-3 right-3">
                     <span
-                      className="inline-block px-2.5 py-0.75 bg-white/90 backdrop-blur-md rounded-sm text-[10px] font-semibold uppercase tracking-wider"
-                      style={{ color: cls.themeColor || "#0066FF" }}
+                      className="inline-block px-2.5 py-0.5 bg-white/90 backdrop-blur-md rounded-sm text-[10px] font-semibold uppercase tracking-wider"
+                      style={{ color: cls.themeColor }}
                     >
                       {cls.department}
                     </span>
                   </div>
                 </div>
 
-                {/* --- Content Section --- */}
-                <div className="p-4 space-y-3 flex flex-col flex-1 bg-white">
+                {/* Content */}
+                <div
+                  className="relative p-4 space-y-3 flex flex-col flex-1 bg-white overflow-hidden"
+                  style={{ borderTop: `3px solid ${cls.themeColor}` }}
+                >
+                  {/* Soft color wash from top */}
+                  <div
+                    className="absolute inset-x-0 top-0 h-24 pointer-events-none"
+                    style={{
+                      background: `radial-gradient(ellipse 140% 100% at 85% -20%, ${cls.themeColor}18, transparent 65%)`,
+                    }}
+                  />
+
                   {/* Title */}
                   <h3 className="text-md font-bold text-[#203044] leading-tight line-clamp-2">
                     {cls.title}
                   </h3>
 
-                  {/* Instructor Info */}
+                  {/* Instructor */}
                   <div className="flex items-center gap-2 ml-1">
                     <Avatar className="w-8 h-8 border border-slate-200">
                       <AvatarImage
@@ -354,31 +388,28 @@ const Classes: React.FC = () => {
                       <p className="text-[9px] uppercase font-bold leading-none text-black opacity-60">
                         Instructor
                       </p>
-                      <span className="text-[13px] font-semibold ">
+                      <span className="text-[13px] font-semibold">
                         {cls.instructor}
                       </span>
                     </div>
                   </div>
 
-                  {/* Divider and Footer */}
+                  {/* Footer */}
                   <div
                     className="pt-2 mt-auto flex items-center justify-between"
                     style={{ borderTop: `1px solid ${cls.themeColor}30` }}
                   >
-                    <div className="flex items-center gap-1.5 text-[#4d5d73]">
-                      {/* Material Icon (Using Lucide React if available or standard span) */}
+                    <div className="flex items-center gap-1.5">
                       <Users size={16} className="text-slate-400" />
-                      <span className="text-xs font-semibold">
+                      <span className="text-xs font-semibold text-[#4d5d73]">
                         {cls.students} Students
                       </span>
                     </div>
-
-                    {/* Semester Tag */}
                     <div
                       className="text-xs font-semibold px-2 py-1 rounded"
                       style={{
-                        backgroundColor: `${cls.themeColor}15` || "#0066FF15",
-                        color: cls.themeColor || "#0066FF",
+                        backgroundColor: `${cls.themeColor}15`,
+                        color: cls.themeColor,
                       }}
                     >
                       {cls.semester}

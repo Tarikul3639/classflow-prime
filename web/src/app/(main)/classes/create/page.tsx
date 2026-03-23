@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { ArrowLeft, Camera, Link } from "lucide-react";
+import React, { useCallback, useState } from "react";
+import { ArrowLeft, WandSparkles, Link } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
@@ -33,10 +33,23 @@ const DEPARTMENTS = [
   { id: "hist", name: "History" },
   { id: "art", name: "Art" },
   { id: "bus", name: "Business" },
-  { id: "other", name: "Other" },
+  { id: "general", name: "General Studies" },
+];
+
+const COLORS = [
+  { hex: "#3A8BFF", name: "Blue" },
+  { hex: "#22C55E", name: "Green" },
+  { hex: "#F59E0B", name: "Amber" },
+  { hex: "#EF4444", name: "Red" },
+  { hex: "#8B5CF6", name: "Purple" },
+  { hex: "#14B8A6", name: "Teal" },
+  { hex: "#EC4899", name: "Pink" },
+  { hex: "#0EA5E9", name: "Sky Blue" },
 ];
 
 export default function CreateClassPage() {
+  // State
+  const [selectedColor, setSelectedColor] = useState(COLORS[5]);
   const router = useRouter();
   const despatch = useAppDispatch();
   const { formData, loading, error } = useAppSelector(
@@ -78,6 +91,15 @@ export default function CreateClassPage() {
       });
   };
 
+  const regenerateCoverImage = useCallback(() => {
+    const newSeed = Math.random().toString(36).substring(7);
+    despatch(
+      updateFormData({
+        coverImage: `https://api.dicebear.com/9.x/shapes/svg?seed=${newSeed}`,
+      }),
+    );
+  }, [despatch]);
+
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
       {/* Header */}
@@ -111,52 +133,80 @@ export default function CreateClassPage() {
             <div className="lg:col-span-2 space-y-6">
               <div className="bg-white rounded-3xl shadow-sm shadow-slate-200/50 border border-slate-100 overflow-hidden">
                 {/* Banner Image */}
-                <div className="relative h-64 w-full group">
+                <div className="relative h-64 w-full group overflow-hidden">
                   <img
                     alt="Class Banner Preview"
-                    className="absolute inset-0 w-full h-full object-cover"
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                     src={formData.coverImage || ""}
                   />
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors"></div>
+
+                  <div className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <label className="bg-white/90 backdrop-blur-md px-6 py-3 rounded-2xl flex items-center gap-3 shadow-2xl hover:bg-white transition-all active:scale-95 border border-white/50 cursor-pointer">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                          // const file = e.target.files?.[0];
-                          // if (file) {
-                          //   const reader = new FileReader();
-                          //   reader.onloadend = () => {
-                          //     despatch(
-                          //       updateFormData({
-                          //         coverImage: reader.result as string,
-                          //       }),
-                          //     );
-                          //   };
-                          //   reader.readAsDataURL(file);
-                          // }
-                          alert(
-                            "Image upload is currently disabled in this demo.",
-                          );
-                        }}
-                        className="hidden"
-                      />
-                      <Camera className="text-primary size-4 md:size-5" />
-                      <span className="text-xs md:text-sm font-semibold text-slate-900">
-                        Upload Class Banner
+                    <button
+                      type="button"
+                      onClick={regenerateCoverImage}
+                      className="md:opacity-0 md:translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 flex items-center gap-2 px-5 py-2.5 rounded-full bg-black/20 backdrop-blur-md text-white hover:bg-black/40 hover:scale-105 active:scale-95 cursor-pointer"
+                    >
+                      <WandSparkles className="size-4 text-sky-300" />
+                      <span className="text-xs font-medium tracking-wide">
+                        Regenerate Banner
                       </span>
-                    </label>
+                    </button>
                   </div>
-                  <div className="absolute bottom-6 left-6">
-                    <span className="px-3 py-1 bg-black/40 backdrop-blur-md rounded-lg text-[10px] font-bold text-white uppercase tracking-widest">
-                      Preview Mode
-                    </span>
+
+                  <div className="absolute bottom-4 left-4">
+                    <p className="px-3 py-1 bg-black/40 backdrop-blur-md rounded-lg text-[10px] font-bold text-white uppercase tracking-widest border border-none">
+                      AI Preview
+                    </p>
                   </div>
                 </div>
-
+              </div>
+              <div className="flex items-center gap-2 px-3 py-2 border border-slate-200 rounded-lg bg-white">
                 {/* Form Fields */}
                 <div className="p-6 md:p-10 space-y-6">
+                  <div>
+                    <div className="flex flex-wrap gap-3 md:gap-3.5">
+                      {COLORS.map((c) => {
+                        const isActive = selectedColor.hex === c.hex;
+                        return (
+                          <button
+                            key={c.hex}
+                            type="button"
+                            onClick={() => {
+                              setSelectedColor(c);
+                              despatch(updateFormData({ themeColor: c.hex }));
+                            }}
+                            className={`group relative size-8 md:size-9 rounded-full transition-all duration-300 cursor-pointer ${isActive ? " scale-140" : "hover:scale-140"}`}
+                            style={
+                              {
+                                backgroundColor: c.hex,
+                                /* Ring-offset color should match your app's background */
+                                "--tw-ring-offset-color": "#ffffff",
+                              } as React.CSSProperties
+                            }
+                            title={c.name}
+                          >
+                            {isActive && (
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="size-1.5 rounded-full bg-white shadow-sm" />
+                              </div>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <p className="text-[12px] font-medium text-slate-400 mt-3 uppercase tracking-wider">
+                      Theme:{" "}
+                      <span
+                        className="font-bold text-slate-900"
+                        style={{ color: selectedColor.hex }}
+                      >
+                        {selectedColor.name}
+                      </span>
+                    </p>
+                  </div>
                   {/* Class Name */}
                   <Input
                     id="className"
