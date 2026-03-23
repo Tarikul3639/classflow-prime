@@ -5,7 +5,7 @@ export interface ClassOverview {
     classId: string;
     about: string | null;
     studentsCount: number;
-    eventsCount: number;
+    updateCount: number;
 }
 
 interface ClassOverviewResponse {

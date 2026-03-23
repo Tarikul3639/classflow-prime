@@ -6,7 +6,7 @@ interface ClassOverviewState {
         classId: string;
         about: string | null;
         studentsCount: number;
-        eventsCount: number;
+        updateCount: number;
     } | null;
     loading: boolean;
     error: string | null;

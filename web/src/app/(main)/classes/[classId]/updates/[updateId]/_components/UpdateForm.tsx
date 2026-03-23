@@ -6,28 +6,15 @@ import { Select } from "@/components/ui/Select";
 import { ScheduleSection } from "./ScheduleSection";
 import { DescriptionEditor } from "./DescriptionEditor";
 import { MaterialsSection } from "./MaterialsSection";
-
-interface Attachment {
-  _id: string;
-  name: string;
-  size: string;
-  url: string;
-  type: string;
-}
-
-interface UpdateFormData {
-  _id: string;
-  type: "announcement" | "assignment" | "exam" | "material";
-  title: string;
-  description: string;
-  date: string;
-  time: string;
-  attachments: Attachment[];
-}
+import {
+  UPDATE_TYPE_CONFIG,
+  CreateUpdateFormData,
+  UpdateType,
+} from "@/types/update.types";
 
 interface UpdateFormProps {
-  form: UpdateFormData;
-  setForm: React.Dispatch<React.SetStateAction<UpdateFormData>>;
+  form: CreateUpdateFormData;
+  setForm: React.Dispatch<React.SetStateAction<CreateUpdateFormData>>;
 }
 
 export function UpdateForm({ form, setForm }: UpdateFormProps) {
@@ -48,14 +35,14 @@ export function UpdateForm({ form, setForm }: UpdateFormProps) {
           label="Update Type"
           value={form.type}
           description="Choose the type of update you're creating. This helps students understand the context at a glance."
-          options={[
-            { value: "announcement", label: "General Announcement" },
-            { value: "assignment", label: "Assignment Update" },
-            { value: "exam", label: "Exam Information" },
-            { value: "material", label: "Course Material" },
-          ]}
+          options={Object.entries(UPDATE_TYPE_CONFIG).map(
+            ([value, config]) => ({
+              value,
+              label: config.label,
+            }),
+          )}
           onChange={(e) =>
-            setForm({ ...form, type: e.target.value as UpdateFormData["type"] })
+            setForm({ ...form, type: e.target.value as UpdateType })
           }
         />
 
@@ -66,7 +53,7 @@ export function UpdateForm({ form, setForm }: UpdateFormProps) {
         <DescriptionEditor form={form} setForm={setForm as any} />
 
         {/* Materials Section */}
-        <MaterialsSection form={form} setForm={setForm as any} />
+        <MaterialsSection form={form} setForm={setForm} />
       </div>
     </div>
   );

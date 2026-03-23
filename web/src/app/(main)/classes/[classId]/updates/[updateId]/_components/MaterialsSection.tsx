@@ -4,22 +4,15 @@ import React from "react";
 import { Link as LinkIcon, PlusCircle, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
-
-interface Attachment {
-  _id: string;
-  name: string;
-  url: string;
-  type: string;
-}
-
-interface UpdateFormData {
-  attachments: Attachment[];
-  [key: string]: any;
-}
+import {
+  Attachment,
+  CreateUpdateFormData,
+  ATTACHMENT_TYPE_CONFIG,
+} from "@/types/update.types";
 
 interface MaterialsSectionProps {
-  form: UpdateFormData;
-  setForm: React.Dispatch<React.SetStateAction<UpdateFormData>>;
+  form: CreateUpdateFormData;
+  setForm: React.Dispatch<React.SetStateAction<CreateUpdateFormData>>;
 }
 
 export function MaterialsSection({ form, setForm }: MaterialsSectionProps) {
@@ -28,7 +21,13 @@ export function MaterialsSection({ form, setForm }: MaterialsSectionProps) {
       ...form,
       attachments: [
         ...form.attachments,
-        { _id: Date.now().toString(), type: "pdf", name: "", url: "" },
+        {
+          _id: crypto.randomUUID(),
+          type: "pdf",
+          name: "",
+          url: "",
+          size: "0KB",
+        },
       ],
     });
   };
@@ -66,6 +65,7 @@ export function MaterialsSection({ form, setForm }: MaterialsSectionProps) {
           </h3>
         </div>
         <button
+          type="button"
           onClick={addAttachment}
           className="flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg bg-[#399aef] text-white text-[10px] sm:text-[11px] font-bold uppercase tracking-wide hover:bg-[#2d82cc] transition-all shadow-lg shadow-[#399aef]/10 cursor-pointer"
         >
@@ -93,7 +93,7 @@ export function MaterialsSection({ form, setForm }: MaterialsSectionProps) {
               />
             </div>
 
-            {/* File Type */}
+            {/* Type */}
             <div className="md:w-1/2">
               <Select
                 label="Type"
@@ -101,12 +101,12 @@ export function MaterialsSection({ form, setForm }: MaterialsSectionProps) {
                 onChange={(e) =>
                   updateAttachment(attachment._id, "type", e.target.value)
                 }
-                options={[
-                  { value: "pdf", label: "PDF" },
-                  { value: "docx", label: "DOCX" },
-                  { value: "image", label: "Image" },
-                  { value: "link", label: "Link" },
-                ]}
+                options={Object.entries(ATTACHMENT_TYPE_CONFIG).map(
+                  ([key, config]) => ({
+                    value: key,
+                    label: config.label,
+                  }),
+                )}
                 placeholder="Select type"
                 description="Select the type of material."
               />
@@ -128,6 +128,7 @@ export function MaterialsSection({ form, setForm }: MaterialsSectionProps) {
 
             {/* Remove Button */}
             <button
+              type="button"
               onClick={() => removeAttachment(attachment._id)}
               className="self-end md:self-center p-2 text-slate-400 hover:text-red-500 transition-colors bg-white md:bg-transparent rounded-lg border border-slate-200 md:border-none"
               title="Remove Attachment"

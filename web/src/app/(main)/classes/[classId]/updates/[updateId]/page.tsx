@@ -6,24 +6,7 @@ import { UpdateEditorHeader } from "./_components/UpdateEditorHeader";
 import { UpdateForm } from "./_components/UpdateForm";
 import { UpdatePreview } from "./_components/UpdatePreview";
 import { ProTip } from "./_components/ProTip";
-
-interface Attachment {
-  _id: string;
-  name: string;
-  size: string;
-  url: string;
-  type: string;
-}
-
-interface UpdateFormData {
-  _id: string;
-  type: "announcement" | "assignment" | "exam" | "material";
-  title: string;
-  description: string;
-  date: string;
-  time: string;
-  attachments: Attachment[];
-}
+import type { CreateUpdateFormData } from "@/types/update.types";
 
 export default function UpdateEditorPage({
   params,
@@ -35,8 +18,8 @@ export default function UpdateEditorPage({
   const [error, setError] = useState<string | null>(null);
   const isNew = params.updateId === "new";
 
-  const [form, setForm] = useState<UpdateFormData>({
-    _id: params.updateId,
+  // Temporary form state with mock data for preview
+  const [form, setForm] = useState<CreateUpdateFormData>({
     type: "announcement",
     title: "Midterm Exam Schedule Revision",
     description:
@@ -59,6 +42,7 @@ export default function UpdateEditorPage({
     setError(null);
 
     try {
+      // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1500));
       console.log("Publishing update:", form);
       router.push(`/classes/${params.classId}/updates`);

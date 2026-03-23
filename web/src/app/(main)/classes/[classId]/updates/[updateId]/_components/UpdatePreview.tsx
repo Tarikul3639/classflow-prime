@@ -1,33 +1,25 @@
 "use client";
 
-import React from "react";
-import { FileText, Download, MessageCircle, Eye, Bookmark } from "lucide-react";
 import UpdateCard from "../../_components/UpdateCard";
-
-interface Attachment {
-  _id: string;
-  name: string;
-  size: string;
-  url: string;
-  type: string;
-}
-
-interface UpdateFormData {
-  title: string;
-  description: string;
-  attachments: Attachment[];
-  [key: string]: any;
-}
+import {
+  CreateUpdateFormData,
+  UPDATE_TYPE_CONFIG,
+  UpdateType,
+} from "@/types/update.types";
 
 interface UpdatePreviewProps {
-  form: UpdateFormData;
+  form: CreateUpdateFormData;
 }
 
 export function UpdatePreview({ form }: UpdatePreviewProps) {
+  const currentConfig =
+    UPDATE_TYPE_CONFIG[form.type as UpdateType] ||
+    UPDATE_TYPE_CONFIG.announcement;
+
   return (
     <>
       {/* Preview Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-4">
         <h3 className="text-[10px] md:text-[11px] lg:text-[12px] font-bold uppercase tracking-wider text-slate-500">
           Live Preview
         </h3>
@@ -39,16 +31,14 @@ export function UpdatePreview({ form }: UpdatePreviewProps) {
 
       <div className="space-y-4 mx-auto w-full">
         <UpdateCard
-          icon={FileText}
-          iconBg="bg-blue-100"
-          iconColor="text-blue-600"
-          title={form.title}
+          icon={currentConfig.icon}
+          iconBg={currentConfig.iconBg}
+          iconColor={currentConfig.iconColor}
+          title={form.title || "Untitled Update"}
           description={form.description}
           attachment={form.attachments}
-          eventDate="12 Feb"
-          eventTime="10:00 AM"
-          // eventDate={form.eventDate}
-          // eventTime={form.eventTime}
+          eventDate={form.date || "TBD"}
+          eventTime={form.time || "TBD"}
           timestamp="Just now"
         />
       </div>

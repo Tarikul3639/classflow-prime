@@ -4,16 +4,11 @@ import React from "react";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/Input";
-
-interface UpdateFormData {
-  date: string;
-  time: string;
-  [key: string]: any;
-}
+import type { CreateUpdateFormData } from "@/types/update.types";
 
 interface ScheduleSectionProps {
-  form: UpdateFormData;
-  setForm: React.Dispatch<React.SetStateAction<UpdateFormData>>;
+  form: CreateUpdateFormData;
+  setForm: React.Dispatch<React.SetStateAction<CreateUpdateFormData>>;
 }
 
 export function ScheduleSection({ form, setForm }: ScheduleSectionProps) {

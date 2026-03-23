@@ -8,15 +8,11 @@ import {
   Link as LinkIcon,
   Image as ImageIcon,
 } from "lucide-react";
-
-interface UpdateFormData {
-  description: string;
-  [key: string]: any;
-}
+import type { CreateUpdateFormData } from "@/types/update.types";
 
 interface DescriptionEditorProps {
-  form: UpdateFormData;
-  setForm: React.Dispatch<React.SetStateAction<UpdateFormData>>;
+  form: CreateUpdateFormData;
+  setForm: React.Dispatch<React.SetStateAction<CreateUpdateFormData>>;
 }
 
 export function DescriptionEditor({ form, setForm }: DescriptionEditorProps) {
