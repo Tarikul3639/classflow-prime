@@ -24,16 +24,16 @@ const errorFieldMap: Record<string, string> = {
 };
 
 const DEPARTMENTS = [
-  { id: "cs", name: "Computer Science" },
-  { id: "math", name: "Mathematics" },
-  { id: "eng", name: "English" },
-  { id: "phy", name: "Physics" },
-  { id: "chem", name: "Chemistry" },
-  { id: "bio", name: "Biology" },
-  { id: "hist", name: "History" },
-  { id: "art", name: "Art" },
-  { id: "bus", name: "Business" },
-  { id: "general", name: "General Studies" },
+  "Computer Science",
+  "Mathematics",
+  "English",
+  "Physics",
+  "Chemistry",
+  "Biology",
+  "History",
+  "Art",
+  "Business",
+  "General Studies",
 ];
 
 const COLORS = [
@@ -232,8 +232,8 @@ export default function CreateClassPage() {
                       label="Department"
                       placeholder="Select department"
                       options={DEPARTMENTS.map((dept) => ({
-                        value: dept.id,
-                        label: dept.name,
+                        value: dept,
+                        label: dept,
                       }))}
                       value={formData.department}
                       error={

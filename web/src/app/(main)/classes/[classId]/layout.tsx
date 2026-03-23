@@ -5,6 +5,12 @@ import { ArrowLeft, Share2 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+import { fetchClass } from "@/redux/slices/classes/thunks/fetch-class.thunk";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { toast } from "sonner";
 
 export default function ClassLayout({
   children,
@@ -15,6 +21,27 @@ export default function ClassLayout({
   const router = useRouter();
   const params = useParams();
   const classId = params.classId as string;
+
+  const dispatch = useAppDispatch();
+  const { classDetails, isLoading, error } = useAppSelector(
+    (state) => state.classes.fetchClass,
+  );
+
+  useEffect(() => {
+    if (classId) {
+      dispatch(fetchClass(classId))
+        .unwrap()
+        .then((res) => {
+          // console.log("Fetched Class Details:", res);
+        })
+        .catch((err) => {
+          console.error("Error fetching class details:", err);
+          toast.error("Failed to load class details", {
+            description: err.message,
+          });
+        });
+    }
+  }, [classId]);
 
   const tabs = [
     {
@@ -51,6 +78,14 @@ export default function ClassLayout({
 
   const isActiveTab = (href: string) => pathname === href;
 
+  // if (isLoading) {
+  //   return (
+  //     <div className="flex items-center justify-center h-screen">
+  //       <p className="text-lg font-medium text-slate-600">Loading class details...</p>
+  //     </div>
+  //   );
+  // }
+
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
       {/* Sticky Header */}
@@ -77,17 +112,45 @@ export default function ClassLayout({
       {/* Class Info Card - Hero Style */}
       <div className="p-2 md:p-3 lg:p-4 mx-auto w-full">
         <div className="relative h-64 w-full rounded-2xl overflow-hidden shadow-lg">
-          <img
-            alt="Class Background"
-            className="absolute inset-0 w-full h-full object-cover"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiqTWbkwjYy_mo_vKEgSaE_mcDquuBA4sRWKC6PF19Y12A3wiv4JvSQNg7s8MGJhzBBFYMZOtE4ETlFLyPPR6LyWXFKlBfmguClalI9wnpFaAjzg7h3XwJ1a_rD7f8H2PStW0kYFL9FizfF6E8FqPYxfbRdQJSld9DorCv1ue79zweVL6AxSpJz2gLxavBKmqlOo-l1dSn8dpdqbr9Vb7yiVdtlLZvl33bUAdQ0gFr53C-4sABTbyiFLBCPAxP_DHdCFJKFOGahopf"
-          />
-          <div className="absolute inset-0 bg-linear-to-t from-blue-900/90 via-primary/40 to-transparent"></div>
+          {/* Banner */}
+          <Avatar className="absolute inset-0 w-full h-full object-cover rounded-none group-hover:scale-105 transition-transform duration-300">
+            <AvatarImage
+              className="object-cover"
+              src={classDetails?.coverImage || undefined}
+              alt={classDetails?.title || "Class Cover Image"}
+            />
+            <AvatarFallback
+              className="rounded-none w-full h-full text-4xl font-bold tracking-widest flex items-center justify-center uppercase"
+              style={{
+                backgroundColor: `${classDetails?.themeColor}`,
+                color: classDetails?.themeColor,
+              }}
+            >
+              {classDetails?.title
+                ?.split(" ")
+                .map((n) => n[0])
+                .join("")}
+            </AvatarFallback>
+          </Avatar>
+
+          {/* Concentric rings effect */}
+          <svg
+            className="absolute inset-0 w-full h-full pointer-events-none"
+            viewBox="0 0 200 144"
+            preserveAspectRatio="none"
+          >
+            <circle cx="170" cy="-10" r="100" fill="rgba(255,255,255,0.07)" />
+            <circle cx="170" cy="-10" r="70" fill="rgba(255,255,255,0.06)" />
+            <circle cx="170" cy="-10" r="40" fill="rgba(255,255,255,0.06)" />
+          </svg>
+
           <div className="absolute inset-0 p-6 flex flex-col justify-between text-white">
-            {/* Top Row */}
             <div className="flex justify-between items-start">
-              <span className="px-3 py-1 bg-emerald-500/90 backdrop-blur-sm text-[11px] font-bold rounded-full uppercase tracking-wider">
-                Active
+              <span
+                className="px-3 py-1 text-[11px] font-bold rounded-full bg-white/20 backdrop-blur-md uppercase tracking-wider"
+                // style={{ backgroundColor: classDetails?.themeColor }}
+              >
+                {classDetails?.status === "active" ? "Active" : "Archived"}
               </span>
               <div className="flex items-center gap-1 bg-white/20 backdrop-blur-md px-2 py-1 rounded-lg">
                 <svg
@@ -103,27 +166,42 @@ export default function ClassLayout({
                     d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
                   />
                 </svg>
-                <span className="text-xs font-semibold">32 Members</span>
+                <span className="text-xs font-semibold">
+                  {classDetails?.members} Members
+                </span>
               </div>
             </div>
 
-            {/* Bottom Info */}
             <div>
               <p className="text-blue-100 text-xs font-bold uppercase tracking-widest mb-1">
-                CS-101 • Fall 2024
+                {classDetails?.department}.{classDetails?.semester}
               </p>
               <h2 className="text-2xl font-extrabold mb-4 leading-tight">
-                Advanced Mathematics & Theory
+                {classDetails?.title}
               </h2>
               <div className="flex items-center gap-3 pt-4 border-t border-white/20">
-                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary font-bold text-sm shadow-sm">
-                  AG
-                </div>
+                <Avatar
+                  className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm text-white flex items-center justify-center font-bold text-sm shadow-sm shadow--blue-500/50"
+                  style={{ boxShadow: classDetails?.themeColor }}
+                >
+                  <AvatarImage
+                    src={classDetails?.avatarUrl || undefined}
+                    alt={classDetails?.instructor || "Instructor Avatar"}
+                  />
+                  <AvatarFallback className="w-full h-full text-sm font-semibold bg-white/20 text-white text-center p-1">
+                    {classDetails?.instructor
+                      ?.split(" ")
+                      .map((n) => n[0])
+                      .join("")}
+                  </AvatarFallback>
+                </Avatar>
                 <div>
                   <p className="text-xs text-blue-100 font-medium">
                     Instructor
                   </p>
-                  <p className="text-sm font-bold">Dr. Alan Grant</p>
+                  <p className="text-sm font-bold">
+                    {classDetails?.instructor}
+                  </p>
                 </div>
               </div>
             </div>

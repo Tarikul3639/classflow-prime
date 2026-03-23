@@ -30,7 +30,7 @@ export const fetchEnrolledClasses = createAsyncThunk<
 >("classes/fetchAll", async (_, { rejectWithValue }) => {
     try {
         const { data } = await apiClient.get<FetchEnrolledClassesResponse>("/classes");
-        console.log("API Response:", data);
+        // console.log("API Response:", data);
 
         if (!data.success) {
             return rejectWithValue({

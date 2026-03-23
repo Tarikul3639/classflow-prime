@@ -10,14 +10,32 @@ import { FetchClassesService } from './services/fetch-enrolled-classes.service';
 
 import { EnrollClassService } from './services/enroll-class.service';
 import { EnrollClassController } from './controllers/enroll-class.controller';
-import { Enrollment, EnrollmentSchema } from '../../database/entities/enrollment.entity';
+import {
+  Enrollment,
+  EnrollmentSchema,
+} from '../../database/entities/enrollment.entity';
+
+import { FetchClassController } from './controllers/fetch-class.controller';
+import { FetchClassService } from './services/fetch-class.service';
 
 @Module({
-    imports: [
-        MongooseModule.forFeature([{ name: Class.name, schema: ClassSchema }]),
-        MongooseModule.forFeature([{ name: Enrollment.name, schema: EnrollmentSchema }]),
-    ],
-    controllers: [CreateClassController, FetchClassesController, EnrollClassController],
-    providers: [CreateClassService, FetchClassesService, EnrollClassService],
+  imports: [
+    MongooseModule.forFeature([{ name: Class.name, schema: ClassSchema }]),
+    MongooseModule.forFeature([
+      { name: Enrollment.name, schema: EnrollmentSchema },
+    ]),
+  ],
+  controllers: [
+    CreateClassController,
+    FetchClassesController,
+    EnrollClassController,
+    FetchClassController,
+  ],
+  providers: [
+    CreateClassService,
+    FetchClassesService,
+    EnrollClassService,
+    FetchClassService,
+  ],
 })
-export class ClassModule { }
+export class ClassModule {}

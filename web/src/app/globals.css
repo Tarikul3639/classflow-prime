@@ -94,7 +94,7 @@
 /* Custom Scrollbar Styles */
 * {
   scrollbar-width: thin; /* Firefox */
-  scrollbar-color: #399aefb2 #fdfcfc; /* thumb, track */
+  scrollbar-color: #777c82b2 #fdfcfc; /* thumb, track */
 }
 
 *::-webkit-scrollbar {

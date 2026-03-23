@@ -328,19 +328,20 @@ const Classes: React.FC = () => {
 
                   {/* Status Badge */}
                   <div
-                    className="absolute top-3 right-3 text-[11px] font-semibold tracking-widest px-2 py-0.5 pb-1 rounded-sm text-white"
-                    style={{ backgroundColor: cls.themeColor }}
+                    className="absolute top-3 right-3 text-[11px] font-semibold tracking-widest px-2 py-0.5 pb-1 rounded-full text-white"
+                    style={{ backgroundColor: `${cls.themeColor}` }}
                   >
                     {cls.status.charAt(0).toUpperCase() +
                       cls.status.slice(1).toLowerCase()}
                   </div>
 
                   {/* Department Label */}
-                  <div className="absolute bottom-3 left-3 right-3">
-                    <span
-                      className="inline-block px-2.5 py-0.5 bg-white/90 backdrop-blur-md rounded-sm text-[10px] font-semibold uppercase tracking-wider"
-                      style={{ color: cls.themeColor }}
-                    >
+                  <div className="absolute bottom-3 left-3">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/40 backdrop-blur-md text-white text-[10px] font-semibold uppercase tracking-wider">
+                      <span
+                        className="size-1.5 rounded-full"
+                        style={{ backgroundColor: cls.themeColor }} // colored dot
+                      />
                       {cls.department}
                     </span>
                   </div>
@@ -348,8 +349,11 @@ const Classes: React.FC = () => {
 
                 {/* Content */}
                 <div
-                  className="relative p-4 space-y-3 flex flex-col flex-1 bg-white overflow-hidden"
-                  style={{ borderTop: `3px solid ${cls.themeColor}` }}
+                  className="relative p-4 flex flex-col flex-1 bg-white overflow-hidden gap-3"
+                  style={{
+                    borderTop: `2px solid ${cls.themeColor}`,
+                    background: `linear-gradient(160deg, ${cls.themeColor}08 0%, #ffffff 40%)`,
+                  }}
                 >
                   {/* Soft color wash from top */}
                   <div
@@ -420,10 +424,32 @@ const Classes: React.FC = () => {
             ))}
           </main>
 
-          {/* Empty State */}
           {!loading && filteredClasses.length === 0 && (
-            <div className="text-center py-20 text-slate-500">
-              No classes found matching your criteria.
+            <div className="flex flex-col items-center justify-center py-24 gap-4">
+              <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center">
+                <BookOpen className="text-slate-300" size={28} />
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-semibold text-slate-700">
+                  No classes found
+                </p>
+                <p className="text-xs text-slate-400 mt-1">
+                  {searchQuery
+                    ? `No results for "${searchQuery}"`
+                    : activeFilter !== "all"
+                      ? `You have no ${activeFilter} classes`
+                      : "Create or enroll in a class to get started"}
+                </p>
+              </div>
+              {!searchQuery && activeFilter === "all" && (
+                <Link
+                  href="/classes/create"
+                  className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors"
+                >
+                  <Plus size={16} />
+                  Create a class
+                </Link>
+              )}
             </div>
           )}
 

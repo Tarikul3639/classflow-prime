@@ -25,7 +25,6 @@ export const fetchEnrolledClassesSlice = createSlice({
             })
             .addCase(fetchEnrolledClasses.fulfilled, (state, action) => {
                 state.loading = false;
-                console.log("Saving to Redux State:", action.payload);
                 state.classes = action.payload;
             })
             .addCase(fetchEnrolledClasses.rejected, (state, action) => {
