@@ -79,7 +79,7 @@ export const UpdateEditorHeader = ({
 
       {/* Error Message - Below header */}
       {error && (
-        <div className="px-4 md:px-8 pt-4">
+        <div id="update-form" className="px-4 md:px-8 pt-4">
           <div className="mx-auto">
             <AnimatePresence mode="wait">
               <motion.div

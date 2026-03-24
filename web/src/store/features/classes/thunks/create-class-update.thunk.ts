@@ -2,10 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { apiClient } from "@/lib/api/axios";
 import { AxiosError } from "axios";
 import { CreateUpdateFormData, ClassUpdateItem } from "@/types/update.types";
-export interface ApiError {
-    field: string | null;
-    message: string;
-}
+import type { ApiError, UpdateErrorField } from "../class.types";
 
 interface CreateClassUpdatePayload {
     classId: string;
@@ -27,7 +24,7 @@ export const createClassUpdate = createAsyncThunk<
 >("classes/createUpdate", async ({ classId, updateData }, { rejectWithValue }) => {
     try {
         // Basic validation before making the API call
-        if (!updateData.title || !updateData.type) {
+        if (!updateData.title || !updateData.category) {
             return rejectWithValue({
                 field: !updateData.title ? "title" : "type",
                 message: !updateData.title
@@ -36,6 +33,9 @@ export const createClassUpdate = createAsyncThunk<
             });
         }
 
+        console.log("Update form data: ", updateData);
+
+        // NOTE: Actually, If your observe closely, the API endpoint are plural `/classes/${classId}/updates` not singular, Because it indicates the collection of updates for a class, and we are adding a new update to that collection. So the correct endpoint should be `/classes/${classId}/updates` instead of `/classes/${classId}/update`. This follows RESTful API design principles where the endpoint represents a resource (in this case, updates) and we are performing a POST request to add a new item to that resource.
         // Make the API call to create the class update
         const response = await apiClient.post<CreateClassUpdateResponse>(
             `/classes/${classId}/updates`,
@@ -49,9 +49,11 @@ export const createClassUpdate = createAsyncThunk<
             });
         }
 
+        console.log("Create response: ", response);
+
         return response.data;
     } catch (error: unknown) {
-        const err = error as AxiosError<{ field?: string; message?: string }>;
+        const err = error as AxiosError<{ field?: UpdateErrorField; message?: string }>;
 
         return rejectWithValue({
             field: err.response?.data?.field || null,

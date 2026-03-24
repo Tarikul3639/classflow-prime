@@ -2,8 +2,8 @@
 
 import React from "react";
 import { type LucideIcon, CalendarDays, Clock } from "lucide-react";
-import UpdateAttachment from "./UpdateAttachment";
-import type { Attachment, PostedBy, UpdateEngagement } from "@/types/update.types";
+import UpdateMaterial from "./UpdateMaterials";
+import type { Material, PostedBy, UpdateEngagement } from "@/types/update.types";
 // import UpdateEngagement from "./UpdateEngagement";
 
 interface UpdateCardProps {
@@ -15,7 +15,7 @@ interface UpdateCardProps {
   description: string;
   eventDate?: string;
   eventTime?: string;
-  attachment?: Attachment[];
+  materials?: Material[];
   engagement?: UpdateEngagement;
   postedBy?: PostedBy;
   isPinned?: boolean;
@@ -30,7 +30,7 @@ export default function UpdateCard({
   description,
   eventDate,
   eventTime,
-  attachment,
+  materials,
   postedBy,
   isPinned,
 }: UpdateCardProps) {
@@ -96,11 +96,11 @@ export default function UpdateCard({
         </div>
       )}
 
-      {/* Attachments */}
-      {attachment && attachment.length > 0 && (
+      {/* Materials */}
+      {materials && materials.length > 0 && (
         <div className="space-y-2">
-          {attachment.map((att) => (
-            <UpdateAttachment key={att._id} attachment={att} />
+          {materials.map((att) => (
+            <UpdateMaterial key={att._id} material={att} />
           ))}
         </div>
       )}

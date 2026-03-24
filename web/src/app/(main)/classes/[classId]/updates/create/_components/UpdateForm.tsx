@@ -9,15 +9,17 @@ import { MaterialsSection } from "./MaterialsSection";
 import {
   UPDATE_TYPE_CONFIG,
   CreateUpdateFormData,
-  UpdateType,
+  UpdateCategory,
 } from "@/types/update.types";
+import type { ApiError } from "@/store/features/classes/class.types";
 
 interface UpdateFormProps {
   form: CreateUpdateFormData;
+  error: ApiError;
   setForm: React.Dispatch<React.SetStateAction<CreateUpdateFormData>>;
 }
 
-export function UpdateForm({ form, setForm }: UpdateFormProps) {
+export function UpdateForm({ form, setForm, error }: UpdateFormProps) {
   return (
     <div className="bg-white rounded-2xl p-4 md:p-8 border border-slate-200 shadow-xs">
       <div className="space-y-6">
@@ -27,14 +29,16 @@ export function UpdateForm({ form, setForm }: UpdateFormProps) {
           placeholder="e.g., Midterm Exam Schedule Revision"
           description="Keep it concise and informative to grab students' attention."
           value={form.title}
+          error={error.field === "title" ? error.message ?? undefined : undefined}
           onChange={(e) => setForm({ ...form, title: e.target.value })}
         />
 
         {/* Type Select */}
         <Select
           label="Update Type"
-          value={form.type}
+          value={form.category}
           description="Choose the type of update you're creating. This helps students understand the context at a glance."
+          error={error.field === "type" ? error.message ?? undefined : undefined}
           options={Object.entries(UPDATE_TYPE_CONFIG).map(
             ([value, config]) => ({
               value,
@@ -42,15 +46,15 @@ export function UpdateForm({ form, setForm }: UpdateFormProps) {
             }),
           )}
           onChange={(e) =>
-            setForm({ ...form, type: e.target.value as UpdateType })
+            setForm({ ...form, category: e.target.value as UpdateCategory })
           }
         />
 
         {/* Schedule Section */}
-        <ScheduleSection form={form} setForm={setForm as any} />
+        <ScheduleSection form={form} setForm={setForm} />
 
         {/* Description Editor */}
-        <DescriptionEditor form={form} setForm={setForm as any} />
+        <DescriptionEditor form={form} setForm={setForm} />
 
         {/* Materials Section */}
         <MaterialsSection form={form} setForm={setForm} />

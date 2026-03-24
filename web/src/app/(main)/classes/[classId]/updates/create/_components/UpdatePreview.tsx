@@ -4,7 +4,7 @@ import UpdateCard from "../../_components/UpdateCard";
 import {
   CreateUpdateFormData,
   UPDATE_TYPE_CONFIG,
-  UpdateType,
+  UpdateCategory,
 } from "@/types/update.types";
 
 interface UpdatePreviewProps {
@@ -13,7 +13,7 @@ interface UpdatePreviewProps {
 
 export function UpdatePreview({ form }: UpdatePreviewProps) {
   const currentConfig =
-    UPDATE_TYPE_CONFIG[form.type as UpdateType] ||
+    UPDATE_TYPE_CONFIG[form.category as UpdateCategory] ||
     UPDATE_TYPE_CONFIG.announcement;
 
   return (
@@ -36,7 +36,7 @@ export function UpdatePreview({ form }: UpdatePreviewProps) {
           iconColor={currentConfig.iconColor}
           title={form.title || "Untitled Update"}
           description={form.description}
-          attachment={form.attachments}
+          materials={form.materials}
           eventDate={form.date || "TBD"}
           eventTime={form.time || "TBD"}
           timestamp="Just now"

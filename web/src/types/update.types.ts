@@ -10,18 +10,18 @@ import {
     type LucideIcon,
 } from "lucide-react";
 
-// ==================== Attachment ====================
+// ==================== Material ====================
 
-export type AttachmentType = "pdf" | "docx" | "image" | "link";
+export type MaterialType = "pdf" | "docx" | "image" | "link" | "video";
 
-export interface AttachmentConfig {
+export interface MaterialConfig {
     icon: LucideIcon;
     label: string;
     color: string;
     bgColor: string;
 }
 
-export const ATTACHMENT_TYPE_CONFIG: Record<AttachmentType, AttachmentConfig> = {
+export const MATERIAL_TYPE_CONFIG: Record<MaterialType, MaterialConfig> = {
     pdf: {
         icon: FileText,
         label: "PDF Document",
@@ -46,20 +46,26 @@ export const ATTACHMENT_TYPE_CONFIG: Record<AttachmentType, AttachmentConfig> = 
         color: "text-emerald-600",
         bgColor: "bg-emerald-50",
     },
+    video: {
+        icon: FileCode,
+        label: "Video File",
+        color: "text-yellow-600",
+        bgColor: "bg-yellow-50",
+    },
 };
 
 // ==================== Update Type ====================
 
-export type UpdateType = "announcement" | "assignment" | "exam" | "material";
+export type UpdateCategory = "announcement" | "assignment" | "exam" | "material";
 
-export interface UpdateTypeConfig {
+export interface UpdateCategoryConfig {
     icon: LucideIcon;
     iconBg: string;
     iconColor: string;
     label: string;
 }
 
-export const UPDATE_TYPE_CONFIG: Record<UpdateType, UpdateTypeConfig> = {
+export const UPDATE_TYPE_CONFIG: Record<UpdateCategory, UpdateCategoryConfig> = {
     announcement: {
         icon: Megaphone,
         iconBg: "bg-green-100",
@@ -86,25 +92,25 @@ export const UPDATE_TYPE_CONFIG: Record<UpdateType, UpdateTypeConfig> = {
     },
 };
 
-// ==================== Attachment Model ====================
+// ==================== Material Model ====================
 
-export interface Attachment {
+export interface Material {
     _id: string;
     name: string;
-    size: string;
+    size: number; // Size in bytes
     url: string;
-    type: AttachmentType;
+    type: MaterialType;
 }
 
 // ==================== Create (Form) ====================
 
 export interface CreateUpdateFormData {
-    type: UpdateType;
+    category: UpdateCategory;
     title: string;
     description: string;
     date: string;
     time: string;
-    attachments: Attachment[];
+    materials: Material[];
 }
 
 // ==================== Fetch (API Response) ====================
@@ -123,13 +129,13 @@ export interface UpdateEngagement {
 export interface ClassUpdateItem {
     _id: string;
     classId: string;
-    type: UpdateType;
+    type: UpdateCategory;
     title: string;
     description: string;
     isPinned: boolean;
     postedBy: PostedBy;
     eventAt: string | null;
     createdAt: string;
-    attachments?: Attachment[];
+    materials?: Material[];
     engagement?: UpdateEngagement;
 }

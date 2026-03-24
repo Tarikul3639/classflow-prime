@@ -2,33 +2,27 @@
 
 import React from "react";
 import { Download, FileText, FileSpreadsheet, Link as LinkIcon, SquareArrowOutUpRight } from "lucide-react";
+import type { Material } from "@/types/update.types";
 
-interface Attachment {
-  name: string;
-  size: string;
-  type: string;
-  url?: string;
+interface UpdateMaterialProps {
+  material: Material;
 }
 
-interface UpdateAttachmentProps {
-  attachment: Attachment;
-}
-
-export default function UpdateAttachment({
-  attachment,
-}: UpdateAttachmentProps) {
+export default function UpdateMaterial({
+  material,
+}: UpdateMaterialProps) {
   const handleClick = () => {
-    if (attachment.url) {
-      window.open(attachment.url, "_blank");
+    if (material.url) {
+      window.open(material.url, "_blank");
     }
   };
 
   const handleDownload = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (attachment.url) {
+    if (material.url) {
       const link = document.createElement("a");
-      link.href = attachment.url;
-      link.download = attachment.name;
+      link.href = material.url;
+      link.download = material.name;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -36,7 +30,7 @@ export default function UpdateAttachment({
   };
 
   const getIconAndColor = () => {
-    const fileExtension = attachment.type.toLowerCase();
+    const fileExtension = material.type.toLowerCase();
     
     if (fileExtension === "pdf") {
       return {
@@ -88,9 +82,9 @@ export default function UpdateAttachment({
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-xs font-semibold text-slate-900 truncate">
-          {attachment.name}
+          {material.name}
         </p>
-        <p className="text-[10px] text-slate-500">{attachment.size}</p>
+        <p className="text-[10px] text-slate-500">{material.size}</p>
       </div>
       {isLink ? (
         <button className="text-primary hover:text-primary/80">

@@ -1,7 +1,8 @@
 import { Types } from "mongoose";
 
 export enum MaterialType {
-  FILE = 'file',
+  PDF = 'pdf',
+  DOCX = 'docx',
   IMAGE = 'image',
   VIDEO = 'video',
   LINK = 'link',

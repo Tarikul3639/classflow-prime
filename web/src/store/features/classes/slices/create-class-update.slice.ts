@@ -1,23 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { createClassUpdate } from "../thunks/create-class-update.thunk";
-import { CreateUpdateFormData, UpdateType } from "@/types/update.types";
-
-export type UpdateErrorField =
-    | "title"
-    | "type"
-    | "description"
-    | "date"
-    | "time"
-    | null;
+import { CreateUpdateFormData } from "@/types/update.types";
+import type { ApiError, UpdateErrorField } from "../class.types";
 
 interface IRequestStatus {
     loading: boolean;
     success: boolean;
     message: string | null;
-    error: {
-        field: UpdateErrorField;
-        message: string | null;
-    };
+    error: ApiError;
 }
 
 interface CreateUpdateState extends IRequestStatus {
@@ -26,12 +16,12 @@ interface CreateUpdateState extends IRequestStatus {
 
 const initialState: CreateUpdateState = {
     formData: {
-        type: "announcement", // Default type
+        category: "announcement", // Default type
         title: "",
         description: "",
         date: "",
         time: "",
-        attachments: [],
+        materials: [],
     },
     loading: false,
     success: false,
