@@ -1,13 +1,10 @@
 import { Types } from 'mongoose';
 
 export enum UpdateCategory {
-    CT = 'CT',
-    VIVA = 'Viva',
-    EXAM = 'Exam',
-    OTHER = 'Other',
-    NOTICE = 'Notice',
-    MATERIAL = 'Material',
-    ASSIGNMENT = 'Assignment',
+    ANNOUNCEMENT = 'announcement',
+    ASSIGNMENT = 'assignment',
+    EXAM = 'exam',
+    MATERIAL = 'material',
 }
 
 export interface IClassUpdate {

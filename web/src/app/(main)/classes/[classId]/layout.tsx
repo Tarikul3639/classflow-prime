@@ -28,7 +28,7 @@ export default function ClassLayout({
   );
 
   useEffect(() => {
-    if (classId) {
+    if (classId && classId !== "undefined") {
       dispatch(fetchClass(classId))
         .unwrap()
         .then((res) => {

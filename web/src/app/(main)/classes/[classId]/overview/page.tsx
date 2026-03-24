@@ -75,7 +75,7 @@ export default function OverviewPage() {
   );
 
   useEffect(() => {
-    if (!classId) return;
+    if (!classId || classId === "undefined") return;
     if (data?.classId === classId) return;
     dispatch(fetchClassOverview(classId)); // Replace with actual class ID
   }, [dispatch]);
@@ -108,7 +108,7 @@ export default function OverviewPage() {
           <div className="flex items-center gap-3 mb-2">
             <CalendarDays className="text-primary" size={20} />
             <span className="text-2xl font-bold text-slate-900">
-              {data?.eventsCount || "NA"}
+              {data?.updateCount || "NA"}
             </span>
           </div>
           <p className="text-xs text-slate-500">Total Events</p>

@@ -15,7 +15,7 @@ export class ClassUpdate implements IClassUpdate {
     @Prop()
     description: string; // Detail information
 
-    @Prop({ enum: UpdateCategory, default: UpdateCategory.NOTICE })
+    @Prop({ enum: UpdateCategory, default: UpdateCategory.ANNOUNCEMENT })
     category: UpdateCategory;
 
     @Prop({ index: true })

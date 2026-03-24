@@ -5,6 +5,7 @@ import enrollClassReducer from "./reducers/enroll-class.reducer";
 // Import Individual class reducers
 import fetchClassReducer from "./reducers/fetch-class.reducer";
 import classOverviewReducer from "./reducers/fetch-class-overview.reducer";
+import classUpdatesReducer from "./reducers/fetch-class-updates.reducer";
 
 export const classReducer = combineReducers({
     createClass: createClassReducer,
@@ -13,4 +14,5 @@ export const classReducer = combineReducers({
     // Add individual class reducers here
     fetchClass: fetchClassReducer,
     classOverview: classOverviewReducer,
+    classUpdates: classUpdatesReducer,
 });
