@@ -7,8 +7,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   IClass,
   fetchEnrolledClasses,
-} from "@/redux/slices/classes/thunks/fetch-enrolled-classes.thunk";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+} from "@/store/features/classes/thunks/fetch-enrolled-classes.thunk";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { toast } from "sonner";
 import { TopLoader } from "@/components/ui/TopLoader";
 

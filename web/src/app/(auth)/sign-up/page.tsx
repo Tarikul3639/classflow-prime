@@ -9,8 +9,8 @@ import { InfoStep } from "./_components/InfoStep";
 import { OTPVerificationStep } from "./_components/OtpStep";
 import { StepSuccess } from "./_components/SuccessStep";
 import SignUpSteps from "./_components/SignUpSteps";
-import { clearSignupStatus } from "@/redux/slices/auth/reducers/signup.reducer";
-import { useAppDispatch } from "@/redux/hooks";
+import { clearSignupStatus } from "@/store/features/auth/slices/signup.slice";
+import { useAppDispatch } from "@/store/hooks";
 
 type SignUpStepsType = "email" | "info" | "otp" | "success";
 

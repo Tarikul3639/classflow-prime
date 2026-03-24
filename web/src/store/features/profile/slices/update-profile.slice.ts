@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { IRequestStatus } from "../../auth/auth.types";
-import { updateProfileThunk } from "../thunks/update.thunk";
+import { updateProfileThunk } from "../thunks/update-profile.thunk";
 
 export type UpdateProfileState = {
     status: IRequestStatus;

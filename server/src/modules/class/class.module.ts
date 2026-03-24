@@ -6,7 +6,7 @@ import { CreateClassController } from './controllers/create-class.controller';
 import { CreateClassService } from './services/create-class.service';
 
 import { FetchClassesController } from './controllers/fetch-enrolled-classes.controller';
-import { FetchClassesService } from './services/fetch-enrolled-classes.service';
+import { FetchEnrolledClassesService } from './services/fetch-enrolled-classes.service';
 
 import { EnrollClassService } from './services/enroll-class.service';
 import { EnrollClassController } from './controllers/enroll-class.controller';
@@ -41,7 +41,7 @@ import { FetchClassUpdateService } from './services/fetch-class-update.service';
   ],
   providers: [
     CreateClassService,
-    FetchClassesService,
+    FetchEnrolledClassesService,
     EnrollClassService,
     FetchClassService,
     FetchClassOverviewService,

@@ -1,9 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { IRequestStatus } from "../../auth/auth.types";
-import { meThunk } from "../thunks/user.thunk";
+import { meThunk } from "../thunks/fetch-user.thunk";
 
 import { IUser } from "../profile.types";
-import { updateProfileThunk } from "../thunks/update.thunk";
+import { updateProfileThunk } from "../thunks/update-profile.thunk";
 
 export type MeState = {
     user: IUser | null;

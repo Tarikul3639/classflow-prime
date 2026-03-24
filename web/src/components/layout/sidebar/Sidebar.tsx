@@ -11,7 +11,7 @@ import {
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
-import { useAppSelector } from "@/redux/hooks";
+import { useAppSelector } from "@/store/hooks";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export const Sidebar: React.FC = () => {
@@ -20,7 +20,7 @@ export const Sidebar: React.FC = () => {
   const [isLocked, setIsLocked] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
 
-  const user = useAppSelector((state) => state.profile.user.user);
+  const user = useAppSelector((state) => state.profile.fetchUser.user);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {

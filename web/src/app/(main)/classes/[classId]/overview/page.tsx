@@ -1,8 +1,8 @@
 "use client";
 
 import { Info, Clock, MapPin, Users, CalendarDays } from "lucide-react";
-import { fetchClassOverview } from "@/redux/slices/classes/thunks/fetch-class-overview.thunk";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { fetchClassOverview } from "@/store/features/classes/thunks/fetch-class-overview.thunk";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 
@@ -71,7 +71,7 @@ export default function OverviewPage() {
   const classId = params.classId as string;
   const dispatch = useAppDispatch();
   const { data, loading, error } = useAppSelector(
-    (state) => state.classes.classOverview,
+    (state) => state.classes.fetchClassOverview,
   );
 
   useEffect(() => {

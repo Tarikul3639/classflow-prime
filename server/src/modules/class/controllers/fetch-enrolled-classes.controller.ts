@@ -5,12 +5,12 @@ import { CurrentUser } from '../../../shared/decorators/current-user.decorator';
 import type { IJwtPayload } from '../../../modules/auth/interfaces/jwt-payload.interface';
 import { FetchClassesResponseDto } from '../dto/fetch-enrolled-classes.dto';
 
-import { FetchClassesService } from '../services/fetch-enrolled-classes.service';
+import { FetchEnrolledClassesService } from '../services/fetch-enrolled-classes.service';
 
 @ApiTags('Class')
 @Controller('classes')
 export class FetchClassesController {
-    constructor(private readonly fetchClassesService: FetchClassesService) { }
+    constructor(private readonly fetchEnrolledClassesService: FetchEnrolledClassesService) { }
 
     @Get()
     @ApiOperation({ summary: 'Fetch classes for the current user' })
@@ -18,7 +18,7 @@ export class FetchClassesController {
     async fetchClasses(
         @CurrentUser() user: IJwtPayload,
     ): Promise<FetchClassesResponseDto> {
-        return await this.fetchClassesService.execute(
+        return await this.fetchEnrolledClassesService.execute(
             user.userId.toString(),
         );
 

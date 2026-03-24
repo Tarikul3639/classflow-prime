@@ -1,40 +1,32 @@
+// // updates/create/page.tsx
 // "use client";
 
 // import React, { useState } from "react";
-// import { useRouter } from "next/navigation";
+// import { useRouter, useParams } from "next/navigation";
 // import { UpdateEditorHeader } from "./_components/UpdateEditorHeader";
 // import { UpdateForm } from "./_components/UpdateForm";
 // import { UpdatePreview } from "./_components/UpdatePreview";
 // import { ProTip } from "./_components/ProTip";
+// import { useAppDispatch } from "@/redux/hooks";
+// import { createClassUpdate } from "@/redux/slices/classes/thunks/create-class-update.thunk";
 // import type { CreateUpdateFormData } from "@/types/update.types";
 
-// export default function UpdateEditorPage({
-//   params,
-// }: {
-//   params: { classId: string; updateId: string };
-// }) {
+// export default function CreateUpdatePage() {
 //   const router = useRouter();
+//   const dispatch = useAppDispatch();
+//   const params = useParams();
+//   const classId = params.classId as string;
+
 //   const [isLoading, setIsLoading] = useState(false);
 //   const [error, setError] = useState<string | null>(null);
-//   const isNew = params.updateId === "new";
 
-//   // Temporary form state with mock data for preview
 //   const [form, setForm] = useState<CreateUpdateFormData>({
 //     type: "announcement",
-//     title: "Midterm Exam Schedule Revision",
-//     description:
-//       "Please be advised that the midterm exam scheduled for next Tuesday has been moved to Wednesday to accommodate the guest lecture series. The syllabus remains the same.",
-//     date: "2026-03-15",
-//     time: "10:30",
-//     attachments: [
-//       {
-//         _id: "1",
-//         name: "exam-syllabus.pdf",
-//         size: "2.4 MB",
-//         url: "https://example.com/syllabus.pdf",
-//         type: "pdf",
-//       },
-//     ],
+//     title: "",
+//     description: "",
+//     date: "",
+//     time: "",
+//     attachments: [],
 //   });
 
 //   const handleSubmit = async () => {
@@ -42,12 +34,12 @@
 //     setError(null);
 
 //     try {
-//       // Simulate API call
-//       await new Promise((resolve) => setTimeout(resolve, 1500));
-//       console.log("Publishing update:", form);
-//       router.push(`/classes/${params.classId}/updates`);
+//       await dispatch(createClassUpdate({ classId, data: form })).unwrap();
+
+//       router.push(`/classes/${classId}/updates`);
 //     } catch (err) {
 //       setError(err instanceof Error ? err.message : "Something went wrong");
+//     } finally {
 //       setIsLoading(false);
 //     }
 //   };
@@ -55,8 +47,8 @@
 //   return (
 //     <div className="flex flex-col min-h-screen bg-slate-50">
 //       <UpdateEditorHeader
-//         classId={params.classId}
-//         isNew={isNew}
+//         classId={classId}
+//         isNew={true}
 //         isLoading={isLoading}
 //         error={error}
 //         onSubmit={handleSubmit}
@@ -64,12 +56,10 @@
 
 //       <main className="flex-1 overflow-y-auto p-2 md:p-4 lg:p-6">
 //         <div className="mx-auto grid grid-cols-1 xl:grid-cols-12 gap-8">
-//           {/* Left Column - Form */}
 //           <div className="xl:col-span-7">
 //             <UpdateForm form={form} setForm={setForm} />
 //           </div>
 
-//           {/* Right Column - Preview */}
 //           <div className="xl:col-span-5">
 //             <div className="sticky top-24 xl:top-0 space-y-4">
 //               <UpdatePreview form={form} />

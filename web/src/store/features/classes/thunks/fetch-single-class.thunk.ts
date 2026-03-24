@@ -4,7 +4,7 @@ import { apiClient } from "@/lib/api/axios";
 export interface IClassDetails {
     classId: string;
     department: string;
-    title: string;
+    name: string;
     members: number;
     instructor: string;
     semester: string;
@@ -12,6 +12,8 @@ export interface IClassDetails {
     coverImage?: string;
     avatarUrl?: string | null;
     status: "active" | "archived";
+    isInstructor: boolean; // ← bonus field to indicate if the current user is the instructor
+    isAssistant: boolean; // ← bonus field to indicate if the current user is an assistant
 }
 
 interface FetchClassResponse {
@@ -22,7 +24,7 @@ interface FetchClassResponse {
     };
 }
 
-export const fetchClass = createAsyncThunk<
+export const fetchSingleClass = createAsyncThunk<
     IClassDetails,
     string,
     { rejectValue: { message: string } }
@@ -35,6 +37,9 @@ export const fetchClass = createAsyncThunk<
                 message: data.message || "Failed to fetch class details",
             });
         }
+
+        console.log("Fetch Class of " + `${data.data.class.name}: ` + JSON.stringify(data.data.class, null, 2));
+
         return data.data.class;
     } catch (error: unknown) {
         console.log("Error fetching class details:", error);

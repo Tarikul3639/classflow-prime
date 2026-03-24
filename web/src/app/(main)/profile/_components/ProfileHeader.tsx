@@ -2,7 +2,7 @@
 
 import React from "react";
 import { User, LoaderIcon } from "lucide-react";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 interface ProfileHeaderProps {
   onSave: () => void;
@@ -14,7 +14,7 @@ export default function ProfileHeader({
   isChanged,
 }: ProfileHeaderProps) {
   const dispatch = useAppDispatch();
-  const { loading } = useAppSelector((state) => state.profile.update.status); // Assuming user data is stored here
+  const { loading } = useAppSelector((state) => state.profile.updateProfile.status); // Assuming user data is stored here
   return (
     <header className="sticky top-0 z-10 bg-slate-50 pb-4 pt-4 px-4 lg:px-8 border-b border-slate-200">
       <div className="flex items-center gap-3 mx-auto">

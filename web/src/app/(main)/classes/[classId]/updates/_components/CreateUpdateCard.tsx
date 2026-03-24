@@ -16,14 +16,14 @@ export default function CreateUpdateCard({ classId }: CreateUpdateCardProps) {
       </div>
       <div>
         <h4 className="font-bold text-slate-900 text-base">
-          Post New Update
+          Publish New Update
         </h4>
         <p className="text-sm text-slate-600 mt-1">
           Share announcements, assignments, or important information
         </p>
       </div>
       <Link
-        href={`/classes/${classId}/updates/1`}
+        href={`/classes/${classId}/updates/create`}
         className="mt-2 px-4 py-2.5 rounded-lg border border-primary/30 bg-white/50 text-primary font-bold text-[11px] md:text-[12px] lg:text-[13px] hover:bg-blue-50 transition-colors flex items-center gap-2"
       >
         <span>Create Update</span>

@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { verifyCodePasswordResetThunk } from "@/redux/slices/auth/thunks/password-reset.thunk";
-import { resendCodePasswordResetThunk } from "@/redux/slices/auth/thunks/password-reset.thunk";
-import { goToStep, clearPasswordResetStatus } from "@/redux/slices/auth/reducers/password-reset.reducer";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { verifyCodePasswordResetThunk } from "@/store/features/auth/thunks/password-reset.thunk";
+import { resendCodePasswordResetThunk } from "@/store/features/auth/thunks/password-reset.thunk";
+import { goToStep, clearPasswordResetStatus } from "@/store/features/auth/slices/password-reset.slice";
 import ErrorMessage from "./Error";
 import OTPInputForm from "./OTPInputForm";
 import ResendOTPSection from "./ResendOTPSection";

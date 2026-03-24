@@ -1,0 +1,1 @@
+//TODO: If need for individual update fetching arises, we can create a separate slice for it. For now, we can handle it within the existing updates slice.

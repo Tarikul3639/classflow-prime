@@ -8,7 +8,7 @@ import StepEmailInput from "./_components/StepEmailInput";
 import StepOTPVerification from "./_components/StepOTPVerification";
 import StepNewPassword from "./_components/StepNewPassword";
 import StepSuccess from "./_components/StepSuccess";
-import { useAppSelector } from "@/redux/hooks";
+import { useAppSelector } from "@/store/hooks";
 
 const ForgotPasswordPage: React.FC = () => {
   const router = useRouter();

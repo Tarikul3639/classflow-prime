@@ -10,12 +10,12 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { Input } from "@/components/ui/Input";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { confirmNewPasswordPasswordResetThunk } from "@/redux/slices/auth/thunks/password-reset.thunk";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { confirmNewPasswordPasswordResetThunk } from "@/store/features/auth/thunks/password-reset.thunk";
 import {
   clearPasswordResetStatus,
   goToStep,
-} from "@/redux/slices/auth/reducers/password-reset.reducer";
+} from "@/store/features/auth/slices/password-reset.slice";
 import ErrorMessage from "./Error";
 
 const StepNewPassword = () => {

@@ -9,12 +9,12 @@ import LogoutButton from "./_components/LogoutButton";
 import EnrolledClasses from "./_components/EnrolledClasses";
 import Preferences from "./_components/Preferences";
 import VersionInfo from "./_components/VersionInfo";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   // signoutAllThunk,
   signoutCurrentThunk,
-} from "@/redux/slices/auth/thunks/signout.thunk";
-import { updateProfileThunk } from "@/redux/slices/profile/thunks/update.thunk";
+} from "@/store/features/auth/thunks/signout.thunk";
+import { updateProfileThunk } from "@/store/features/profile/thunks/update-profile.thunk";
 import { Loader } from "@/components/ui/Loader";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -22,9 +22,9 @@ import { useRouter } from "next/navigation";
 const ProfileSettings: React.FC = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { user, status } = useAppSelector((state) => state.profile.user); // Assuming user data is stored here
+  const { user, status } = useAppSelector((state) => state.profile.fetchUser); // Assuming user data is stored here
   const { loading } = useAppSelector(
-    (state) => state.auth.session.signoutCurrent,
+    (state) => state.auth.signout.signoutCurrent,
   ); // For logout feedback
 
   const [userForm, setUserForm] = useState({

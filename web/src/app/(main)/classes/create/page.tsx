@@ -10,9 +10,9 @@ import { Textarea } from "@/components/ui/Textarea";
 import {
   updateFormData,
   resetForm,
-} from "@/redux/slices/classes/reducers/create-class.reducer";
-import { createClass } from "@/redux/slices/classes/thunks/create-class.thunk";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+} from "@/store/features/classes/slices/create-class.slice";
+import { createClass } from "@/store/features/classes/thunks/create-class.thunk";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { toast } from "sonner";
 
 const errorFieldMap: Record<string, string> = {

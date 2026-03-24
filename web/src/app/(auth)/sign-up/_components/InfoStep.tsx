@@ -12,13 +12,13 @@ import {
 
 import { Input } from "@/components/ui/Input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 import ErrorMessage from "./Error";
 
 // Thunk + types
-import { signupThunk } from "@/redux/slices/auth/thunks/signup.thunk";
-import type { ISignUpRequest } from "@/redux/slices/auth/thunks/signup.thunk";
+import { signupThunk } from "@/store/features/auth/thunks/signup.thunk";
+import type { ISignUpRequest } from "@/store/features/auth/thunks/signup.thunk";
 
 interface InfoStepProps {
   name: string;

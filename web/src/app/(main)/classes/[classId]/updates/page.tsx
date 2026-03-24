@@ -1,19 +1,21 @@
 "use client";
 
-import { useState } from "react";
-import SearchBar from "./_components/SearchBar";
+import { useState, useEffect } from "react";
 import { Filters as FilterChips } from "@/components/ui/Filters";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { BellOff } from "lucide-react";
+
 import CreateUpdateCard from "./_components/CreateUpdateCard";
 import DateHeader from "./_components/DateHeader";
 import UpdateCard from "./_components/UpdateCard";
-import { getDateKey, formatTime, formatDate } from "@/utils/date.utils";
+import SearchBar from "./_components/SearchBar";
 
+import { getDateKey, formatTime, formatDate } from "@/utils/date.utils";
 import { UPDATE_TYPE_CONFIG, UpdateType } from "@/types/update.types";
 
-import { fetchClassUpdate } from "@/redux/slices/classes/thunks/fetch-class-update.thunk";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { fetchClassUpdate } from "@/store/features/classes/thunks/fetch-class-update.thunk";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useParams } from "next/navigation";
-import { useEffect } from "react";
 
 interface Filter {
   id: string;
@@ -27,8 +29,9 @@ export default function UpdatesPage() {
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const { updates, loading, error } = useAppSelector(
-    (state) => state.classes.classUpdates,
+    (state) => state.classes.fetchClassUpdates,
   );
+  const { classDetails } = useAppSelector((state) => state.classes.fetchSingleClass);
 
   useEffect(() => {
     if (!classId || classId === "undefined") return;
@@ -113,7 +116,9 @@ export default function UpdatesPage() {
       </div>
 
       <div className="px-4 py-2 space-y-4 pb-8 mx-auto w-full">
-        <CreateUpdateCard classId={classId} />
+        {classDetails?.isInstructor || classDetails?.isAssistant ? (
+          <CreateUpdateCard classId={classId} />
+        ) : null}
 
         {Object.entries(groupedUpdates).map(([dateKey, dateUpdates]) => (
           <div key={dateKey} className="space-y-3">
@@ -149,6 +154,14 @@ export default function UpdatesPage() {
             </div>
           </div>
         ))}
+
+        {Object.keys(groupedUpdates).length === 0 && !loading && (
+          <EmptyState
+            icon={BellOff}
+            title="No updates yet"
+            description="New announcements will appear here."
+          />
+        )}
       </div>
     </div>
   );

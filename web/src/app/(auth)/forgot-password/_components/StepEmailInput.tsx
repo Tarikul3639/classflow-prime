@@ -3,9 +3,9 @@
 import { Mail, ArrowRight, Loader2, ArrowLeft } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import Link from "next/link";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { requestPasswordResetThunk } from "@/redux/slices/auth/thunks/password-reset.thunk";
-import { setResetEmail } from "@/redux/slices/auth/reducers/password-reset.reducer";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { requestPasswordResetThunk } from "@/store/features/auth/thunks/password-reset.thunk";
+import { setResetEmail } from "@/store/features/auth/slices/password-reset.slice";
 import ErrorMessage from "./Error";
 
 const StepEmailInput = () => {

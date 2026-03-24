@@ -26,9 +26,9 @@ class ClassDetailsDto {
 
     @ApiProperty({
         example: 'Introduction to Programming',
-        description: 'Title of the class',
+        description: 'Name of the class',
     })
-    title: string;
+    name: string;
 
     @ApiProperty({
         example: 30,
@@ -75,6 +75,18 @@ class ClassDetailsDto {
         description: 'Status of the class (e.g., active, archived)',
     })
     status: 'active' | 'archived';
+
+    @ApiProperty({
+        example: true,
+        description: 'Indicates if the current user is the instructor of the class',
+    })
+    isInstructor: boolean;
+
+    @ApiProperty({
+        example: false,
+        description: 'Indicates if the current user is an assistant of the class',
+    })
+    isAssistant: boolean;
 }
 
 export class FetchClassDataDto {

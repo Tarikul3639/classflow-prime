@@ -1,18 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { IClassDetails } from "../thunks/fetch-class.thunk";
-import { fetchClass } from "../thunks/fetch-class.thunk";
+import { IClassDetails } from "../thunks/fetch-single-class.thunk";
+import { fetchSingleClass } from "../thunks/fetch-single-class.thunk";
 
-interface FetchClassState {
+interface FetchSingleClassState {
     classDetails: IClassDetails | null;
     isLoading: boolean;
     error: string | null;
 }
 
-const initialState: FetchClassState = {
+const initialState: FetchSingleClassState = {
     classDetails: {
         classId: "",
         department: "",
-        title: "",
+        name: "",
         members: 0,
         instructor: "",
         semester: "",
@@ -20,12 +20,14 @@ const initialState: FetchClassState = {
         coverImage: "",
         avatarUrl: null,
         status: "active",
+        isInstructor: false,
+        isAssistant: false,
     },
     isLoading: false,
     error: null,
 };
-const fetchClassSlice = createSlice({
-    name: "fetchClass",
+const fetchSingleClassSlice = createSlice({
+    name: "fetchSingleClass",
     initialState,
     reducers: {
         // reset state when closing the Class Details Modal
@@ -37,17 +39,17 @@ const fetchClassSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(fetchClass.pending, (state) => {
+            .addCase(fetchSingleClass.pending, (state) => {
                 state.isLoading = true;
                 state.error = null;
                 state.classDetails = null;
             })
-            .addCase(fetchClass.fulfilled, (state, action) => {
+            .addCase(fetchSingleClass.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.classDetails = action.payload;
                 state.error = null;
             })
-            .addCase(fetchClass.rejected, (state, action) => {
+            .addCase(fetchSingleClass.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload?.message || "Failed to fetch class details";
                 state.classDetails = null;
@@ -55,5 +57,5 @@ const fetchClassSlice = createSlice({
     },
 });
 
-export const { resetClassDetailsState } = fetchClassSlice.actions;
-export default fetchClassSlice.reducer;
+export const { resetClassDetailsState } = fetchSingleClassSlice.actions;
+export default fetchSingleClassSlice.reducer;

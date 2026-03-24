@@ -11,19 +11,19 @@ import React, {
 } from "react";
 import { ArrowLeft, ArrowRight, Clock, Loader2, RefreshCw } from "lucide-react";
 
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import ErrorMessage from "./Error";
 
 // Updated thunks (server flow match)
 import {
   resendSignupVerificationThunk,
   verifySignupEmailThunk,
-} from "@/redux/slices/auth/thunks/signup.thunk";
+} from "@/store/features/auth/thunks/signup.thunk";
 
 import type {
   IResendVerificationRequest,
   IEmailVerifyRequest,
-} from "@/redux/slices/auth/thunks/signup.thunk";
+} from "@/store/features/auth/thunks/signup.thunk";
 
 interface StepOTPVerificationProps {
   email: string;

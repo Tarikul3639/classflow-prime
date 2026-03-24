@@ -11,9 +11,9 @@ import {
   QrCode,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { enrollClass } from "@/redux/slices/classes/thunks/enroll-class.thunk";
-import { resetEnrollState } from "@/redux/slices/classes/reducers/enroll-class.reducer";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { enrollClass } from "@/store/features/classes/thunks/enroll-class.thunk";
+import { resetEnrollState } from "@/store/features/classes/slices/enroll-class.slice";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { toast } from "sonner";
 
 export default function EnrollClassPage() {

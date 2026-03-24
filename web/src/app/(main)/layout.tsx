@@ -3,8 +3,8 @@
 import { useEffect } from "react";
 import { Sidebar } from "@/components/layout/sidebar/Sidebar";
 import { BottomNavbar } from "@/components/layout/navbar/BottomNav";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { meThunk } from "@/redux/slices/profile/thunks/user.thunk";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { meThunk } from "@/store/features/profile/thunks/fetch-user.thunk";
 import { Loader } from "@/components/ui/Loader";
 import { toast } from "sonner";
 
@@ -14,7 +14,7 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   const dispatch = useAppDispatch();
-  const { loading } = useAppSelector((state) => state.profile.user.status);
+  const { loading } = useAppSelector((state) => state.profile.fetchUser.status);
 
   // On mount, fetch current user if not already authenticated
   useEffect(() => {

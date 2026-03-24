@@ -5,7 +5,7 @@ import { Class, ClassDocument } from '../../../database/entities/class.entity';
 import { FetchClassesResponseDto } from '../dto/fetch-enrolled-classes.dto';
 
 @Injectable()
-export class FetchClassesService {
+export class FetchEnrolledClassesService {
     constructor(
         @InjectModel(Class.name)
         private readonly classModel: Model<ClassDocument>,
@@ -15,14 +15,42 @@ export class FetchClassesService {
         const userObjectId = new Types.ObjectId(userId);
 
         const pipeline: PipelineStage[] = [
+            // Step 1: Current user enrolled কিনা আগে check করো
             {
-                // 1. Initial Match: Instructor or Assistant
-                $match: {
-                    $or: [{ instructorId: userObjectId }, { assistants: userObjectId }],
+                $lookup: {
+                    from: 'enrollments',
+                    let: { currentClassId: '$_id' },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        { $eq: ['$classId', '$$currentClassId'] },
+                                        { $eq: ['$userId', userObjectId] },  // ← schema: userId
+                                    ],
+                                },
+                            },
+                        },
+                    ],
+                    as: 'currentUserEnrollment',
                 },
             },
+
+            // Step 2: Access check — instructor/assistant/student
             {
-                // 2. Advanced Lookup with 'let' for Student Count
+                $match: {
+                    $expr: {
+                        $or: [
+                            { $eq: ['$instructorId', userObjectId] },
+                            { $in: [userObjectId, { $ifNull: ['$assistantIds', []] }] }, // ← assistantIds
+                            { $gt: [{ $size: '$currentUserEnrollment' }, 0] },           // ← student
+                        ],
+                    },
+                },
+            },
+
+            // Step 3: মোট student count
+            {
                 $lookup: {
                     from: 'enrollments',
                     let: { currentClassId: '$_id' },
@@ -33,8 +61,9 @@ export class FetchClassesService {
                     as: 'studentCountArray',
                 },
             },
+
+            // Step 4: Instructor details
             {
-                // 3. Lookup Instructor Details
                 $lookup: {
                     from: 'users',
                     localField: 'instructorId',
@@ -44,8 +73,9 @@ export class FetchClassesService {
             },
             { $unwind: { path: '$instructorDetails', preserveNullAndEmptyArrays: true } },
             { $unwind: { path: '$studentCountArray', preserveNullAndEmptyArrays: true } },
+
+            // Step 5: Project
             {
-                // 4. Final Projection to Match DTO
                 $project: {
                     _id: 0,
                     classId: { $toString: '$_id' },
@@ -56,11 +86,15 @@ export class FetchClassesService {
                     avatarUrl: { $ifNull: ['$instructorDetails.avatarUrl', null] },
                     semester: { $ifNull: ['$semester', 'TBA'] },
                     themeColor: '$themeColor',
-                    coverImage: '$coverImage',
+                    coverImage: { $ifNull: ['$coverImage', null] },
                     status: {
-                        $cond: { if: { $eq: ['$isArchived', true] }, then: 'archived', else: 'active' }
+                        $cond: {
+                            if: { $eq: ['$isArchived', true] },
+                            then: 'archived',
+                            else: 'active',
+                        },
                     },
-
+                    isInstructor: { $eq: ['$instructorId', userObjectId] },  // ← bonus
                 },
             },
         ];

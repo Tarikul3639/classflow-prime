@@ -1,45 +1,25 @@
 import { createSlice } from '@reduxjs/toolkit';
-
-import { SignInThunk } from '../thunks/signin.thunks';
 import { IRequestStatus } from '../auth.types';
 import { signoutAllThunk, signoutCurrentThunk } from '../thunks/signout.thunk';
 
-export type AuthSessionStatusState = {
-    signIn: IRequestStatus;
+export interface SignOutState {
     signoutCurrent: IRequestStatus;
     signoutAll: IRequestStatus;
-};
+}
 
-export const initialState: AuthSessionStatusState = {
-    signIn: { loading: false, error: null, message: null },
+const initialState: SignOutState = {
     signoutCurrent: { loading: false, error: null, message: null },
     signoutAll: { loading: false, error: null, message: null },
 };
 
-export const sessionStatusSlice = createSlice({
-    name: 'auth/sessionStatus',
+export const signOutSlice = createSlice({
+    name: 'auth/signOut',
     initialState,
     reducers: {
-        clearSessionStatus: () => initialState,
+        resetSignOutStatus: () => initialState,
     },
     extraReducers: (builder) => {
-        // signIn
-        builder
-            .addCase(SignInThunk.pending, (state) => {
-                state.signIn.loading = true;
-                state.signIn.error = null;
-                state.signIn.message = null;
-            })
-            .addCase(SignInThunk.fulfilled, (state, action) => {
-                state.signIn.loading = false;
-                state.signIn.message = action.payload?.message ?? null;
-            })
-            .addCase(SignInThunk.rejected, (state, action) => {
-                state.signIn.loading = false;
-                state.signIn.error = action.payload ?? 'Sign in failed';
-            });
-
-        // signout current
+        // Signout Current
         builder
             .addCase(signoutCurrentThunk.pending, (state) => {
                 state.signoutCurrent.loading = true;
@@ -52,10 +32,10 @@ export const sessionStatusSlice = createSlice({
             })
             .addCase(signoutCurrentThunk.rejected, (state, action) => {
                 state.signoutCurrent.loading = false;
-                state.signoutCurrent.error = action.payload ?? 'Signout failed';
+                state.signoutCurrent.error = (action.payload as string) ?? 'Signout failed';
             });
 
-        // signout all
+        // Signout All
         builder
             .addCase(signoutAllThunk.pending, (state) => {
                 state.signoutAll.loading = true;
@@ -64,15 +44,14 @@ export const sessionStatusSlice = createSlice({
             })
             .addCase(signoutAllThunk.fulfilled, (state, action) => {
                 state.signoutAll.loading = false;
-                state.signoutAll.message =
-                    action.payload?.message ?? 'Signed out from all devices';
+                state.signoutAll.message = action.payload?.message ?? 'Signed out from all devices';
             })
             .addCase(signoutAllThunk.rejected, (state, action) => {
                 state.signoutAll.loading = false;
-                state.signoutAll.error = action.payload ?? 'Signout failed';
+                state.signoutAll.error = (action.payload as string) ?? 'Signout failed';
             });
     },
 });
 
-export const { clearSessionStatus } = sessionStatusSlice.actions;
-export default sessionStatusSlice.reducer;
+export const { resetSignOutStatus } = signOutSlice.actions;
+export default signOutSlice.reducer;

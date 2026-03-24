@@ -19,12 +19,15 @@ export class FetchClassService {
         const userObjectId = new Types.ObjectId(userId);
 
         const pipeline: PipelineStage[] = [
+            // Step 1: Class খোঁজো
             {
                 $match: {
                     _id: classObjectId,
-                    $or: [{ instructorId: userObjectId }, { assistantIds: userObjectId }],
+                    isArchived: false,        // ← archived class দেখাবো না
                 },
             },
+
+            // Step 2: মোট enrolled student count
             {
                 $lookup: {
                     from: 'enrollments',
@@ -37,17 +40,38 @@ export class FetchClassService {
                                 },
                             },
                         },
-                        {
-                            $count: 'total',
-                        },
+                        { $count: 'total' },
                     ],
                     as: 'studentCountArray',
                 },
             },
+
+            // Step 3: Current user enrolled কিনা (userId ← schema অনুযায়ী)
+            {
+                $lookup: {
+                    from: 'enrollments',
+                    let: { currentClassId: '$_id' },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        { $eq: ['$classId', '$$currentClassId'] },
+                                        { $eq: ['$userId', userObjectId] },  // ← schema: userId
+                                    ],
+                                },
+                            },
+                        },
+                    ],
+                    as: 'currentUserEnrollment',
+                },
+            },
+
+            // Step 4: Instructor details (schema: name, avatarUrl)
             {
                 $lookup: {
                     from: 'users',
-                    localField: 'instructorId', // From Current class
+                    localField: 'instructorId',
                     foreignField: '_id',
                     as: 'instructorDetails',
                 },
@@ -63,27 +87,55 @@ export class FetchClassService {
                     path: '$studentCountArray',
                     preserveNullAndEmptyArrays: true,
                 },
-            }, {
+            },
+
+            // Step 5: Access check — instructor/assistant/enrolled student
+            {
+                $match: {
+                    $expr: {
+                        $or: [
+                            { $eq: ['$instructorId', userObjectId] },
+                            { $in: [userObjectId, { $ifNull: ['$assistantIds', []] }] },
+                            { $gt: [{ $size: '$currentUserEnrollment' }, 0] },
+                        ],
+                    },
+                },
+            },
+
+            // Step 6: Project
+            {
                 $project: {
                     _id: 0,
-                    classId: { $toString: "$_id" },
-                    title: 1,
-                    department: { $ifNull: ["$department", "General"] },
+                    classId: { $toString: '$_id' },
+                    name: '$name',                                          // ← schema: name (title না)
+                    department: { $ifNull: ['$department', 'General'] },
+                    semester: { $ifNull: ['$semester', 'TBA'] },
+                    about: { $ifNull: ['$about', null] },                  // ← schema: about
+                    themeColor: '$themeColor',
+                    coverImage: { $ifNull: ['$coverImage', null] },
+                    status: { $ifNull: ['$status', 'active'] },
+                    allowEnroll: '$allowEnroll',                           // ← schema: allowEnroll
+
+                    // Members count
                     members: {
                         $add: [
-                            { $ifNull: ["$studentCountArray.total", 0] }, // Student count from enrollments
-                            { $size: { $ifNull: ["$assistantIds", []] } }, // Assistant count from class document
-                            1, // Instructor count (always 1)
-                        ]
+                            { $ifNull: ['$studentCountArray.total', 0] },  // enrolled students
+                            { $size: { $ifNull: ['$assistantIds', []] } }, // assistants
+                            1,                                              // instructor
+                        ],
                     },
-                    instructor: { $ifNull: ["$instructorDetails.name", "Student"] },
-                    avatarUrl: { $ifNull: ["$instructorDetails.avatarUrl", null] },
-                    semester: { $ifNull: ["$semester", "TBA"] },
-                    themeColor: "$themeColor",
-                    coverImage: { $ifNull: ["$coverImage", null] },
-                    status: { $ifNull: ["$status", "active"] },
-                }
-            }
+
+                    // Instructor info (schema: name, avatarUrl)
+                    instructor: { $ifNull: ['$instructorDetails.name', 'Unknown'] },
+                    avatarUrl: { $ifNull: ['$instructorDetails.avatarUrl', null] },
+
+                    // Current user role
+                    isInstructor: { $eq: ['$instructorId', userObjectId] },
+                    isAssistant: {
+                        $in: [userObjectId, { $ifNull: ['$assistantIds', []] }]
+                    },
+                },
+            },
         ];
 
         const classData = await this.classModel.aggregate(pipeline).exec();

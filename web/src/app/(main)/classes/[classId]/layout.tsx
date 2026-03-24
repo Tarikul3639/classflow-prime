@@ -8,8 +8,8 @@ import { motion } from "framer-motion";
 import { useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-import { fetchClass } from "@/redux/slices/classes/thunks/fetch-class.thunk";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { fetchSingleClass } from "@/store/features/classes/thunks/fetch-single-class.thunk";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { toast } from "sonner";
 
 export default function ClassLayout({
@@ -24,12 +24,12 @@ export default function ClassLayout({
 
   const dispatch = useAppDispatch();
   const { classDetails, isLoading, error } = useAppSelector(
-    (state) => state.classes.fetchClass,
+    (state) => state.classes.fetchSingleClass,
   );
 
   useEffect(() => {
     if (classId && classId !== "undefined") {
-      dispatch(fetchClass(classId))
+      dispatch(fetchSingleClass(classId))
         .unwrap()
         .then((res) => {
           // console.log("Fetched Class Details:", res);
@@ -117,7 +117,7 @@ export default function ClassLayout({
             <AvatarImage
               className="object-cover"
               src={classDetails?.coverImage || undefined}
-              alt={classDetails?.title || "Class Cover Image"}
+              alt={classDetails?.name || "Class Cover Image"}
             />
             <AvatarFallback
               className="rounded-none w-full h-full text-4xl font-bold tracking-widest flex items-center justify-center uppercase"
@@ -126,7 +126,7 @@ export default function ClassLayout({
                 color: classDetails?.themeColor,
               }}
             >
-              {classDetails?.title
+              {classDetails?.name
                 ?.split(" ")
                 .map((n) => n[0])
                 .join("")}
@@ -177,7 +177,7 @@ export default function ClassLayout({
                 {classDetails?.department}.{classDetails?.semester}
               </p>
               <h2 className="text-2xl font-extrabold mb-4 leading-tight">
-                {classDetails?.title}
+                {classDetails?.name}
               </h2>
               <div className="flex items-center gap-3 pt-4 border-t border-white/20">
                 <Avatar
