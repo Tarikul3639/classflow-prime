@@ -22,7 +22,7 @@ import fetchClassUpdatesReducer from "./features/classes/slices/fetch-class-upda
 import createClassUpdateReducer from "./features/classes/slices/create-class-update.slice";
 import fetchSingleClassReducer from "./features/classes/slices/fetch-single-class.slice";
 import fetchEnrolledClassesReducer from "./features/classes/slices/fetch-enrolled-classes.slice";
-import fetchClassUpdateByIdReducer from "./features/classes/slices/fetch-class-update-by-id.slice";
+import fetchSingleClassUpdateReducer from "./features/classes/slices/fetch-single-class-update.slice";
 import updateClassUpdateReducer from "./features/classes/slices/update-class-update.slice";
 
 const classesReducer = combineReducers({
@@ -33,7 +33,7 @@ const classesReducer = combineReducers({
   createClassUpdate: createClassUpdateReducer,
   fetchSingleClass: fetchSingleClassReducer,
   fetchEnrolledClasses: fetchEnrolledClassesReducer,
-  fetchClassUpdateById: fetchClassUpdateByIdReducer,
+  fetchSingleClassUpdate: fetchSingleClassUpdateReducer,
   updateClassUpdate: updateClassUpdateReducer,
 });
 

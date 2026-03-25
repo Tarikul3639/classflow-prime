@@ -28,7 +28,7 @@ export const fetchSingleClass = createAsyncThunk<
     IClassDetails,
     string,
     { rejectValue: { message: string } }
->("classes/fetchById", async (classId, { rejectWithValue }) => {
+>("classes/fetchSingleUpdate", async (classId, { rejectWithValue }) => {
     try {
         const { data } = await apiClient.get<FetchClassResponse>(`/classes/${classId}`);
         console.log("API Response:", data);

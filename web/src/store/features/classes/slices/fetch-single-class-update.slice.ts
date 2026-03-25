@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchClassUpdateById } from "../thunks/fetch-class-update-by-id.thunk";
+import { fetchSingleClassUpdate } from "../thunks/fetch-single-class-update.thunk";
 import type { ClassUpdateItem } from "@/types/update.types";
 
 interface ClassUpdateDetailState {
@@ -14,7 +14,7 @@ const initialState: ClassUpdateDetailState = {
     error: null,
 };
 
-const fetchClassUpdateByIdSlice = createSlice({
+const fetchSingleClassUpdateSlice = createSlice({
     name: "classUpdateDetail",
     initialState,
     reducers: {
@@ -26,18 +26,18 @@ const fetchClassUpdateByIdSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(fetchClassUpdateById.pending, (state) => {
+            .addCase(fetchSingleClassUpdate.pending, (state) => {
                 state.loading = true;
                 state.error = null;
                 // Previously, we were clearing currentUpdate here, but it's better to keep it until we know the result of the fetch
                 // state.currentUpdate = null; 
             })
-            .addCase(fetchClassUpdateById.fulfilled, (state, action) => {
+            .addCase(fetchSingleClassUpdate.fulfilled, (state, action) => {
                 state.loading = false;
                 state.currentUpdate = action.payload; // Single Object
                 state.error = null;
             })
-            .addCase(fetchClassUpdateById.rejected, (state, action) => {
+            .addCase(fetchSingleClassUpdate.rejected, (state, action) => {
                 state.loading = false;
                 state.currentUpdate = null;
                 // Use the error message from the rejected action payload, or a default message
@@ -46,5 +46,5 @@ const fetchClassUpdateByIdSlice = createSlice({
     },
 });
 
-export const { clearCurrentUpdate } = fetchClassUpdateByIdSlice.actions;
-export default fetchClassUpdateByIdSlice.reducer;
+export const { clearCurrentUpdate } = fetchSingleClassUpdateSlice.actions;
+export default fetchSingleClassUpdateSlice.reducer;

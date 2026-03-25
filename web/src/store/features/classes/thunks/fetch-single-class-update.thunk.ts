@@ -18,12 +18,12 @@ interface FetchClassUpdateResponse {
  * Fetch a single class update by its ID
  * URL: /classes/:classId/updates/:updateId
  */
-export const fetchClassUpdateById = createAsyncThunk<
+export const fetchSingleClassUpdate = createAsyncThunk<
     ClassUpdateItem, // Return type (Payload)
     { classId: string; updateId: string }, // Arguments
     { rejectValue: { message: string } } // Error type
 >(
-    "classes/fetchClassUpdateById",
+    "classes/fetchSingleClassUpdate",
     async ({ classId, updateId }, { rejectWithValue }) => {
         try {
             // Make the API call to fetch the class update details by ID
@@ -36,6 +36,8 @@ export const fetchClassUpdateById = createAsyncThunk<
                     message: data.message || "Failed to fetch the update details." 
                 });
             }
+
+            console.log('Fetch Single Class Update: ', data.data.update);
 
             return data.data.update;
         } catch (error: unknown) {

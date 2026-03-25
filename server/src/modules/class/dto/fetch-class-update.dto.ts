@@ -39,10 +39,10 @@ class UpdateEngagementDto {
 }
 
 /**
- * DTO for attachments in an update
+ * DTO for materials in an update
  */
-class AttachmentDto {
-    @ApiProperty({ example: 'a456', description: 'Unique ID of the attachment' })
+class MaterialDto {
+    @ApiProperty({ example: 'a456', description: 'Unique ID of the material' })
     _id: string;
 
     @ApiProperty({ example: 'Lecture_Notes.pdf' })
@@ -91,10 +91,10 @@ export class ClassUpdateItemDto {
     @ApiProperty({ example: '2026-03-24T05:00:00Z' })
     createdAt: string;
 
-    @ApiProperty({ type: [AttachmentDto], required: false })
+    @ApiProperty({ type: [MaterialDto], required: false })
     @IsOptional()
     @IsArray()
-    attachments?: AttachmentDto[];
+    materials?: MaterialDto[];
 
     @ApiProperty({ type: UpdateEngagementDto, required: false })
     @IsOptional()

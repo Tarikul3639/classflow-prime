@@ -47,11 +47,12 @@ export class CreateClassUpdateService {
         }
 
         // Check if the user is the instructor or assistant of the class
-        const isInstructor = targetClass.instructorId === userObjId;
-        const isAssistant = targetClass.assistantIds?.some((id) =>
-            id.equals(userObjId),
-        );
+        const isInstructor =
+            targetClass.instructorId.equals(userObjId);
 
+        const isAssistant = targetClass.assistantIds?.some(
+            (id) => id.equals(userObjId),
+        );
         if (!isInstructor && !isAssistant) {
             throw new ForbiddenException(
                 'You do not have permission to post updates',

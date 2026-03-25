@@ -8,7 +8,7 @@ import { UpdateForm } from "../../updates/create/_components/UpdateForm";
 import { UpdatePreview } from "../../updates/create/_components/UpdatePreview";
 import { ProTip } from "../../updates/create/_components/ProTip";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { fetchClassUpdateById } from "@/store/features/classes/thunks/fetch-class-update-by-id.thunk";
+import { fetchSingleClassUpdate } from "@/store/features/classes/thunks/fetch-single-class-update.thunk";
 import { updateClassUpdate } from "@/store/features/classes/thunks/update-class-update.thunk";
 import type { CreateUpdateFormData } from "@/types/update.types";
 import { toast } from "sonner";
@@ -21,7 +21,7 @@ export default function EditUpdatePage() {
     const updateId = params.updateId as string;
 
     const { loading: fetchLoading } = useAppSelector(
-        (state) => state.classes.fetchClassUpdateById,
+        (state) => state.classes.fetchSingleClassUpdate,
     );
 
     const { loading, error } = useAppSelector(
@@ -32,14 +32,14 @@ export default function EditUpdatePage() {
         category: "announcement",
         title: "",
         description: "",
-        date: undefined,
-        time: undefined,
+        date: "",
+        time: "",
         materials: [],
     });
 
     // Fetch the existing update details on component mount
     useEffect(() => {
-        dispatch(fetchClassUpdateById({ classId, updateId }))
+        dispatch(fetchSingleClassUpdate({ classId, updateId }))
             .unwrap()
             .then((res) => {
                 setForm({
