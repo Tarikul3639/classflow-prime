@@ -18,7 +18,7 @@ export class ClassUpdate implements IClassUpdate {
     @Prop({ enum: UpdateCategory, default: UpdateCategory.ANNOUNCEMENT })
     category: UpdateCategory;
 
-    @Prop({ index: true })
+    @Prop({ type: Date, index: true })
     eventAt?: Date; // Exam ba CT er date if applicable
 
     @Prop({ type: [Types.ObjectId], ref: 'ClassMaterial', default: [] })

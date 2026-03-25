@@ -108,8 +108,8 @@ export interface CreateUpdateFormData {
     category: UpdateCategory;
     title: string;
     description: string;
-    date: string;
-    time: string;
+    date: string | undefined; // Format: YYYY-MM-DD
+    time: string | undefined; // Format: HH:mm
     materials: Material[];
 }
 
@@ -129,7 +129,7 @@ export interface UpdateEngagement {
 export interface ClassUpdateItem {
     _id: string;
     classId: string;
-    type: UpdateCategory;
+    category: UpdateCategory;
     title: string;
     description: string;
     isPinned: boolean;

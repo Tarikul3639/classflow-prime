@@ -41,7 +41,13 @@ export default function CreateUpdatePage() {
 
   const handleSubmit = async () => {
 
-    await dispatch(createClassUpdate({ classId, updateData: form }))
+    const payload = {
+      ...form,
+      date: form.date ? form.date : undefined,
+      time: form.time ? form.time : undefined,
+    };
+
+    await dispatch(createClassUpdate({ classId, updateData: payload }))
       .unwrap()
       .then((res) => {
         toast.success("Update created successfully!", {

@@ -11,11 +11,13 @@ import UpdateCard from "./_components/UpdateCard";
 import SearchBar from "./_components/SearchBar";
 
 import { getDateKey, formatTime, formatDate } from "@/utils/date.utils";
-import { UPDATE_TYPE_CONFIG, UpdateType } from "@/types/update.types";
+import { UPDATE_TYPE_CONFIG, UpdateCategory } from "@/types/update.types";
 
 import { fetchClassUpdate } from "@/store/features/classes/thunks/fetch-class-update.thunk";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { ro } from "date-fns/locale";
 
 interface Filter {
   id: string;
@@ -24,6 +26,7 @@ interface Filter {
 
 export default function UpdatesPage() {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const params = useParams();
   const classId = params.classId as string;
   const [activeFilter, setActiveFilter] = useState("all");
@@ -31,7 +34,9 @@ export default function UpdatesPage() {
   const { updates, loading, error } = useAppSelector(
     (state) => state.classes.fetchClassUpdates,
   );
-  const { classDetails } = useAppSelector((state) => state.classes.fetchSingleClass);
+  const { classDetails } = useAppSelector(
+    (state) => state.classes.fetchSingleClass,
+  );
 
   useEffect(() => {
     if (!classId || classId === "undefined") return;
@@ -89,7 +94,7 @@ export default function UpdatesPage() {
       update.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       update.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesFilter =
-      activeFilter === "all" || update.type === activeFilter;
+      activeFilter === "all" || update.category === activeFilter;
     return matchesSearch && matchesFilter;
   });
 
@@ -103,6 +108,18 @@ export default function UpdatesPage() {
     },
     {} as Record<string, typeof filteredUpdates>,
   );
+
+  const handlePin = () => {
+    console.log("Pin/Unpin action triggered");
+  };
+
+  const handleUnpin = () => {
+    console.log("Unpin action triggered");
+  };
+
+  const handleDelete = () => {
+    console.log("Delete action triggered");
+  };
 
   return (
     <div className="min-h-screen">
@@ -126,7 +143,8 @@ export default function UpdatesPage() {
 
             <div className="space-y-3">
               {dateUpdates.map((update) => {
-                const config = UPDATE_TYPE_CONFIG[update.type as UpdateType];
+                const config =
+                  UPDATE_TYPE_CONFIG[update.category as UpdateCategory];
 
                 return (
                   <UpdateCard
@@ -145,9 +163,20 @@ export default function UpdatesPage() {
                       update.eventAt ? formatTime(update.eventAt) : undefined
                     }
                     description={update.description}
-                    attachment={update.attachments}
+                    materials={update.materials}
                     postedBy={update.postedBy}
                     isPinned={update.isPinned}
+                    onPin={handlePin}
+                    onUnpin={handleUnpin}
+                    onEdit={() => {
+                      router.push(
+                        `/classes/${classId}/updates/${update._id}`,
+                      );
+                    }}
+                    onDelete={handleDelete}
+                    showActions={
+                      classDetails?.isInstructor || classDetails?.isAssistant
+                    }
                   />
                 );
               })}

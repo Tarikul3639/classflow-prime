@@ -2,8 +2,13 @@
 
 import React from "react";
 import { type LucideIcon, CalendarDays, Clock } from "lucide-react";
+import UpdateActionMenu from "./UpdateActionMenu";
 import UpdateMaterial from "./UpdateMaterials";
-import type { Material, PostedBy, UpdateEngagement } from "@/types/update.types";
+import type {
+  Material,
+  PostedBy,
+  UpdateEngagement,
+} from "@/types/update.types";
 // import UpdateEngagement from "./UpdateEngagement";
 
 interface UpdateCardProps {
@@ -19,6 +24,12 @@ interface UpdateCardProps {
   engagement?: UpdateEngagement;
   postedBy?: PostedBy;
   isPinned?: boolean;
+
+  onPin?: () => void;
+  onUnpin?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  showActions?: boolean;
 }
 
 export default function UpdateCard({
@@ -33,6 +44,12 @@ export default function UpdateCard({
   materials,
   postedBy,
   isPinned,
+
+  onPin,
+  onUnpin,
+  onEdit,
+  onDelete,
+  showActions,
 }: UpdateCardProps) {
   return (
     <article className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col gap-3 active:bg-slate-50 transition-colors">
@@ -64,6 +81,16 @@ export default function UpdateCard({
             </div>
           </div>
         </div>
+
+        {showActions && (
+          <UpdateActionMenu
+            isPinned={isPinned}
+            onPin={onPin}
+            onUnpin={onUnpin}
+            onEdit={onEdit}
+            onDelete={onDelete}
+          />
+        )}
       </div>
 
       {/* Description */}

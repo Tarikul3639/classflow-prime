@@ -70,7 +70,7 @@ export class ClassUpdateItemDto {
     classId: string;
 
     @ApiProperty({ enum: UpdateCategory, example: 'exam' })
-    type: UpdateCategory;
+    category: UpdateCategory;
 
     @ApiProperty({ example: 'Midterm Exam Schedule' })
     title: string;

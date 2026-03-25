@@ -39,6 +39,7 @@ export default function ClassLayout({
           toast.error("Failed to load class details", {
             description: err.message,
           });
+          router.replace("/404");
         });
     }
   }, [classId]);

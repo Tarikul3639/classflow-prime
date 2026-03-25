@@ -4,6 +4,7 @@ import { Model, Types, PipelineStage } from 'mongoose';
 import { Class, ClassDocument } from '../../../database/entities/class.entity';
 import { FetchClassUpdateResponseDto } from "../dto/fetch-class-update.dto";
 
+// TODO: Have some issue with the aggregation pipeline
 @Injectable()
 export class FetchClassUpdateService {
     constructor(
@@ -15,6 +16,7 @@ export class FetchClassUpdateService {
         userId: string,
         classId: string,
     ): Promise<FetchClassUpdateResponseDto> {
+        const userObjId = new Types.ObjectId(userId);
         const classObjectId = new Types.ObjectId(classId);
 
         const pipeline: PipelineStage[] = [
@@ -68,8 +70,7 @@ export class FetchClassUpdateService {
                     classId: { $toString: '$_id' },
                     title: '$updates.title',
                     description: { $ifNull: ['$updates.description', null] },
-                    // DTO-তে 'type' আছে, তাই category-কে 'type' হিসেবে পাঠানো হচ্ছে
-                    type: '$updates.category',
+                    category: '$updates.category',
                     isPinned: '$updates.isPinned',
                     eventAt: {
                         $cond: {
