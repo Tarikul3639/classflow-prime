@@ -1,15 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { 
-    IsNotEmpty, 
-    IsString, 
-    IsEnum, 
-    IsBoolean, 
-    IsOptional, 
-    IsArray, 
-    IsUrl, 
-    IsInt, 
-    ValidateNested 
+import {
+    IsNotEmpty,
+    IsString,
+    IsEnum,
+    IsBoolean,
+    IsOptional,
+    IsArray,
+    IsUrl,
+    IsInt,
+    IsDate,
+    ValidateNested
 } from 'class-validator';
 import { UpdateCategory } from '../../../database/interface/update.interface';
 
@@ -102,20 +103,29 @@ export class ClassUpdateItemDto {
     @Type(() => PostedByDto)
     postedBy: PostedByDto;
 
-    @ApiProperty({ example: '2026-03-24T05:43:38Z', required: false, nullable: true })
+    @ApiProperty({ type: Date, example: '2026-03-24T05:43:38Z', required: false, nullable: true })
     @IsOptional()
-    eventAt: string | null;
+    @IsDate()
+    @Type(() => Date)
+    eventAt: Date | null;
 
-    @ApiProperty({ example: '2026-03-24T05:00:00Z' })
-    @IsString()
-    createdAt: string;
+    @ApiProperty({ type: Date, example: '2026-03-24T05:00:00Z' })
+    @IsDate()
+    @Type(() => Date)
+    createdAt: Date;
+
+    @ApiProperty({ type: Date, example: '2026-03-24T06:00:00Z', required: false })
+    @IsOptional()
+    @IsDate()
+    @Type(() => Date)
+    updatedAt?: Date;
 
     @ApiProperty({ type: [MaterialDto], required: false })
     @IsOptional()
     @IsArray()
     @ValidateNested({ each: true })
     @Type(() => MaterialDto)
-    materials?: MaterialDto[]; 
+    materials?: MaterialDto[];
 
     @ApiProperty({ type: UpdateEngagementDto, required: false })
     @IsOptional()

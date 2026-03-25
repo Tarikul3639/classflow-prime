@@ -32,8 +32,7 @@ export default function EditUpdatePage() {
         category: "announcement",
         title: "",
         description: "",
-        date: "",
-        time: "",
+        eventAt: null,
         materials: [],
     });
 
@@ -46,13 +45,15 @@ export default function EditUpdatePage() {
                     category: res.category,
                     title: res.title,
                     description: res.description,
-                    date: res.eventAt ? res.eventAt.split("T")[0] : "",
-                    time: res.eventAt ? res.eventAt.split("T")[1].slice(0, 5) : "",
+                    eventAt: res.eventAt || "",
                     materials: res.materials ?? [],
                 });
             })
             .catch((err) => {
-                toast.error("Failed to load update", { description: err.message ,  position: "top-center" });
+                toast.error("Failed to load update", {
+                    description: err.message,
+                    position: "top-center",
+                });
                 router.push(`/classes/${classId}/updates`);
             });
     }, [classId, updateId]);
@@ -65,14 +66,7 @@ export default function EditUpdatePage() {
     }, [error]);
 
     const handleSubmit = async () => {
-        const payload = {
-            ...form,
-            date: form.date ? form.date : undefined,
-            time: form.time ? form.time : undefined,
-        };
-        await dispatch(
-            updateClassUpdate({ classId, updateId, updateData: payload }),
-        )
+        await dispatch(updateClassUpdate({ classId, updateId, updateData: form }))
             .unwrap()
             .then((res) => {
                 toast.success("Update saved successfully!", {

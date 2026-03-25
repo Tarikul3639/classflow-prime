@@ -59,12 +59,6 @@ export class CreateClassUpdateService {
             );
         }
 
-        let eventAt: Date | undefined = undefined;
-        if (dto.date) {
-            const timeStr = dto.time || '00:00';
-            eventAt = new Date(`${dto.date}T${timeStr}:00`);
-        }
-
         // Start transaction for creating update and associated materials
         const session = await this.classModel.db.startSession();
         session.startTransaction();
@@ -77,7 +71,7 @@ export class CreateClassUpdateService {
                         title: dto.title,
                         description: dto.description,
                         category: dto.category,
-                        eventAt: eventAt,
+                        eventAt: dto.eventAt ? new Date(dto.eventAt) : undefined,
                         postedBy: userObjId,
                     },
                 ],

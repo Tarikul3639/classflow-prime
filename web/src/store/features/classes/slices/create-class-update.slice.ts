@@ -19,8 +19,7 @@ const initialState: CreateUpdateState = {
         category: "announcement", // Default type
         title: "",
         description: "",
-        date:"",
-        time:"",
+        eventAt: null,
         materials: [],
     },
     loading: false,

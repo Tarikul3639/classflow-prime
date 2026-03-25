@@ -108,8 +108,7 @@ export interface CreateUpdateFormData {
     category: UpdateCategory;
     title: string;
     description: string;
-    date: string | undefined; // Format: YYYY-MM-DD
-    time: string | undefined; // Format: HH:mm
+    eventAt: string | null; // ISO string format
     materials: Material[];
 }
 

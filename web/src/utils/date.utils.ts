@@ -49,3 +49,33 @@ export function formatDate(date: Date): string {
 function isSameDay(a: Date, b: Date): boolean {
   return a.toDateString() === b.toDateString();
 }
+
+export function getISODate(isoStr?: string): string | null {
+  if (!isoStr) return null;
+
+  const date = new Date(isoStr);
+  if (isNaN(date.getTime())) return null;
+
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const dd = String(date.getDate()).padStart(2, "0");
+
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+export function getISOTime(isoStr?: string): string | null {
+  if (!isoStr) return null;
+
+  const date = new Date(isoStr);
+  if (isNaN(date.getTime())) return null;
+
+  const hh = String(date.getHours()).padStart(2, "0");
+  const mm = String(date.getMinutes()).padStart(2, "0");
+
+  return `${hh}:${mm}`;
+}
+
+export function combineDateTimeLocal(dateStr?: string, timeStr?: string): string | null {
+  if (!dateStr) return null;
+  return timeStr ? `${dateStr}T${timeStr}` : `${dateStr}T00:00`; // ✅ local string save
+}

@@ -37,8 +37,7 @@ export function UpdatePreview({ form }: UpdatePreviewProps) {
           title={form.title || "Untitled Update"}
           description={form.description}
           materials={form.materials}
-          eventDate={form.date || "TBD"}
-          eventTime={form.time || "TBD"}
+          eventAt={form.eventAt ?? ""}
           timestamp="Just now"
         />
       </div>

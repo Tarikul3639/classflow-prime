@@ -9,6 +9,7 @@ import type {
   PostedBy,
   UpdateEngagement,
 } from "@/types/update.types";
+import { getISODate, getISOTime } from "@/utils/date.utils";
 // import UpdateEngagement from "./UpdateEngagement";
 
 interface UpdateCardProps {
@@ -18,8 +19,7 @@ interface UpdateCardProps {
   title: string;
   timestamp: string;
   description: string;
-  eventDate?: string;
-  eventTime?: string;
+  eventAt?: string; // ISO string format for event date/time
   materials?: Material[];
   engagement?: UpdateEngagement;
   postedBy?: PostedBy;
@@ -39,8 +39,7 @@ export default function UpdateCard({
   title,
   timestamp,
   description,
-  eventDate,
-  eventTime,
+  eventAt,
   materials,
   postedBy,
   isPinned,
@@ -51,6 +50,9 @@ export default function UpdateCard({
   onDelete,
   showActions,
 }: UpdateCardProps) {
+  // Format event date and time if eventAt is provided
+  const eventDate = getISODate(eventAt ?? "");
+  const eventTime = getISOTime(eventAt ?? "");
   return (
     <article className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col gap-3 active:bg-slate-50 transition-colors">
       {/* Header */}

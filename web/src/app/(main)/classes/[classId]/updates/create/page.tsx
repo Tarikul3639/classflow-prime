@@ -27,8 +27,7 @@ export default function CreateUpdatePage() {
     category: "announcement",
     title: "",
     description: "",
-    date: "",
-    time: "",
+    eventAt: null,
     materials: [],
   });
 
@@ -40,14 +39,7 @@ export default function CreateUpdatePage() {
   }, [error]);
 
   const handleSubmit = async () => {
-
-    const payload = {
-      ...form,
-      date: form.date ? form.date : undefined,
-      time: form.time ? form.time : undefined,
-    };
-
-    await dispatch(createClassUpdate({ classId, updateData: payload }))
+    await dispatch(createClassUpdate({ classId, updateData: form }))
       .unwrap()
       .then((res) => {
         toast.success("Update created successfully!", {

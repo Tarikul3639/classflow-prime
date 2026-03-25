@@ -10,13 +10,13 @@ import {
     ValidateNested,
     MaxLength,
     MinLength,
-    IsDateString,
-    Matches,
     IsUrl,
     IsNumber,
     Min,
+    IsDate,
+    IsDateString,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import { UpdateCategory } from '../../../database/interface/update.interface';
 import { MaterialType } from '../../../database/interface/material.interface';
 
@@ -100,25 +100,15 @@ export class CreateClassUpdateRequestDto {
     description: string;
 
     @ApiProperty({
-        example: '2026-03-15',
-        description: 'Event date (for exams, assignments etc.)',
+        example: '2026-03-15T10:30:00.000Z',
+        description: 'Scheduled event time (optional)',
         required: false,
     })
-    @IsOptional()
-    @IsDateString({}, { message: 'Date must be a valid date (YYYY-MM-DD)' })
-    date?: string;
 
-    @ApiProperty({
-        example: '10:30',
-        description: 'Event time in HH:MM format',
-        required: false,
-    })
+    @Transform(({ value }) => (value === "" ? undefined : value))
     @IsOptional()
-    @IsString()
-    @Matches(/^([01]\d|2[0-3]):([0-5]\d)$/, {
-        message: 'Time must be in HH:MM format',
-    })
-    time?: string;
+    @IsDateString({}, { message: 'eventAt must be a valid ISO date string' })
+    eventAt?: string | null;
 
     @ApiProperty({
         type: [CreateMaterialDto],

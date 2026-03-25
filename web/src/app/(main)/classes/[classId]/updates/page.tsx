@@ -17,7 +17,6 @@ import { fetchClassUpdate } from "@/store/features/classes/thunks/fetch-class-up
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { ro } from "date-fns/locale";
 
 interface Filter {
   id: string;
@@ -153,15 +152,8 @@ export default function UpdatesPage() {
                     iconBg={config.iconBg}
                     iconColor={config.iconColor}
                     title={update.title}
-                    timestamp={formatTime(update.createdAt)}
-                    eventDate={
-                      update.eventAt
-                        ? formatDate(new Date(update.eventAt))
-                        : undefined
-                    }
-                    eventTime={
-                      update.eventAt ? formatTime(update.eventAt) : undefined
-                    }
+                    timestamp={`${getDateKey(update.createdAt)} at ${formatTime(update.createdAt)}`}
+                    eventAt={update.eventAt ?? undefined}
                     description={update.description}
                     materials={update.materials}
                     postedBy={update.postedBy}
@@ -169,9 +161,7 @@ export default function UpdatesPage() {
                     onPin={handlePin}
                     onUnpin={handleUnpin}
                     onEdit={() => {
-                      router.push(
-                        `/classes/${classId}/updates/${update._id}`,
-                      );
+                      router.push(`/classes/${classId}/updates/${update._id}`);
                     }}
                     onDelete={handleDelete}
                     showActions={

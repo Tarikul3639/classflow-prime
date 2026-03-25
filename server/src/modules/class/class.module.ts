@@ -33,6 +33,9 @@ import { CreateClassUpdateService } from './services/create-class-update.service
 import { FetchSingleClassUpdateController } from './controllers/fetch-single-class-update.controller';
 import { FetchSingleClassUpdateService } from './services/fetch-single-class-update.service';
 
+import { UpdateClassUpdateController } from './controllers/update-class-update.controller';
+import { UpdateClassUpdateService } from './services/update-class-update.service';
+
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Class.name, schema: ClassSchema }]),
@@ -51,6 +54,7 @@ import { FetchSingleClassUpdateService } from './services/fetch-single-class-upd
     FetchClassUpdateController,
     CreateClassUpdateController,
     FetchSingleClassUpdateController,
+    UpdateClassUpdateController,
   ],
   providers: [
     CreateClassService,
@@ -61,6 +65,7 @@ import { FetchSingleClassUpdateService } from './services/fetch-single-class-upd
     FetchClassUpdateService,
     CreateClassUpdateService,
     FetchSingleClassUpdateService,
+    UpdateClassUpdateService,
   ],
 })
 export class ClassModule { }
