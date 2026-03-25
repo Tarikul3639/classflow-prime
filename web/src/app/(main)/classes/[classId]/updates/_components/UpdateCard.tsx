@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { type LucideIcon, CalendarDays, Clock } from "lucide-react";
+import { type LucideIcon, CalendarClock } from "lucide-react";
 import UpdateActionMenu from "./UpdateActionMenu";
 import UpdateMaterial from "./UpdateMaterials";
 import type {
@@ -9,21 +9,21 @@ import type {
   PostedBy,
   UpdateEngagement,
 } from "@/types/update.types";
-import { getISODate, getISOTime } from "@/utils/date.utils";
-// import UpdateEngagement from "./UpdateEngagement";
+import { formatRelativeDate } from "@/utils/date.utils";
 
 interface UpdateCardProps {
   icon?: LucideIcon;
   iconBg?: string;
   iconColor?: string;
   title: string;
-  timestamp: string;
   description: string;
-  eventAt?: string; // ISO string format for event date/time
+  eventAt?: string;
   materials?: Material[];
   engagement?: UpdateEngagement;
   postedBy?: PostedBy;
   isPinned?: boolean;
+  createdAt: string;
+  updatedAt?: string;
 
   onPin?: () => void;
   onUnpin?: () => void;
@@ -37,24 +37,21 @@ export default function UpdateCard({
   iconBg,
   iconColor,
   title,
-  timestamp,
   description,
   eventAt,
   materials,
   postedBy,
   isPinned,
-
+  createdAt,
+  updatedAt,
   onPin,
   onUnpin,
   onEdit,
   onDelete,
   showActions,
 }: UpdateCardProps) {
-  // Format event date and time if eventAt is provided
-  const eventDate = getISODate(eventAt ?? "");
-  const eventTime = getISOTime(eventAt ?? "");
   return (
-    <article className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col gap-3 active:bg-slate-50 transition-colors">
+    <article className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col gap-3 active:bg-slate-50 transition-colors overflow-hidden">
       {/* Header */}
       <div className="flex justify-between items-start gap-2">
         <div className="flex items-center gap-3 min-w-0">
@@ -65,6 +62,7 @@ export default function UpdateCard({
               <Icon size={18} />
             </div>
           )}
+
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">
               {isPinned && (
@@ -72,14 +70,35 @@ export default function UpdateCard({
                   Pinned
                 </span>
               )}
+
               <h4 className="text-sm font-bold text-slate-900 truncate">
                 {title}
               </h4>
             </div>
-            {/* Posted time */}
-            <div className="flex items-center gap-1 text-slate-500 text-xs">
-              <span>Published</span>
-              <span>{timestamp}</span>
+
+            {/* Timestamp */}
+            <div className="flex items-center gap-2 text-slate-500 text-xs">
+              {updatedAt && updatedAt !== createdAt ? (
+                <span>
+                  Updated:{" "}
+                  {formatRelativeDate(updatedAt, {
+                    showTime: true,
+                    showYear: false,
+                    relativeDaysLimit: 3,
+                    showTimeAfterLimit: false,
+                  })}{" "}
+                </span>
+              ) : (
+                <span>
+                  Published:{" "}
+                  {formatRelativeDate(createdAt, {
+                    showTime: true,
+                    showYear: false,
+                    relativeDaysLimit: 3,
+                    showTimeAfterLimit: false,
+                  })}{" "}
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -95,35 +114,17 @@ export default function UpdateCard({
         )}
       </div>
 
-      {/* Description */}
-      <p className="text-sm text-slate-600 leading-relaxed">{description}</p>
-
-      {/* Event Time Badge */}
-      {(eventDate || eventTime) && (
-        <div className="bg-blue-50 border border-blue-100 rounded-lg p-2.5 flex flex-col gap-1.5">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-primary/70">
-            Event Time
+      {/* Schedule / Event */}
+      {eventAt && (
+        <div className="flex items-center gap-1.5 text-blue-600 text-[13px] md:text-sm font-semibold bg-blue-50 w-fit px-2.5 py-1 rounded-md">
+          <CalendarClock className="size-4 md:size-4.5 mt-[0.5px]" />
+          <span>
+            {formatRelativeDate(eventAt, { showTime: true, showYear: false })}
           </span>
-          <div className="flex items-center gap-4">
-            {eventDate && (
-              <div className="flex items-center gap-1.5">
-                <CalendarDays size={16} className="text-primary" />
-                <span className="text-xs font-semibold text-slate-700">
-                  {eventDate}
-                </span>
-              </div>
-            )}
-            {eventTime && (
-              <div className="flex items-center gap-1.5">
-                <Clock size={16} className="text-primary" />
-                <span className="text-xs font-semibold text-slate-700">
-                  {eventTime}
-                </span>
-              </div>
-            )}
-          </div>
         </div>
       )}
+      {/* Description */}
+      <p className="text-sm text-slate-600 leading-relaxed">{description}</p>
 
       {/* Materials */}
       {materials && materials.length > 0 && (
@@ -153,11 +154,10 @@ export default function UpdateCard({
               </div>
             )}
           </div>
+
           <span className="text-xs text-slate-400">{postedBy.name}</span>
         </div>
       )}
-
-      {/* {engagement && <UpdateEngagement engagement={engagement} />} */}
     </article>
   );
 }

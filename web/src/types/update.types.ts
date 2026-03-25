@@ -134,7 +134,8 @@ export interface ClassUpdateItem {
     isPinned: boolean;
     postedBy: PostedBy;
     eventAt: string | null;
-    createdAt: string;
     materials?: Material[];
     engagement?: UpdateEngagement;
+    createdAt: string;
+    updatedAt: string;
 }

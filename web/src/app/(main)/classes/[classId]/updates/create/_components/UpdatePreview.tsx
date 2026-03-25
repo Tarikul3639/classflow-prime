@@ -38,7 +38,8 @@ export function UpdatePreview({ form }: UpdatePreviewProps) {
           description={form.description}
           materials={form.materials}
           eventAt={form.eventAt ?? ""}
-          timestamp="Just now"
+          createdAt={new Date().toISOString()}
+          updatedAt={new Date().toISOString()}
         />
       </div>
     </>

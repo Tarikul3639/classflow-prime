@@ -26,6 +26,8 @@ export const fetchClassUpdate = createAsyncThunk<
                 return rejectWithValue({ message: data.message || "Failed to fetch update." });
             }
 
+            console.log("ALL Updates: ",data.data.update);
+
             return data.data.update;
         } catch (error: unknown) {
             const err = error as Error;

@@ -72,22 +72,15 @@ export class FetchClassUpdateService {
                     description: { $ifNull: ['$updates.description', null] },
                     category: '$updates.category',
                     isPinned: '$updates.isPinned',
-                    eventAt: {
-                        $cond: {
-                            if: { $ifNull: ['$updates.eventAt', false] },
-                            then: { $dateToString: { format: '%Y-%m-%dT%H:%M:%S', date: '$updates.eventAt' } },
-                            else: null,
-                        },
-                    },
-                    createdAt: {
-                        $dateToString: { format: '%Y-%m-%dT%H:%M:%S', date: '$updates.createdAt' },
-                    },
+                    eventAt: '$updates.eventAt',
+                    createdAt: '$updates.createdAt',
+                    updatedAt: '$updates.updatedAt',
                     postedBy: {
                         _id: { $toString: '$postedByDetails._id' },
                         name: { $ifNull: ['$postedByDetails.name', 'Unknown User'] },
                         avatarUrl: { $ifNull: ['$postedByDetails.avatarUrl', null] },
                     },
-                    attachments: {
+                    materials: {
                         $map: {
                             input: '$materialDetails',
                             as: 'mat',
@@ -128,7 +121,7 @@ export class FetchClassUpdateService {
         ];
 
         const result = await this.classModel.aggregate(pipeline).exec();
-        
+
         // রেজাল্ট হ্যান্ডলিং
         const updates = result.length > 0 ? result[0].allUpdates : [];
 

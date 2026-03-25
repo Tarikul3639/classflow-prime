@@ -89,7 +89,12 @@ export class ClassUpdateItemDto {
     eventAt: string | null;
 
     @ApiProperty({ example: '2026-03-24T05:00:00Z' })
+    @IsString()
     createdAt: string;
+
+    @ApiProperty({ example: '2026-03-24T05:43:38Z' })
+    @IsString()
+    updatedAt: string;
 
     @ApiProperty({ type: [MaterialDto], required: false })
     @IsOptional()
