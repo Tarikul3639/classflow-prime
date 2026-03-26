@@ -10,7 +10,7 @@ import cookieParser from 'cookie-parser';
 async function bootstrap() {
   // const app = await NestFactory.create(AppModule);
   const app = await NestFactory.create(AppModule, {
-    logger: ['log','error', 'warn', 'debug', 'verbose'],
+    logger: ['log', 'error', 'warn', 'debug', 'verbose'],
   });
   // Get config service
   const configService = app.get(ConfigService);

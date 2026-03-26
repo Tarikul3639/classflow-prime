@@ -9,8 +9,8 @@ export enum AccountProvider {
 
 export interface IAccount {
   _id?: string;
-  userId: Types.ObjectId;         // User _id
-  accountId: string;      // Provider-specific user ID
+  userId: Types.ObjectId; // User _id
+  accountId: string; // Provider-specific user ID
   providerId: AccountProvider;
   accessToken?: string;
   refreshToken?: string;
@@ -18,7 +18,7 @@ export interface IAccount {
   refreshTokenExpiresAt?: Date;
   scope?: string;
   idToken?: string;
-  password?: string;      // hashed password
+  password?: string; // hashed password
   createdAt?: Date;
   updatedAt?: Date;
 }

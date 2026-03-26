@@ -31,14 +31,14 @@ export const fetchSingleClass = createAsyncThunk<
 >("classes/fetchSingleUpdate", async (classId, { rejectWithValue }) => {
     try {
         const { data } = await apiClient.get<FetchClassResponse>(`/classes/${classId}`);
-        console.log("API Response:", data);
+        
         if (!data.success) {
             return rejectWithValue({
                 message: data.message || "Failed to fetch class details",
             });
         }
 
-        console.log("Fetch Class of " + `${data.data.class.name}: ` + JSON.stringify(data.data.class, null, 2));
+        // console.log("Fetch Class of " + `${data.data.class.name}: ` + JSON.stringify(data.data.class, null, 2));
 
         return data.data.class;
     } catch (error: unknown) {

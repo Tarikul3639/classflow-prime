@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
-import type { StringValue } from "ms";
+import type { StringValue } from 'ms';
 
 interface BaseEmailContext {
   appName: string;
@@ -15,10 +15,13 @@ export class MailService {
   constructor(
     private readonly mailerService: MailerService,
     private readonly configService: ConfigService,
-  ) { }
+  ) {}
 
   private get frontendUrl(): string {
-    return this.configService.get<string>('FRONTEND_URL', 'http://localhost:3000');
+    return this.configService.get<string>(
+      'FRONTEND_URL',
+      'http://localhost:3000',
+    );
   }
 
   private get verificationCodeExpiresIn(): StringValue {

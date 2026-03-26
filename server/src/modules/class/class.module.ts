@@ -5,8 +5,14 @@ import {
   Enrollment,
   EnrollmentSchema,
 } from '../../database/entities/enrollment.entity';
-import { ClassUpdate, ClassUpdateSchema } from '../../database/entities/update.entity';
-import { Material, MaterialSchema } from '../../database/entities/material.entity';
+import {
+  ClassUpdate,
+  ClassUpdateSchema,
+} from '../../database/entities/update.entity';
+import {
+  Material,
+  MaterialSchema,
+} from '../../database/entities/material.entity';
 
 import { CreateClassController } from './controllers/create-class.controller';
 import { CreateClassService } from './services/create-class.service';
@@ -16,7 +22,6 @@ import { FetchEnrolledClassesService } from './services/fetch-enrolled-classes.s
 
 import { EnrollClassService } from './services/enroll-class.service';
 import { EnrollClassController } from './controllers/enroll-class.controller';
-
 
 import { FetchClassController } from './controllers/fetch-class.controller';
 import { FetchClassService } from './services/fetch-class.service';
@@ -42,8 +47,12 @@ import { UpdateClassUpdateService } from './services/update-class-update.service
     MongooseModule.forFeature([
       { name: Enrollment.name, schema: EnrollmentSchema },
     ]),
-    MongooseModule.forFeature([{ name: ClassUpdate.name, schema: ClassUpdateSchema }]),
-    MongooseModule.forFeature([{ name: Material.name, schema: MaterialSchema }]),
+    MongooseModule.forFeature([
+      { name: ClassUpdate.name, schema: ClassUpdateSchema },
+    ]),
+    MongooseModule.forFeature([
+      { name: Material.name, schema: MaterialSchema },
+    ]),
   ],
   controllers: [
     CreateClassController,
@@ -68,4 +77,4 @@ import { UpdateClassUpdateService } from './services/update-class-update.service
     UpdateClassUpdateService,
   ],
 })
-export class ClassModule { }
+export class ClassModule {}

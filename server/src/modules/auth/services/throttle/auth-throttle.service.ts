@@ -1,7 +1,14 @@
-import { Injectable, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  ForbiddenException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Throttle, ThrottleDocument } from '../../../../database/entities/throttle.entity';
+import {
+  Throttle,
+  ThrottleDocument,
+} from '../../../../database/entities/throttle.entity';
 import { ThrottlePurpose } from '../../../../database/interface/throttle.interface';
 
 @Injectable()
@@ -9,7 +16,7 @@ export class AuthThrottleService {
   constructor(
     @InjectModel(Throttle.name)
     private readonly throttleModel: Model<ThrottleDocument>,
-  ) { }
+  ) {}
 
   /**
    * Internal helper to fetch or create the throttle record
@@ -35,7 +42,8 @@ export class AuthThrottleService {
       },
     );
 
-    if (!doc) throw new InternalServerErrorException('Could not sync throttle state');
+    if (!doc)
+      throw new InternalServerErrorException('Could not sync throttle state');
     return doc;
   }
 
@@ -56,7 +64,7 @@ export class AuthThrottleService {
       const diffInMinutes = Math.ceil(diffInMs / 1000 / 60);
 
       throw new ForbiddenException(
-        `Too many attempts. Please try again in ${diffInMinutes} minute(s).`
+        `Too many attempts. Please try again in ${diffInMinutes} minute(s).`,
       );
     }
 

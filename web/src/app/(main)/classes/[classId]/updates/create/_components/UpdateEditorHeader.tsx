@@ -21,7 +21,6 @@ export const UpdateEditorHeader = ({
   onSubmit,
 }: UpdateEditorHeaderProps) => {
   const router = useRouter();
-
   return (
     <>
       {/* Header - Sticky with backdrop blur */}
@@ -70,7 +69,13 @@ export const UpdateEditorHeader = ({
                 <Save className="size-3.5 md:size-4 group-hover:scale-110 transition-transform" />
               )}
               <span className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.25em]">
-                {isLoading ? "Publishing..." : isNew ? "Publish" : "Update"}
+                {isLoading
+                  ? isNew
+                    ? "Publishing..."
+                    : "Updating..."
+                  : isNew
+                    ? "Publish"
+                    : "Update"}
               </span>
             </button>
           </div>

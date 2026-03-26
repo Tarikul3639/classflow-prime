@@ -29,4 +29,4 @@ import { CoreModule } from './core/core.module';
   controllers: [],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}

@@ -9,9 +9,15 @@ import type { Model } from 'mongoose';
 
 import { SignUpDto } from '../../dto/signup/signup.dto';
 import { User, UserDocument } from '../../../../database/entities/user.entity';
-import { Account, AccountDocument } from '../../../../database/entities/account.entity';
+import {
+  Account,
+  AccountDocument,
+} from '../../../../database/entities/account.entity';
 import { AccountProvider } from '../../../../database/interface/account.interface';
-import { Verification, VerificationDocument } from '../../../../database/entities/verification.entity';
+import {
+  Verification,
+  VerificationDocument,
+} from '../../../../database/entities/verification.entity';
 import { IUser } from '../../../../database/interface/user.interface';
 import { IVerification } from '../../../../database/interface/verification.interface';
 
@@ -26,9 +32,11 @@ export class SignUpService {
     @InjectModel(Account.name)
     private readonly accountModel: Model<AccountDocument>,
     @InjectModel(Verification.name)
-    private readonly verificationModel: Model<VerificationDocument & IVerification>,
+    private readonly verificationModel: Model<
+      VerificationDocument & IVerification
+    >,
     private readonly mailService: MailService,
-  ) { }
+  ) {}
 
   async execute(dto: SignUpDto) {
     const email = dto.email.toLowerCase().trim();
@@ -69,10 +77,12 @@ export class SignUpService {
       }
 
       // 6️) Create / update account for email login
-      let account: AccountDocument | null = await this.accountModel.findOne({
-        userId: user._id,
-        providerId: AccountProvider.PASSWORD,
-      }).session(session);
+      let account: AccountDocument | null = await this.accountModel
+        .findOne({
+          userId: user._id,
+          providerId: AccountProvider.PASSWORD,
+        })
+        .session(session);
 
       if (!account) {
         account = new this.accountModel({
@@ -92,11 +102,12 @@ export class SignUpService {
       const code = Math.floor(100000 + Math.random() * 900000).toString();
       const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 min
 
-      const verificationToken: VerificationDocument & IVerification = new this.verificationModel({
-        identifier: email,
-        value: code,
-        expiresAt,
-      });
+      const verificationToken: VerificationDocument & IVerification =
+        new this.verificationModel({
+          identifier: email,
+          value: code,
+          expiresAt,
+        });
 
       await verificationToken.save({ session });
 

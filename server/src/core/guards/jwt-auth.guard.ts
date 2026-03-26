@@ -18,7 +18,7 @@ export class JwtAuthGuard implements CanActivate {
     private readonly reflector: Reflector,
     private readonly jwtService: JwtService,
     private readonly tokenService: TokenService,
-  ) { }
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // 1️) Check if the route is marked as public
@@ -43,7 +43,7 @@ export class JwtAuthGuard implements CanActivate {
 
     // 2️) Exit if no tokens are present in cookies
     if (!accessToken && !refreshToken) {
-      console.log("Authentication token missing");
+      console.log('Authentication token missing');
       throw new UnauthorizedException('Authentication tokens missing');
     }
 
@@ -65,18 +65,25 @@ export class JwtAuthGuard implements CanActivate {
     if (refreshToken) {
       try {
         // Safe IP extraction considering proxies
-        const ip = (request.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
+        const ip =
+          (request.headers['x-forwarded-for'] as string)
+            ?.split(',')[0]
+            ?.trim() ||
           request.ip ||
           'unknown';
         const ua = request.headers['user-agent'] || 'unknown-device';
 
         // Rotate tokens
-        const tokens = await this.tokenService.refreshTokens(refreshToken, ip, ua);
+        const tokens = await this.tokenService.refreshTokens(
+          refreshToken,
+          ip,
+          ua,
+        );
 
         // Update Cookies
         setAuthCookies(response, tokens);
 
-        // NOTE: Attach user payload to request (Extract from new access token) 
+        // NOTE: Attach user payload to request (Extract from new access token)
         const newPayload = this.jwtService.decode(tokens.accessToken);
         request['user'] = newPayload; // NOTE: This "user" will be available in controllers via @CurrentUser() decorator
 
@@ -85,11 +92,11 @@ export class JwtAuthGuard implements CanActivate {
         // Clear cookies on refresh failure to prevent infinite loops
         response.clearCookie('accessToken');
         response.clearCookie('refreshToken');
-        console.log("Token refresh failed:", error.message || error);
+        console.log('Token refresh failed:', error.message || error);
         throw new UnauthorizedException(
           error instanceof ForbiddenException
             ? error.message
-            : 'Session expired. Please login again'
+            : 'Session expired. Please login again',
         );
       }
     }

@@ -6,14 +6,12 @@ import type { ApiError } from "../class.types";
 
 interface ClassUpdatesState {
     updates: ClassUpdateItem[];
-    loading: boolean;
     updating: boolean;
     error: ApiError;
 }
 
 const initialState: ClassUpdatesState = {
     updates: [],
-    loading: false,
     updating: false,
     error: {
         field: null,
@@ -34,15 +32,15 @@ const classUpdatesSlice = createSlice({
         builder
             // --- Fetch All Updates ---
             .addCase(fetchClassUpdate.pending, (state) => {
-                state.loading = true;
+                state.updating = true;
                 state.error = { field: null, message: null };
             })
             .addCase(fetchClassUpdate.fulfilled, (state, action) => {
-                state.loading = false;
+                state.updating = false;
                 state.updates = action.payload;
             })
             .addCase(fetchClassUpdate.rejected, (state, action) => {
-                state.loading = false;
+                state.updating = false;
                 state.error = {
                     field: null,
                     message: action.payload?.message || "Failed to fetch class updates.",

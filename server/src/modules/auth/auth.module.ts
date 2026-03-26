@@ -46,7 +46,10 @@ import {
 } from '../../database/entities/throttle.entity';
 import { Account, AccountSchema } from '../../database/entities/account.entity';
 import { Session, SessionSchema } from '../../database/entities/session.entity';
-import { Verification, VerificationSchema } from '../../database/entities/verification.entity';
+import {
+  Verification,
+  VerificationSchema,
+} from '../../database/entities/verification.entity';
 
 // ------------------------------------------------------
 // -------------------- MODULES -------------------------
@@ -108,4 +111,4 @@ import { MailModule } from '../../modules/mail/mail.module';
     AuthThrottleService,
   ],
 })
-export class AuthModule { }
+export class AuthModule {}

@@ -1,11 +1,18 @@
-import { Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import type { Model } from 'mongoose';
 
 import { SignInDto } from '../../dto/signin/signin.dto';
 import { TokenService } from '../token/token.service';
 import { User, UserDocument } from '../../../../database/entities/user.entity';
-import { Account, AccountDocument } from '../../../../database/entities/account.entity';
+import {
+  Account,
+  AccountDocument,
+} from '../../../../database/entities/account.entity';
 import { AccountProvider } from '../../../../database/interface/account.interface';
 import { ThrottlePurpose } from '../../../../database/interface/throttle.interface';
 import { AuthThrottleService } from '../throttle/auth-throttle.service';
@@ -28,12 +35,17 @@ export class SignInService {
 
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-    @InjectModel(Account.name) private readonly accountModel: Model<AccountDocument>,
+    @InjectModel(Account.name)
+    private readonly accountModel: Model<AccountDocument>,
     private readonly tokenService: TokenService,
     private readonly throttle: AuthThrottleService,
-  ) { }
+  ) {}
 
-  async execute(dto: SignInDto, ip: string, userAgent: string): Promise<SignInResponseDto> {
+  async execute(
+    dto: SignInDto,
+    ip: string,
+    userAgent: string,
+  ): Promise<SignInResponseDto> {
     const email = dto.email.toLowerCase().trim();
 
     // 1️) Throttle check to prevent Brute-Force
@@ -53,10 +65,12 @@ export class SignInService {
 
     // 3️) Load Account for password verification
     // In standard, passwords live in the Account entity linked to 'password' provider
-    const account = await this.accountModel.findOne({
-      userId: user._id,
-      providerId: AccountProvider.PASSWORD,
-    }).select('+password');
+    const account = await this.accountModel
+      .findOne({
+        userId: user._id,
+        providerId: AccountProvider.PASSWORD,
+      })
+      .select('+password');
 
     if (!account) {
       await this.handleFailure(t);
@@ -83,7 +97,10 @@ export class SignInService {
     );
 
     // DEBUG: Add near SignInService after tokens are generated:
-    console.log('[DEBUG sign-in] refreshToken (truncated):', tokens.refreshToken?.slice(0, 50));
+    console.log(
+      '[DEBUG sign-in] refreshToken (truncated):',
+      tokens.refreshToken?.slice(0, 50),
+    );
 
     return {
       success: true,
@@ -99,7 +116,7 @@ export class SignInService {
         },
         tokens,
       },
-    }
+    };
   }
 
   /**

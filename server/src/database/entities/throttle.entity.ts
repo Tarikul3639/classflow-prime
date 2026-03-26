@@ -1,8 +1,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { IThrottle, IThrottleMethods, ThrottlePurpose,  } from '../interface/throttle.interface';
+import {
+  IThrottle,
+  IThrottleMethods,
+  ThrottlePurpose,
+} from '../interface/throttle.interface';
 
-export type ThrottleDocument = HydratedDocument<Throttle & IThrottle & IThrottleMethods>;
+export type ThrottleDocument = HydratedDocument<
+  Throttle & IThrottle & IThrottleMethods
+>;
 
 @Schema({
   timestamps: true,
@@ -49,7 +55,6 @@ ThrottleSchema.index({ purpose: 1, identifier: 1 });
 // TTL index to auto-delete expired throttle records (optional)
 ThrottleSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
-
 // ==================== Schema Methods ====================
 
 /**
@@ -63,14 +68,14 @@ ThrottleSchema.methods.increment = function (attemptWindowMinutes = 15) {
     expires.setMinutes(expires.getMinutes() + attemptWindowMinutes);
     this.expiresAt = expires;
   }
-}
+};
 
 /**
  * Check if currently blocked
  */
 ThrottleSchema.methods.isBlocked = function (): boolean {
   return this.expiresAt ? this.expiresAt > new Date() : false;
-}
+};
 
 /**
  * Reset attempts and expiresAt
@@ -78,4 +83,4 @@ ThrottleSchema.methods.isBlocked = function (): boolean {
 ThrottleSchema.methods.reset = function () {
   this.attempts = 0;
   this.expiresAt = undefined;
-}
+};

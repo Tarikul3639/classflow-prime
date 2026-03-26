@@ -83,7 +83,8 @@ export class CreateClassRequestDto implements ICreateClassDto {
 
   @ApiProperty({
     example: true,
-    description: 'Whether to allow students to enroll the class without approval',
+    description:
+      'Whether to allow students to enroll the class without approval',
   })
   @IsOptional()
   allowEnroll?: boolean;

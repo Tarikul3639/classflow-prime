@@ -15,13 +15,16 @@ import type { ApiError } from "@/store/features/classes/class.types";
 
 interface UpdateFormProps {
   form: CreateUpdateFormData;
-  error: ApiError;
+  error: ApiError | null;
   setForm: React.Dispatch<React.SetStateAction<CreateUpdateFormData>>;
 }
 
 export function UpdateForm({ form, setForm, error }: UpdateFormProps) {
   return (
-    <div className="bg-white rounded-2xl p-4 md:p-8 border border-slate-200 shadow-xs">
+    <div
+      id="update-form"
+      className="bg-white rounded-2xl p-4 md:p-8 border border-slate-200 shadow-xs"
+    >
       <div className="space-y-6">
         {/* Title */}
         <Input
@@ -29,24 +32,29 @@ export function UpdateForm({ form, setForm, error }: UpdateFormProps) {
           placeholder="e.g., Midterm Exam Schedule Revision"
           description="Keep it concise and informative to grab students' attention."
           value={form.title}
-          error={error.field === "title" ? error.message ?? undefined : undefined}
-          onChange={(e) => setForm({ ...form, title: e.target.value })}
+          error={
+            error?.field === "title" ? error.message ?? undefined : undefined
+          }
+          onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))}
         />
 
         {/* Type Select */}
         <Select
           label="Update Type"
           value={form.category}
-          description="Choose the type of update you're creating. This helps students understand the context at a glance."
-          error={error.field === "type" ? error.message ?? undefined : undefined}
-          options={Object.entries(UPDATE_TYPE_CONFIG).map(
-            ([value, config]) => ({
-              value,
-              label: config.label,
-            }),
-          )}
+          description="Choose the type of update you're creating."
+          error={
+            error?.field === "type" ? error.message ?? undefined : undefined
+          }
+          options={Object.entries(UPDATE_TYPE_CONFIG).map(([value, config]) => ({
+            value,
+            label: config.label,
+          }))}
           onChange={(e) =>
-            setForm({ ...form, category: e.target.value as UpdateCategory })
+            setForm((prev) => ({
+              ...prev,
+              category: e.target.value as UpdateCategory,
+            }))
           }
         />
 

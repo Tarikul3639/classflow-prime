@@ -33,7 +33,7 @@ export const enrollClass = createAsyncThunk<
       payload
     );
 
-    console.log("Enroll: ",data);
+    // console.log("Enroll: ",data);
 
     if (!data.success) {
       return rejectWithValue({

@@ -4,13 +4,13 @@ import type { IJwtPayload } from '../../modules/auth/interfaces/jwt-payload.inte
 /**
  * CurrentUser Decorator
  * Extracts the authenticated user from the request object
- * 
+ *
  * Usage:
  * @Get('profile')
  * async getProfile(@CurrentUser() user: IJwtPayload) {
  *   return { userId: user.sub, email: user.email };
  * }
- * 
+ *
  * @returns IJwtPayload - The user payload from JWT token
  */
 export const CurrentUser = createParamDecorator(

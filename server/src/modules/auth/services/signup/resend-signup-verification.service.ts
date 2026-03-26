@@ -27,7 +27,7 @@ export class ResendSignupVerificationService {
     private readonly verificationModel: Model<VerificationDocument>,
     private readonly mailService: MailService,
     private readonly configService: ConfigService,
-  ) { }
+  ) {}
 
   // TODO: Configure OTP expiry time in config
   private get otpExpiryMinutes(): number {

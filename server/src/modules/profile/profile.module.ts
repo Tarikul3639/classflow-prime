@@ -11,12 +11,12 @@ import { UpdateProfileService } from './services/update/update-profile.service';
 import { User, UserSchema } from '../../database/entities/user.entity';
 
 @Module({
-    imports: [
-        MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-        AuthModule, // Import AuthModule to use its services and guards
-    ],
-    controllers: [MeController, ProfileUpdateController],
-    providers: [GetCurrentUserService, UpdateProfileService],
-    exports: [GetCurrentUserService], // Export if other modules need to use it
+  imports: [
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    AuthModule, // Import AuthModule to use its services and guards
+  ],
+  controllers: [MeController, ProfileUpdateController],
+  providers: [GetCurrentUserService, UpdateProfileService],
+  exports: [GetCurrentUserService], // Export if other modules need to use it
 })
-export class ProfileModule { }
+export class ProfileModule {}

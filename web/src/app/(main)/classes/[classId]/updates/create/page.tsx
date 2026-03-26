@@ -1,4 +1,3 @@
-// updates/create/page.tsx
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -10,7 +9,6 @@ import { ProTip } from "./_components/ProTip";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { createClassUpdate } from "@/store/features/classes/thunks/create-class-update.thunk";
 import type { CreateUpdateFormData } from "@/types/update.types";
-
 import { toast } from "sonner";
 
 export default function CreateUpdatePage() {
@@ -20,25 +18,28 @@ export default function CreateUpdatePage() {
   const classId = params.classId as string;
 
   const { loading, error } = useAppSelector(
-    (state) => state.classes.createClassUpdate,
+    (state) => state.classes.createClassUpdate
   );
 
   const [form, setForm] = useState<CreateUpdateFormData>({
     category: "announcement",
     title: "",
     description: "",
-    eventAt: null,
+    eventAt: null, // null = no schedule set
     materials: [],
   });
 
+  // Scroll to form on error
   useEffect(() => {
     if (error?.message) {
-      const el = document.getElementById("update-form");
-      el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      document
+        .getElementById("update-form")
+        ?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   }, [error]);
 
   const handleSubmit = async () => {
+    // form.eventAt is already a UTC ISO string (or null) — safe to send as-is
     await dispatch(createClassUpdate({ classId, updateData: form }))
       .unwrap()
       .then((res) => {
@@ -69,7 +70,8 @@ export default function CreateUpdatePage() {
       <main className="flex-1 overflow-y-auto p-2 md:p-4 lg:p-6">
         <div className="mx-auto grid grid-cols-1 xl:grid-cols-12 gap-8">
           <div className="xl:col-span-7">
-            <UpdateForm form={form} setForm={setForm} error={error} />;
+            {/* ✅ Removed stray semicolon after component */}
+            <UpdateForm form={form} setForm={setForm} error={error} />
           </div>
 
           <div className="xl:col-span-5">

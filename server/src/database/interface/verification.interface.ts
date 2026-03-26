@@ -1,6 +1,6 @@
 export interface IVerification {
-  identifier: string;     // email or phone
-  value: string;          // OTP or token
+  identifier: string; // email or phone
+  value: string; // OTP or token
   expiresAt: Date;
   createdAt?: Date;
   updatedAt?: Date;

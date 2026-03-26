@@ -4,7 +4,7 @@ import type { UserRole } from '../../database/interface/user.interface';
 /**
  * Roles Decorator
  * Restricts access to routes based on user roles
- * 
+ *
  * Usage:
  * @Roles('admin', 'teacher')
  * @Get('admin-only')

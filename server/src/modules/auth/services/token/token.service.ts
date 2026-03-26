@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
@@ -10,7 +14,10 @@ import type { IJwtPayload } from '../../interfaces/jwt-payload.interface';
 import type { ITokens } from './token.types';
 import { User, UserDocument } from '../../../../database/entities/user.entity';
 import { UserRole } from '../../../../database/interface/user.interface';
-import { Session, SessionDocument } from '../../../../database/entities/session.entity';
+import {
+  Session,
+  SessionDocument,
+} from '../../../../database/entities/session.entity';
 
 @Injectable()
 export class TokenService {
@@ -18,15 +25,22 @@ export class TokenService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-    @InjectModel(Session.name) private readonly sessionModel: Model<SessionDocument>,
-  ) { }
+    @InjectModel(Session.name)
+    private readonly sessionModel: Model<SessionDocument>,
+  ) {}
 
   private get jwtAccessTokenExpiresIn(): StringValue {
-    return this.configService.get<StringValue>('jwt.accessToken.expiresIn', '15m');
+    return this.configService.get<StringValue>(
+      'jwt.accessToken.expiresIn',
+      '15m',
+    );
   }
 
   private get jwtRefreshTokenExpiresIn(): StringValue {
-    return this.configService.get<StringValue>('jwt.refreshToken.expiresIn', '7d');
+    return this.configService.get<StringValue>(
+      'jwt.refreshToken.expiresIn',
+      '7d',
+    );
   }
 
   private get maxSessionsPerUser(): number {
@@ -34,12 +48,16 @@ export class TokenService {
   }
 
   /**
- * Generates Access and Refresh JWTs
- */
+   * Generates Access and Refresh JWTs
+   */
   async signTokens(payload: IJwtPayload): Promise<ITokens> {
     const [accessToken, refreshToken] = await Promise.all([
-      this.jwtService.signAsync(payload, { expiresIn: this.jwtAccessTokenExpiresIn }),
-      this.jwtService.signAsync(payload, { expiresIn: this.jwtRefreshTokenExpiresIn }),
+      this.jwtService.signAsync(payload, {
+        expiresIn: this.jwtAccessTokenExpiresIn,
+      }),
+      this.jwtService.signAsync(payload, {
+        expiresIn: this.jwtRefreshTokenExpiresIn,
+      }),
     ]);
 
     return { accessToken, refreshToken };
@@ -48,8 +66,13 @@ export class TokenService {
   /**
    * INFO: Initial SignIn: Generates tokens and manages session limit
    */
-  async createSession(userId: string, email: string, role: UserRole, ip: string, ua: string): Promise<ITokens> {
-
+  async createSession(
+    userId: string,
+    email: string,
+    role: UserRole,
+    ip: string,
+    ua: string,
+  ): Promise<ITokens> {
     // 1) Create Session for session ID (sid) generation and device tracking
     const session = new this.sessionModel({
       userId: new Types.ObjectId(userId),
@@ -59,7 +82,14 @@ export class TokenService {
     });
 
     // 2) Prepare JWT payload with session ID (sid) and device info
-    const payload: IJwtPayload = { userId, sid: session._id, email, role, ip, ua };
+    const payload: IJwtPayload = {
+      userId,
+      sid: session._id,
+      email,
+      role,
+      ip,
+      ua,
+    };
     const tokens = await this.signTokens(payload);
 
     // Hash the refresh token before saving to database (Security)
@@ -67,7 +97,9 @@ export class TokenService {
     await session.save();
 
     // Get User sessions with sorted by creation date (oldest first)
-    const sessions = await this.sessionModel.find({ userId: new Types.ObjectId(userId) }).sort({ createdAt: 1 });
+    const sessions = await this.sessionModel
+      .find({ userId: new Types.ObjectId(userId) })
+      .sort({ createdAt: 1 });
     // If user has reached max sessions, delete the oldest one
     if (sessions.length >= this.maxSessionsPerUser) {
       await sessions[0].deleteOne();
@@ -83,7 +115,11 @@ export class TokenService {
   /**
    * INFO:Refreshes session: Implements Token Rotation and Reuse Detection
    */
-  async refreshTokens(refreshToken: string, ip: string, ua: string): Promise<ITokens> {
+  async refreshTokens(
+    refreshToken: string,
+    ip: string,
+    ua: string,
+  ): Promise<ITokens> {
     let payload: IJwtPayload;
 
     // 1️) Verify JWT Integrity
@@ -98,8 +134,12 @@ export class TokenService {
 
     // If token is valid but not found in DB, it was likely already used (Theft attempt)
     if (!currentSession) {
-      await this.sessionModel.deleteMany({ userId: new Types.ObjectId(payload.userId) });
-      throw new ForbiddenException('Security Alert: Compromised session detected. All devices logged out.');
+      await this.sessionModel.deleteMany({
+        userId: new Types.ObjectId(payload.userId),
+      });
+      throw new ForbiddenException(
+        'Security Alert: Compromised session detected. All devices logged out.',
+      );
     }
 
     // 3) Token Matching
@@ -107,14 +147,19 @@ export class TokenService {
       throw new ForbiddenException('This session has been revoked.');
     }
 
-    // Device Fingerprint Matching 
+    // Device Fingerprint Matching
     // Note: Some cases in User-Agent String minor changes so best option is trim/toLowerCase
     const normalizedUA = (ua || 'unknown-device').toLowerCase().trim();
-    const storedUA = (currentSession.userAgent?.trim().toLowerCase() || 'unknown-device');
+    const storedUA =
+      currentSession.userAgent?.trim().toLowerCase() || 'unknown-device';
 
     if (normalizedUA !== storedUA) {
-      console.warn(`Device mismatch detected for user ${payload.userId}. Expected UA: ${storedUA}, Received UA: ${normalizedUA}`);
-      throw new ForbiddenException('Device mismatch detected. Please sign in again.');
+      console.warn(
+        `Device mismatch detected for user ${payload.userId}. Expected UA: ${storedUA}, Received UA: ${normalizedUA}`,
+      );
+      throw new ForbiddenException(
+        'Device mismatch detected. Please sign in again.',
+      );
     }
 
     // 4️) Check Expiration
@@ -124,7 +169,9 @@ export class TokenService {
     }
 
     // 5️) Rotation & Refresh
-    const user = await this.userModel.findById(new Types.ObjectId(payload.userId));
+    const user = await this.userModel.findById(
+      new Types.ObjectId(payload.userId),
+    );
     if (!user) throw new UnauthorizedException('User no longer exists');
 
     const tokens = await this.signTokens({
@@ -139,7 +186,9 @@ export class TokenService {
     // 6️) Update Existing Session instead of creating a new one
     await currentSession.setToken(tokens.refreshToken);
     currentSession.ipAddress = ip; // Update IP in case of network switch
-    currentSession.expiresAt = new Date(Date.now() + ms(this.jwtRefreshTokenExpiresIn));
+    currentSession.expiresAt = new Date(
+      Date.now() + ms(this.jwtRefreshTokenExpiresIn),
+    );
     await currentSession.save();
 
     // Return new tokens to client
@@ -151,7 +200,9 @@ export class TokenService {
    */
   async revokeSession(refreshToken: string): Promise<void> {
     const payload = this.jwtService.decode(refreshToken) as IJwtPayload;
-    const sessions = await this.sessionModel.find({ userId: new Types.ObjectId(payload.userId) });
+    const sessions = await this.sessionModel.find({
+      userId: new Types.ObjectId(payload.userId),
+    });
 
     for (const s of sessions) {
       if (await s.compareToken(refreshToken)) {

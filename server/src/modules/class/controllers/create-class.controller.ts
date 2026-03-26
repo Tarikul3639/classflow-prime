@@ -9,18 +9,18 @@ import type { IJwtPayload } from '../../../modules/auth/interfaces/jwt-payload.i
 @ApiTags('Class')
 @Controller('classes')
 export class CreateClassController {
-    constructor(private readonly createClassService: CreateClassService) { }
+  constructor(private readonly createClassService: CreateClassService) {}
 
-    @Post()
-    @ApiOperation({ summary: 'Create a new class' })
-    @ApiResponse({ status: 201, description: 'Class created successfully' })
-    async createClass(
-        @CurrentUser() user: IJwtPayload,
-        @Body() createClassRequestDto: CreateClassRequestDto,
-    ) {
-        return await this.createClassService.execute(
-            user.userId.toString(),
-            createClassRequestDto,
-        );
-    }
+  @Post()
+  @ApiOperation({ summary: 'Create a new class' })
+  @ApiResponse({ status: 201, description: 'Class created successfully' })
+  async createClass(
+    @CurrentUser() user: IJwtPayload,
+    @Body() createClassRequestDto: CreateClassRequestDto,
+  ) {
+    return await this.createClassService.execute(
+      user.userId.toString(),
+      createClassRequestDto,
+    );
+  }
 }

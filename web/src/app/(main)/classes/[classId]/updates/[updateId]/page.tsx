@@ -24,7 +24,7 @@ export default function EditUpdatePage() {
         (state) => state.classes.fetchSingleClassUpdate,
     );
 
-    const { loading, error } = useAppSelector(
+    const { updating, error } = useAppSelector(
         (state) => state.classes.updateClassUpdate,
     );
 
@@ -95,7 +95,7 @@ export default function EditUpdatePage() {
             <UpdateEditorHeader
                 classId={classId}
                 isNew={false}
-                isLoading={loading}
+                isLoading={updating}
                 error={error?.message || null}
                 onSubmit={handleSubmit}
             />

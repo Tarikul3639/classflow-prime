@@ -12,7 +12,10 @@ import type { Request, Response } from 'express';
 import { Public } from '../../../shared/decorators/public.decorator';
 import { RequestInfo } from '../../../shared/decorators/request-info.decorator';
 import type { IRequestInfo } from '../../../shared/decorators/request-info.decorator';
-import { IAuthTokens, setAuthCookies } from '../../../shared/utils/auth-cookies.util';
+import {
+  IAuthTokens,
+  setAuthCookies,
+} from '../../../shared/utils/auth-cookies.util';
 
 import { SignUpDto } from '../dto/signup/signup.dto';
 import { VerifySignupEmailDto } from '../dto/signup/verify-signup-email.dto';
@@ -33,7 +36,7 @@ export class SignupController {
     private readonly signUpService: SignUpService,
     private readonly verifySignupEmailService: VerifySignupEmailService,
     private readonly resendSignupVerificationService: ResendSignupVerificationService,
-  ) { }
+  ) {}
 
   /**
    * User registration endpoint.
@@ -82,8 +85,12 @@ export class SignupController {
     @RequestInfo() info: IRequestInfo,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const result = await this.verifySignupEmailService.execute(dto, info.ip, info.userAgent);
-    
+    const result = await this.verifySignupEmailService.execute(
+      dto,
+      info.ip,
+      info.userAgent,
+    );
+
     // Set HttpOnly cookies with the tokens
     setAuthCookies(res, result.data.tokens);
 

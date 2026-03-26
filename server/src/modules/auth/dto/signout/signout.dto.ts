@@ -1,4 +1,3 @@
-
 import { IsString, IsOptional } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -12,7 +11,7 @@ export class SignOutDto {
    * If not provided, all refresh tokens will be revoked (logout from all devices)
    * @example eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
    */
-  
+
   @ApiPropertyOptional({
     description:
       'Refresh token to revoke. If not provided, logs out from all devices.',

@@ -7,7 +7,12 @@ import {
   Req,
   Res,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 
 import { CurrentUser } from '../../../shared/decorators/current-user.decorator';
@@ -22,8 +27,8 @@ import { clearAuthCookies } from '../../../shared/utils/auth-cookies.util';
 @ApiBearerAuth('JWT-auth')
 @Controller('auth/signout')
 export class SignoutController {
-  constructor(private readonly signOutService: SignOutService) { }
-  
+  constructor(private readonly signOutService: SignOutService) {}
+
   /**
    * Sign out from current device (revoke the provided refresh token).
    * The client should also clear cookies on their side to complete the logout process.
@@ -40,9 +45,9 @@ export class SignoutController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
-
     // prefer cookie refreshToken; fallback to body for backward compatibility
-    const refreshTokenFromCookie = (req.cookies as Record<string, string>)?.refreshToken as string | undefined;
+    const refreshTokenFromCookie = (req.cookies as Record<string, string>)
+      ?.refreshToken as string | undefined;
     const refreshToken = refreshTokenFromCookie || dto.refreshToken;
 
     // revoke refresh token in DB (if present)
@@ -69,7 +74,10 @@ export class SignoutController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Sign out (all devices)' })
   @ApiResponse({ status: 200, description: 'Signed out from all devices' })
-  async signoutAll(@CurrentUser() user: IJwtPayload, @Res({ passthrough: true }) res: Response,) {
+  async signoutAll(
+    @CurrentUser() user: IJwtPayload,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     // revoke all refresh tokens in DB for the user
     const result = await this.signOutService.signOutAll(user.userId.toString());
     // clear cookies on current device (client should be logged out)

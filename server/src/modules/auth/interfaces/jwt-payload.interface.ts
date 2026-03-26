@@ -7,7 +7,7 @@ import type { UserRole } from '../../../database/interface/user.interface';
  */
 export interface IJwtPayload {
   /**
-   * User ID 
+   * User ID
    */
   userId: string | Types.ObjectId;
 

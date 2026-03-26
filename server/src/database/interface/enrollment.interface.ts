@@ -1,14 +1,14 @@
-import type { Types } from "mongoose";
+import type { Types } from 'mongoose';
 
 export enum EnrollmentRole {
-    INSTRUCTOR = 'instructor',
-    ASSISTANT = 'assistant',
-    LEARNER = 'learner',
+  INSTRUCTOR = 'instructor',
+  ASSISTANT = 'assistant',
+  LEARNER = 'learner',
 }
 
 export interface IEnrollment {
-    userId: Types.ObjectId;
-    classId: Types.ObjectId;
-    role: EnrollmentRole;
-    enrolledAt: Date;
+  userId: Types.ObjectId;
+  classId: Types.ObjectId;
+  role: EnrollmentRole;
+  enrolledAt: Date;
 }

@@ -23,7 +23,7 @@ export class PasswordResetController {
     private readonly resendResetService: ResendOtpService,
     private readonly verifyResetService: VerifyOtpService,
     private readonly confirmResetService: ResetPasswordService,
-  ) { }
+  ) {}
 
   @Public()
   @Post('request')

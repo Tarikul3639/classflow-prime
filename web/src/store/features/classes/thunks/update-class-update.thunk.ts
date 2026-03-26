@@ -32,6 +32,9 @@ export const updateClassUpdate = createAsyncThunk<
 >(
     "classes/updateClassUpdate",
     async ({ classId, updateId, updateData }, { rejectWithValue }) => {
+        
+        console.log("Update Payload: ", updateData);
+
         try {
             // API call to update the class announcement/event
             const { data } = await apiClient.patch<UpdateClassUpdateResponse>(

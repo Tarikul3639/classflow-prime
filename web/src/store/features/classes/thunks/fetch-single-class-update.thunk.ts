@@ -37,7 +37,7 @@ export const fetchSingleClassUpdate = createAsyncThunk<
                 });
             }
 
-            console.log('Fetch Single Class Update: ', data.data.update);
+            // console.log('Fetch Single Class Update: ', data.data.update);
 
             return data.data.update;
         } catch (error: unknown) {

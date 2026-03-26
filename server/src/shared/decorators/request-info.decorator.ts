@@ -19,34 +19,34 @@ import { Request } from 'express';
  */
 
 export interface IRequestInfo {
-    ip: string;
-    userAgent: string;
+  ip: string;
+  userAgent: string;
 }
 
 export const RequestInfo = createParamDecorator(
-    (data: unknown, ctx: ExecutionContext): IRequestInfo => {
-        const req = ctx.switchToHttp().getRequest<Request>();
+  (data: unknown, ctx: ExecutionContext): IRequestInfo => {
+    const req = ctx.switchToHttp().getRequest<Request>();
 
-        /*
-         * Extract IP address:
-         * - Prefer x-forwarded-for header (handles proxies/load balancers)
-         * - Fallback to req.ip (Express's built-in IP extraction)
-         * - Fallback to req.socket.remoteAddress (raw socket info)
-         * - Final fallback to '
-         */
-        const ip =
-            (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
-            req.ip ||
-            req.socket.remoteAddress ||
-            '0.0.0.0';
+    /*
+     * Extract IP address:
+     * - Prefer x-forwarded-for header (handles proxies/load balancers)
+     * - Fallback to req.ip (Express's built-in IP extraction)
+     * - Fallback to req.socket.remoteAddress (raw socket info)
+     * - Final fallback to '
+     */
+    const ip =
+      (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
+      req.ip ||
+      req.socket.remoteAddress ||
+      '0.0.0.0';
 
-        /*
-         * Extract User Agent:
-         * - Use 'user-agent' header if present
-         * - Fallback to 'unknown-device' if header is missing (e.g., some bots or curl requests)
-         */
-        const userAgent = req.headers['user-agent'] || 'unknown-device';
+    /*
+     * Extract User Agent:
+     * - Use 'user-agent' header if present
+     * - Fallback to 'unknown-device' if header is missing (e.g., some bots or curl requests)
+     */
+    const userAgent = req.headers['user-agent'] || 'unknown-device';
 
-        return { ip, userAgent };
-    },
+    return { ip, userAgent };
+  },
 );

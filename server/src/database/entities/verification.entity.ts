@@ -1,33 +1,37 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { IVerification, IVerificationMethods } from '../interface/verification.interface';
+import {
+  IVerification,
+  IVerificationMethods,
+} from '../interface/verification.interface';
 
-export type VerificationDocument = HydratedDocument<Verification & IVerification & IVerificationMethods>;
+export type VerificationDocument = HydratedDocument<
+  Verification & IVerification & IVerificationMethods
+>;
 
 @Schema({
-    timestamps: true, // createdAt, updatedAt
-    strict: true, // only defined fields are allowed
+  timestamps: true, // createdAt, updatedAt
+  strict: true, // only defined fields are allowed
 })
 export class Verification implements IVerification {
-    @Prop({
-        required: true,
-        trim: true,
-    })
-    identifier: string; // e.g., email or phone number
+  @Prop({
+    required: true,
+    trim: true,
+  })
+  identifier: string; // e.g., email or phone number
 
-    @Prop({
-        required: true,
-    })
-    value: string; // e.g., OTP code or verification token
+  @Prop({
+    required: true,
+  })
+  value: string; // e.g., OTP code or verification token
 
-    @Prop({
-        required: true,
-    })
-    expiresAt: Date;
+  @Prop({
+    required: true,
+  })
+  expiresAt: Date;
 }
 
-export const VerificationSchema =
-    SchemaFactory.createForClass(Verification);
+export const VerificationSchema = SchemaFactory.createForClass(Verification);
 
 // ==================== Indexes ====================
 
@@ -43,12 +47,12 @@ VerificationSchema.index({ identifier: 1 });
  * Check if the token is expired
  */
 VerificationSchema.methods.isExpired = function (): boolean {
-    return this.expiresAt <= new Date();
+  return this.expiresAt <= new Date();
 };
 
 /**
  * Verify token value
  */
 VerificationSchema.methods.verify = function (token: string): boolean {
-    return !this.isExpired() && this.value === token;
-}
+  return !this.isExpired() && this.value === token;
+};

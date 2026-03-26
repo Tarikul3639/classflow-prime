@@ -31,7 +31,7 @@ interface FormatOptions {
 
 export function formatRelativeDate(
   dateStr: string,
-  options: FormatOptions = {}
+  options: FormatOptions = {},
 ): string {
   const {
     showTime = false,
@@ -54,19 +54,24 @@ export function formatRelativeDate(
   }
 
   // Normalize to LOCAL midnight
-  const normalize = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const normalize = (d: Date) =>
+    new Date(d.getFullYear(), d.getMonth(), d.getDate());
   const today = normalize(new Date());
   const target = normalize(date);
 
-  const diffDays = Math.round((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  const diffDays = Math.round(
+    (target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+  );
 
   let relative: string | null = null;
 
   if (diffDays === 0) relative = "Today";
   else if (diffDays === 1) relative = "Tomorrow";
   else if (diffDays === -1) relative = "Yesterday";
-  else if (diffDays > 1 && diffDays <= relativeDaysLimit) relative = `after ${diffDays} day${diffDays > 1 ? "s" : ""}`;
-  else if (diffDays < -1 && diffDays >= -relativeDaysLimit) relative = `${Math.abs(diffDays)} day${Math.abs(diffDays) > 1 ? "s" : ""} before`;
+  else if (diffDays > 1 && diffDays <= relativeDaysLimit)
+    relative = `after ${diffDays} day${diffDays > 1 ? "s" : ""}`;
+  else if (diffDays < -1 && diffDays >= -relativeDaysLimit)
+    relative = `${Math.abs(diffDays)} day${Math.abs(diffDays) > 1 ? "s" : ""} before`;
 
   // Base date formatting if beyond limit
   let datePart: string;
@@ -97,51 +102,24 @@ export function formatRelativeDate(
 }
 
 /**
- * Extract local date (YYYY-MM-DD)
+ * @param localDate 
+ * @param localTime 
+ * @returns UTC ISO string (e.g. "2024-10-27T14:30:00.000Z")
  */
-export function getISODate(isoStr?: string): string | null {
-  if (!isoStr) return null;
 
-  const date = new Date(isoStr);
-  if (isNaN(date.getTime())) return null;
-
-  const yyyy = date.getFullYear();
-  const mm = String(date.getMonth() + 1).padStart(2, "0");
-  const dd = String(date.getDate()).padStart(2, "0");
-
-  return `${yyyy}-${mm}-${dd}`;
+/** Local YYYY-MM-DD + HH:mm → UTC ISO string */
+export function localToISO(localDate: string, localTime: string): string {
+  return new Date(`${localDate}T${localTime}`).toISOString();
 }
 
-/**
- * Extract local time (HH:mm)
- */
-export function getISOTime(isoStr?: string): string | null {
-  if (!isoStr) return null;
-
-  const date = new Date(isoStr);
-  if (isNaN(date.getTime())) return null;
-
-  const hh = String(date.getHours()).padStart(2, "0");
-  const mm = String(date.getMinutes()).padStart(2, "0");
-
-  return `${hh}:${mm}`;
+/** UTC ISO → local YYYY-MM-DD */
+export function isoToLocalDate(iso: string): string {
+  const d = new Date(iso);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-/**
- * Combine date + time → SAVE AS UTC (IMPORTANT)
- */
-export function combineDateTime(
-  dateStr?: string,
-  timeStr?: string,
-): string | null {
-  if (!dateStr) return null;
-
-  // Create LOCAL datetime
-  const isoLocal = timeStr ? `${dateStr}T${timeStr}` : `${dateStr}T00:00`;
-
-  const date = new Date(isoLocal);
-  if (isNaN(date.getTime())) return null;
-
-  // Convert to UTC for backend
-  return date.toISOString();
+/** UTC ISO → local HH:mm */
+export function isoToLocalTime(iso: string): string {
+  const d = new Date(iso);
+  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }

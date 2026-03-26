@@ -9,7 +9,7 @@ export interface IThrottle {
   _id?: string;
   purpose: ThrottlePurpose; // sign_in, otp_verify, etc.
   ipAddress: string;
-  identifier?: string;      // optional: email/phone/username
+  identifier?: string; // optional: email/phone/username
   attempts: number;
   expiresAt?: Date;
   userAgent?: string;

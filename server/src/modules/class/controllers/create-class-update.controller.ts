@@ -9,20 +9,25 @@ import type { IJwtPayload } from '../../../modules/auth/interfaces/jwt-payload.i
 @ApiTags('Class')
 @Controller('classes')
 export class CreateClassUpdateController {
-    constructor(private readonly createClassUpdateService: CreateClassUpdateService) { }
+  constructor(
+    private readonly createClassUpdateService: CreateClassUpdateService,
+  ) {}
 
-    @Post(':classId/updates')
-    @ApiOperation({ summary: 'Create a new update for a class' })
-    @ApiResponse({ status: 201, description: 'Class update created successfully' })
-    async createClassUpdate(
-        @CurrentUser() user: IJwtPayload,
-        @Param('classId') classId: string,
-        @Body() createClassUpdateRequestDto: CreateClassUpdateRequestDto,
-    ) {
-        return await this.createClassUpdateService.execute(
-            classId.toString(),
-            user.userId.toString(),
-            createClassUpdateRequestDto,
-        );
-    }
+  @Post(':classId/updates')
+  @ApiOperation({ summary: 'Create a new update for a class' })
+  @ApiResponse({
+    status: 201,
+    description: 'Class update created successfully',
+  })
+  async createClassUpdate(
+    @CurrentUser() user: IJwtPayload,
+    @Param('classId') classId: string,
+    @Body() createClassUpdateRequestDto: CreateClassUpdateRequestDto,
+  ) {
+    return await this.createClassUpdateService.execute(
+      classId.toString(),
+      user.userId.toString(),
+      createClassUpdateRequestDto,
+    );
+  }
 }

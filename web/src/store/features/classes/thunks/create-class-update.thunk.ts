@@ -49,7 +49,7 @@ export const createClassUpdate = createAsyncThunk<
             });
         }
 
-        console.log("Create response: ", response);
+        // console.log("Create response: ", response);
 
         return response.data;
     } catch (error: unknown) {

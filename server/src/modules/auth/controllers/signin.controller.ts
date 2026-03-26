@@ -23,7 +23,7 @@ import { SignInService } from '../services/signin/signin.service';
 @ApiTags('Auth')
 @Controller('auth/signin')
 export class SigninController {
-  constructor(private readonly signInService: SignInService) { }
+  constructor(private readonly signInService: SignInService) {}
 
   @Public()
   @Post()
@@ -36,9 +36,12 @@ export class SigninController {
     @RequestInfo() info: IRequestInfo,
     @Res({ passthrough: true }) res: Response,
   ) {
-
     // Call the service to perform sign-in logic
-    const result = await this.signInService.execute(dto, info.ip, info.userAgent);
+    const result = await this.signInService.execute(
+      dto,
+      info.ip,
+      info.userAgent,
+    );
 
     // set HttpOnly cookies here (HTTP layer concern)
     setAuthCookies(res, result.data.tokens);

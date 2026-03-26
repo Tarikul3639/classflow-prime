@@ -1,118 +1,130 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from "@nestjs/mongoose";
-import { Model, Types, PipelineStage } from "mongoose";
-import { Class, ClassDocument } from "../../../database/entities/class.entity";
-import { Enrollment, EnrollmentDocument } from "../../../database/entities/enrollment.entity";
-import { EnrollClassRequestDto, EnrollClassResponseDto } from "../dto/enroll-class.dto";
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, Types, PipelineStage } from 'mongoose';
+import { Class, ClassDocument } from '../../../database/entities/class.entity';
+import {
+  Enrollment,
+  EnrollmentDocument,
+} from '../../../database/entities/enrollment.entity';
+import {
+  EnrollClassRequestDto,
+  EnrollClassResponseDto,
+} from '../dto/enroll-class.dto';
 import { EnrollmentRole } from '../../../database/interface/enrollment.interface';
 
 @Injectable()
 export class EnrollClassService {
-    constructor(
-        @InjectModel(Class.name)
-        private readonly classModel: Model<ClassDocument>,
-        @InjectModel(Enrollment.name)
-        private readonly enrollmentModel: Model<EnrollmentDocument>,
-    ) { }
+  constructor(
+    @InjectModel(Class.name)
+    private readonly classModel: Model<ClassDocument>,
+    @InjectModel(Enrollment.name)
+    private readonly enrollmentModel: Model<EnrollmentDocument>,
+  ) {}
 
-    async execute(userId: string, dto: EnrollClassRequestDto): Promise<EnrollClassResponseDto> {
-        const userObjId = new Types.ObjectId(userId);
+  async execute(
+    userId: string,
+    dto: EnrollClassRequestDto,
+  ): Promise<EnrollClassResponseDto> {
+    const userObjId = new Types.ObjectId(userId);
 
-        // 1. Single Pipeline Validation
-        const pipeline: PipelineStage[] = [
-            { $match: { enrollCode: dto.enrollCode } },
+    // 1. Single Pipeline Validation
+    const pipeline: PipelineStage[] = [
+      { $match: { enrollCode: dto.enrollCode } },
+      {
+        $lookup: {
+          from: 'enrollments',
+          let: { cid: '$_id' },
+          pipeline: [
             {
-                $lookup: {
-                    from: 'enrollments',
-                    let: { cid: '$_id' },
-                    pipeline: [
-                        {
-                            $match: {
-                                $expr: {
-                                    $and: [
-                                        { $eq: ['$classId', '$$cid'] },
-                                        { $eq: ['$userId', userObjId] }
-                                    ]
-                                }
-                            }
-                        }
-                    ],
-                    as: 'userEnrollment'
-                }
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ['$classId', '$$cid'] },
+                    { $eq: ['$userId', userObjId] },
+                  ],
+                },
+              },
             },
-            {
-                $project: {
-                    name: 1,
-                    allowEnroll: 1,
-                    isArchived: 1,
-                    instructorId: 1,
-                    assistantIds: 1,
-                    isAlreadyEnrolled: { $gt: [{ $size: '$userEnrollment' }, 0] },
-                    isInstructor: {
-                        $or: [
-                            { $eq: ['$instructorId', userObjId] },
-                            { $in: [userObjId, { $ifNull: ['$assistantIds', []] }] }
-                        ]
-                    }
-                }
-            }
-        ];
+          ],
+          as: 'userEnrollment',
+        },
+      },
+      {
+        $project: {
+          name: 1,
+          allowEnroll: 1,
+          isArchived: 1,
+          instructorId: 1,
+          assistantIds: 1,
+          isAlreadyEnrolled: { $gt: [{ $size: '$userEnrollment' }, 0] },
+          isInstructor: {
+            $or: [
+              { $eq: ['$instructorId', userObjId] },
+              { $in: [userObjId, { $ifNull: ['$assistantIds', []] }] },
+            ],
+          },
+        },
+      },
+    ];
 
-        const classInfo = await this.classModel.aggregate(pipeline).exec().then(results => results[0]);
+    const classInfo = await this.classModel
+      .aggregate(pipeline)
+      .exec()
+      .then((results) => results[0]);
 
-        // 2. Run Business Logic Checks
-        if (!classInfo) {
-            return {
-                success: false,
-                message: "Invalid enroll code. Class not found.",
-                data: { classId: null }
-            };
-        }
-
-        if (classInfo.isAlreadyEnrolled) {
-            return {
-                success: false,
-                message: "You are already a member of this class.",
-                data: { classId: classInfo._id.toString() }
-            };
-        }
-
-        if (classInfo.isInstructor) {
-            return {
-                success: false,
-                message: "Teacher or Assistants cannot enroll as students.",
-                data: { classId: classInfo._id.toString() }
-            };
-        }
-
-        if (!classInfo.allowEnroll || classInfo.isArchived) {
-            return {
-                success: false,
-                message: "This class is currently closed for new enrolls.",
-                data: { classId: classInfo._id.toString() }
-            };
-        }
-
-        // 3. Perform the Write Operation
-        try {
-            await this.enrollmentModel.create({
-                userId: userObjId,
-                classId: classInfo._id,
-                role: EnrollmentRole.LEARNER,
-                enrolledAt: new Date()
-            });
-
-            return {
-                success: true,
-                message: `Successfully enrolled ${classInfo.name}`,
-                data: { classId: classInfo._id.toString() }
-            };
-        } catch (error) {
-            return {
-                success: false,
-                message: "Enrollment failed. Please try again later.",
-                data: { classId: classInfo._id.toString() }
-            };
-        }
+    // 2. Run Business Logic Checks
+    if (!classInfo) {
+      return {
+        success: false,
+        message: 'Invalid enroll code. Class not found.',
+        data: { classId: null },
+      };
     }
+
+    if (classInfo.isAlreadyEnrolled) {
+      return {
+        success: false,
+        message: 'You are already a member of this class.',
+        data: { classId: classInfo._id.toString() },
+      };
+    }
+
+    if (classInfo.isInstructor) {
+      return {
+        success: false,
+        message: 'Teacher or Assistants cannot enroll as students.',
+        data: { classId: classInfo._id.toString() },
+      };
+    }
+
+    if (!classInfo.allowEnroll || classInfo.isArchived) {
+      return {
+        success: false,
+        message: 'This class is currently closed for new enrolls.',
+        data: { classId: classInfo._id.toString() },
+      };
+    }
+
+    // 3. Perform the Write Operation
+    try {
+      await this.enrollmentModel.create({
+        userId: userObjId,
+        classId: classInfo._id,
+        role: EnrollmentRole.LEARNER,
+        enrolledAt: new Date(),
+      });
+
+      return {
+        success: true,
+        message: `Successfully enrolled ${classInfo.name}`,
+        data: { classId: classInfo._id.toString() },
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Enrollment failed. Please try again later.',
+        data: { classId: classInfo._id.toString() },
+      };
+    }
+  }
 }

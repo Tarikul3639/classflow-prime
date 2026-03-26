@@ -38,7 +38,7 @@ export class VerifyOtpService {
     @InjectModel(Verification.name)
     private readonly verificationModel: Model<VerificationDocument>,
     private readonly configService: ConfigService,
-  ) { }
+  ) {}
 
   /**
    * Token expiry duration for password reset step
@@ -110,7 +110,7 @@ export class VerifyOtpService {
       message: 'Reset code verified successfully',
       data: {
         resetToken: passwordResetToken,
-      }
+      },
     };
   }
 }

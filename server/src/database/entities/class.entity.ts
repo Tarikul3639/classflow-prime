@@ -5,76 +5,76 @@ import { IClass, ClassStatus } from '../interface/class.interface';
 export type ClassDocument = HydratedDocument<Class & IClass>;
 
 @Schema({
-    timestamps: true,
-    strict: true,
+  timestamps: true,
+  strict: true,
 })
 export class Class implements IClass {
-    @Prop({
-        required: true,
-        trim: true,
-    })
-    name: string;
+  @Prop({
+    required: true,
+    trim: true,
+  })
+  name: string;
 
-    @Prop({ required: true, unique: true })
-    enrollCode: string; // Teacher generated code
+  @Prop({ required: true, unique: true })
+  enrollCode: string; // Teacher generated code
 
-    @Prop({
-        type: Types.ObjectId,
-        ref: 'User',
-        required: true,
-    })
-    instructorId: Types.ObjectId;
+  @Prop({
+    type: Types.ObjectId,
+    ref: 'User',
+    required: true,
+  })
+  instructorId: Types.ObjectId;
 
-    @Prop({
-        type: [Types.ObjectId],
-        ref: 'User',
-        default: [],
-    })
-    assistantIds?: Types.ObjectId[];
+  @Prop({
+    type: [Types.ObjectId],
+    ref: 'User',
+    default: [],
+  })
+  assistantIds?: Types.ObjectId[];
 
-    @Prop({
-        trim: true,
-        maxlength: 1000,
-    })
-    about?: string;
+  @Prop({
+    trim: true,
+    maxlength: 1000,
+  })
+  about?: string;
 
-    @Prop({
-        trim: true,
-        maxlength: 100,
-    })
-    department?: string; // e.g., "Computer Science"
+  @Prop({
+    trim: true,
+    maxlength: 100,
+  })
+  department?: string; // e.g., "Computer Science"
 
-    @Prop({
-        trim: true,
-        maxlength: 50,
-    })
-    semester?: string; // e.g., "Fall 2024"
+  @Prop({
+    trim: true,
+    maxlength: 50,
+  })
+  semester?: string; // e.g., "Fall 2024"
 
-    // UI Identity Fields
-    @Prop({ default: '#3B82F6' }) // Default blue
-    themeColor: string;
+  // UI Identity Fields
+  @Prop({ default: '#3B82F6' }) // Default blue
+  themeColor: string;
 
-    @Prop({ default: null })
-    coverImage?: string;
+  @Prop({ default: null })
+  coverImage?: string;
 
-    @Prop({
-        type: [String],
-        default: [],
-    })
-    tags: string[];
+  @Prop({
+    type: [String],
+    default: [],
+  })
+  tags: string[];
 
-    @Prop({
-        enum: Object.values(ClassStatus),
-        default: ClassStatus.ACTIVE,
-        index: true,
-    })
-    status: ClassStatus;
+  @Prop({
+    enum: Object.values(ClassStatus),
+    default: ClassStatus.ACTIVE,
+    index: true,
+  })
+  status: ClassStatus;
 
-    @Prop({ default: true })
-    allowEnroll: boolean;
+  @Prop({ default: true })
+  allowEnroll: boolean;
 
-    @Prop({ default: false })
-    isArchived: boolean;
+  @Prop({ default: false })
+  isArchived: boolean;
 }
 
 export const ClassSchema = SchemaFactory.createForClass(Class);

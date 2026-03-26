@@ -2,14 +2,18 @@ import { Controller, Post, Body } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtService } from '@nestjs/jwt';
 import { IJwtPayload } from '../interfaces/jwt-payload.interface';
-import { AccessTokenDecodeDto, RefreshTokenDecodeDto, PasswordDecodeDto } from '../dto/debug/debug.dto';
+import {
+  AccessTokenDecodeDto,
+  RefreshTokenDecodeDto,
+  PasswordDecodeDto,
+} from '../dto/debug/debug.dto';
 import { Public } from '../../../shared/decorators/public.decorator';
 import * as bcrypt from 'bcrypt';
 
 @ApiTags('Debug')
 @Controller('debug')
 export class DebugController {
-  constructor(private readonly jwtService: JwtService) { }
+  constructor(private readonly jwtService: JwtService) {}
 
   @Public()
   @Post('access-token-decode')
@@ -18,7 +22,9 @@ export class DebugController {
     const { token } = dto;
 
     try {
-      const payload = this.jwtService.decode(token, { json: true }) as IJwtPayload;
+      const payload = this.jwtService.decode(token, {
+        json: true,
+      }) as IJwtPayload;
 
       // exp timestamp convert to local time
       const expLocal = payload?.exp
@@ -42,7 +48,9 @@ export class DebugController {
     const { token } = dto;
 
     try {
-      const payload = this.jwtService.decode(token, { json: true }) as IJwtPayload;
+      const payload = this.jwtService.decode(token, {
+        json: true,
+      }) as IJwtPayload;
 
       // exp timestamp convert to local time
       const expLocal = payload?.exp
@@ -65,7 +73,9 @@ export class DebugController {
   async encryptPassword(@Body() dto: PasswordDecodeDto) {
     const { password } = dto;
     try {
-      const hash = await bcrypt.genSalt(10).then(salt => bcrypt.hash(password, salt));
+      const hash = await bcrypt
+        .genSalt(10)
+        .then((salt) => bcrypt.hash(password, salt));
       return {
         success: true,
         message: 'Password encrypted successfully',
@@ -75,5 +85,4 @@ export class DebugController {
       return { success: false, error: err.message };
     }
   }
-
 }

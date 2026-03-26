@@ -19,7 +19,7 @@ export interface IUser {
     role: string;
     status: string;
     enrolledAt: Date;
-  }
+  };
 }
 
 export interface IGetCurrentUserResponseDto {
@@ -27,14 +27,14 @@ export interface IGetCurrentUserResponseDto {
   message: string;
   data: {
     user: IUser;
-  }
+  };
 }
 
 @Injectable()
 export class GetCurrentUserService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-  ) { }
+  ) {}
 
   async execute(userId: string): Promise<IGetCurrentUserResponseDto> {
     // 1. Convert string ID to MongoDB ObjectId
@@ -236,8 +236,7 @@ export class GetCurrentUserService {
     ];
 
     // 2. Optimized User & Enrollment Fetch using Aggregation
-    const result: IUser[] =
-      await this.userModel.aggregate(pipeline);
+    const result: IUser[] = await this.userModel.aggregate(pipeline);
 
     // DEBUG: Add after aggregation result is obtained:
     // console.log("User Data: ", result);
@@ -251,7 +250,7 @@ export class GetCurrentUserService {
     // 3. Final sanitization for response
     return {
       success: true,
-      message: "User profile fetched successfully",
+      message: 'User profile fetched successfully',
       data: {
         user: {
           _id: userData._id.toString(),
@@ -261,8 +260,8 @@ export class GetCurrentUserService {
           bio: userData.bio,
           avatarUrl: userData.avatarUrl || undefined,
           enrolledClasses: userData.enrolledClasses || [],
-        }
-      }
-    }
+        },
+      },
+    };
   }
 }
