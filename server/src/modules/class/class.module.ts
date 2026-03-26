@@ -41,6 +41,9 @@ import { FetchSingleClassUpdateService } from './services/fetch-single-class-upd
 import { UpdateClassUpdateController } from './controllers/update-class-update.controller';
 import { UpdateClassUpdateService } from './services/update-class-update.service';
 
+import { TogglePinClassUpdateController } from './controllers/toggle-pin-class-update.controller';
+import { TogglePinClassUpdateService } from './services/toggle-pin-class-update.service';
+
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Class.name, schema: ClassSchema }]),
@@ -64,6 +67,7 @@ import { UpdateClassUpdateService } from './services/update-class-update.service
     CreateClassUpdateController,
     FetchSingleClassUpdateController,
     UpdateClassUpdateController,
+    TogglePinClassUpdateController,
   ],
   providers: [
     CreateClassService,
@@ -75,6 +79,7 @@ import { UpdateClassUpdateService } from './services/update-class-update.service
     CreateClassUpdateService,
     FetchSingleClassUpdateService,
     UpdateClassUpdateService,
+    TogglePinClassUpdateService,
   ],
 })
 export class ClassModule {}

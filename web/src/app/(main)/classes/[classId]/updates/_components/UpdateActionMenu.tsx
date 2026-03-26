@@ -11,16 +11,14 @@ import {
 
 interface UpdateActionMenuProps {
   isPinned?: boolean;
-  onPin?: () => void;
-  onUnpin?: () => void;
+  onTogglePin?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
 }
 
 export default function UpdateActionMenu({
   isPinned,
-  onPin,
-  onUnpin,
+  onTogglePin,
   onEdit,
   onDelete,
 }: UpdateActionMenuProps) {
@@ -34,12 +32,12 @@ export default function UpdateActionMenu({
 
       <DropdownMenuContent align="end" className="w-40">
         {isPinned ? (
-          <DropdownMenuItem onClick={onUnpin}>
+          <DropdownMenuItem onClick={onTogglePin}>
             <PinOff size={14} />
             Unpin
           </DropdownMenuItem>
         ) : (
-          <DropdownMenuItem onClick={onPin}>
+          <DropdownMenuItem onClick={onTogglePin}>
             <Pin size={14} />
             Pin
           </DropdownMenuItem>

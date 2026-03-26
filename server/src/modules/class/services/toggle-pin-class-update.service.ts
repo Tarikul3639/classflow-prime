@@ -1,0 +1,78 @@
+import {
+    Injectable,
+    NotFoundException,
+    ForbiddenException,
+} from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, Types } from 'mongoose';
+import { Class, ClassDocument } from '../../../database/entities/class.entity';
+import {
+    ClassUpdate,
+    ClassUpdateDocument,
+} from '../../../database/entities/update.entity';
+
+import { TogglePinClassUpdateRequestDto, TogglePinClassUpdateResponseDto } from '../dto/toggle-pin-class-update.dto';
+
+@Injectable()
+export class TogglePinClassUpdateService {
+    constructor(
+        @InjectModel(Class.name)
+        private readonly classModel: Model<ClassDocument>,
+        @InjectModel(ClassUpdate.name)
+        private readonly classUpdateModel: Model<ClassUpdateDocument>,
+    ) { }
+
+    async execute(
+        userId: string,
+        classId: string,
+        updateId: string,
+        dto: TogglePinClassUpdateRequestDto,
+    ): Promise<TogglePinClassUpdateResponseDto> {
+        const userObjectId = new Types.ObjectId(userId);
+        const classObjectId = new Types.ObjectId(classId);
+        const updateObjectId = new Types.ObjectId(updateId);
+console.log(dto);
+        // Step 1: Check if class exists
+        const classData = await this.classModel.findOne({
+            _id: classObjectId as any,
+            isArchived: false,
+        });
+
+        if (!classData) {
+            throw new NotFoundException('Class not found');
+        }
+
+        // Step 2: Permission check
+        const isInstructor = classData.instructorId.equals(userObjectId);
+        const isAssistant = classData.assistantIds?.some((id) => id.equals(userObjectId));
+
+        if (!isInstructor && !isAssistant) {
+            throw new ForbiddenException('You do not have permission to pin/unpin this update');
+        }
+
+        // Step 3: Update the pin status
+        const update = await this.classUpdateModel.findOneAndUpdate(
+            { _id: updateObjectId.toString(), classId: classObjectId },
+            { $set: { isPinned: dto.isPinned } },
+            { new: true },
+        );
+
+        console.log(update);
+
+        if (!update) {
+            throw new NotFoundException('Update not found');
+        }
+
+        return {
+            success: true,
+            message: 'Pin status updated successfully',
+            data: {
+                update: {
+                    updateId: update._id.toString(),
+                    isPinned: update.isPinned,
+                },
+            },
+        }
+
+    }
+}

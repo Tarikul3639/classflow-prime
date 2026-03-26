@@ -14,8 +14,10 @@ import { formatRelativeDate } from "@/utils/date.utils";
 import { UPDATE_TYPE_CONFIG, UpdateCategory } from "@/types/update.types";
 
 import { fetchClassUpdate } from "@/store/features/classes/thunks/fetch-class-update.thunk";
+import { togglePinClassUpdate } from "@/store/features/classes/thunks/toggle-pin-class-update.thunk";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useParams, useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface Filter {
   id: string;
@@ -36,6 +38,8 @@ export default function UpdatesPage() {
   const { classDetails } = useAppSelector(
     (state) => state.classes.fetchSingleClass,
   );
+
+  const { error } = useAppSelector((state) => state.classes.fetchClassUpdates);
 
   useEffect(() => {
     if (classId && classId !== "undefined") {
@@ -92,8 +96,23 @@ export default function UpdatesPage() {
     return new Date(b).getTime() - new Date(a).getTime();
   });
 
-  const handlePin = () => console.log("Pin/Unpin triggered");
-  const handleUnpin = () => console.log("Unpin triggered");
+  const handleTogglePin = async (updateId: string, isPinned: boolean) => {
+    console.log("Hnandle Pin: ", updateId, isPinned);
+    await dispatch(togglePinClassUpdate({ classId, updateId, isPinned }))
+      .unwrap()
+      .then(() => {
+        toast.success(isPinned ? "Update pinned" : "Update unpinned", {
+          position: "top-center",
+        });
+      })
+      .catch((err) => {
+        toast.error("Failed to update pin status", {
+          description: err.message,
+          position: "top-center",
+        });
+      });
+  };
+
   const handleDelete = () => console.log("Delete triggered");
 
   return (
@@ -136,8 +155,9 @@ export default function UpdatesPage() {
                     materials={update.materials}
                     postedBy={update.postedBy}
                     isPinned={update.isPinned}
-                    onPin={handlePin}
-                    onUnpin={handleUnpin}
+                    onTogglePin={() =>
+                      handleTogglePin(update._id, update.isPinned)
+                    }
                     onEdit={() =>
                       router.push(`/classes/${classId}/updates/${update._id}`)
                     }

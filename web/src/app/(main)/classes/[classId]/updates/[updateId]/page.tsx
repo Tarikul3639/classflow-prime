@@ -1,7 +1,7 @@
 // updates/[updateId]/edit/page.tsx
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { UpdateEditorHeader } from "../../updates/create/_components/UpdateEditorHeader";
 import { UpdateForm } from "../../updates/create/_components/UpdateForm";
@@ -12,6 +12,7 @@ import { fetchSingleClassUpdate } from "@/store/features/classes/thunks/fetch-si
 import { updateClassUpdate } from "@/store/features/classes/thunks/update-class-update.thunk";
 import type { CreateUpdateFormData } from "@/types/update.types";
 import { toast } from "sonner";
+import { getDirtyFields } from "@/utils/form.utils";
 
 export default function EditUpdatePage() {
     const router = useRouter();
@@ -23,10 +24,12 @@ export default function EditUpdatePage() {
     const { loading: fetchLoading } = useAppSelector(
         (state) => state.classes.fetchSingleClassUpdate,
     );
-
     const { updating, error } = useAppSelector(
         (state) => state.classes.updateClassUpdate,
     );
+
+    // Original snapshot —> for dirty tracking 
+    const originalFormRef = useRef<CreateUpdateFormData | null>(null);
 
     const [form, setForm] = useState<CreateUpdateFormData>({
         category: "announcement",
@@ -36,18 +39,21 @@ export default function EditUpdatePage() {
         materials: [],
     });
 
-    // Fetch the existing update details on component mount
+    // Fetch existing update and initialize both form & original snapshot
     useEffect(() => {
         dispatch(fetchSingleClassUpdate({ classId, updateId }))
             .unwrap()
             .then((res) => {
-                setForm({
+                const initial: CreateUpdateFormData = {
                     category: res.category,
                     title: res.title,
-                    description: res.description,
-                    eventAt: res.eventAt || "",
+                    description: res.description ?? "",
+                    eventAt: res.eventAt ?? null,
                     materials: res.materials ?? [],
-                });
+                };
+
+                originalFormRef.current = initial; // snapshot save
+                setForm(initial);
             })
             .catch((err) => {
                 toast.error("Failed to load update", {
@@ -58,17 +64,30 @@ export default function EditUpdatePage() {
             });
     }, [classId, updateId]);
 
+    // Error scrolling on update error
     useEffect(() => {
         if (error?.message) {
-            const el = document.getElementById("update-form");
-            el?.scrollIntoView({ behavior: "smooth", block: "center" });
+            document
+                .getElementById("update-form")
+                ?.scrollIntoView({ behavior: "smooth", block: "center" });
         }
     }, [error]);
 
     const handleSubmit = async () => {
-        await dispatch(updateClassUpdate({ classId, updateId, updateData: form }))
+        if (!originalFormRef.current) return;
+
+        const dirtyFields = getDirtyFields(originalFormRef.current, form);
+
+        if (Object.keys(dirtyFields).length === 0) {
+            toast.info("Nothing changed.", { position: "top-center" });
+            return;
+        }
+
+        await dispatch(
+            updateClassUpdate({ classId, updateId, updateData: dirtyFields }),
+        )
             .unwrap()
-            .then((res) => {
+            .then(() => {
                 toast.success("Update saved successfully!", {
                     position: "top-center",
                 });
@@ -98,6 +117,12 @@ export default function EditUpdatePage() {
                 isLoading={updating}
                 error={error?.message || null}
                 onSubmit={handleSubmit}
+                isDirty={
+                    originalFormRef.current
+                        ? Object.keys(getDirtyFields(originalFormRef.current, form))
+                            .length > 0
+                        : false
+                }
             />
 
             <main className="flex-1 overflow-y-auto p-2 md:p-4 lg:p-6">

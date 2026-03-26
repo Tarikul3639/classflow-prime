@@ -11,6 +11,7 @@ interface UpdateEditorHeaderProps {
   isLoading: boolean;
   error?: string | null;
   onSubmit: () => void;
+  isDirty?: boolean;
 }
 
 export const UpdateEditorHeader = ({
@@ -19,8 +20,10 @@ export const UpdateEditorHeader = ({
   isLoading,
   error,
   onSubmit,
+  isDirty = false,
 }: UpdateEditorHeaderProps) => {
   const router = useRouter();
+
   return (
     <>
       {/* Header - Sticky with backdrop blur */}
@@ -37,6 +40,7 @@ export const UpdateEditorHeader = ({
                 size={18}
               />
             </button>
+
             <h1 className="text-lg font-bold text-slate-900">
               {isNew ? "Create" : "Edit"}
             </h1>
@@ -57,32 +61,44 @@ export const UpdateEditorHeader = ({
 
             <button
               onClick={onSubmit}
-              disabled={isLoading}
-              className="group relative flex items-center justify-center gap-2 px-6 py-2.5 md:py-3 rounded-2xl bg-[#399aef] text-white overflow-hidden transition-all duration-500 hover:bg-[#2d82cc] hover:shadow-[0_0_20px_rgba(57,154,239,0.4)] active:scale-[0.96] disabled:opacity-50 cursor-pointer"
+              disabled={isLoading || !isDirty}
+              className={`group relative flex items-center justify-center gap-2 px-6 py-2.5 md:py-3 rounded-2xl text-white overflow-hidden transition-all duration-500 active:scale-[0.96]
+              ${
+                isDirty && !isLoading
+                  ? "bg-[#399aef] hover:bg-[#2d82cc] hover:shadow-[0_0_20px_rgba(57,154,239,0.4)] cursor-pointer"
+                  : "bg-slate-400 opacity-60 cursor-not-allowed"
+              }`}
             >
               {/* Shine effect */}
-              <div className="absolute inset-0 w-1/2 h-full bg-white/20 skew-x-[-25deg] -translate-x-full group-hover:animate-shine" />
+              {isDirty && !isLoading && (
+                <div className="absolute inset-0 w-1/2 h-full bg-white/20 skew-x-[-25deg] -translate-x-full group-hover:animate-shine" />
+              )}
 
               {isLoading ? (
-                <Loader2 className="size-3.5 md:size-4  animate-spin transition-transform" />
+                <Loader2 className="size-3.5 md:size-4 animate-spin transition-transform" />
               ) : (
-                <Save className="size-3.5 md:size-4 group-hover:scale-110 transition-transform" />
+                <Save
+                  className={`size-3.5 md:size-4 transition-transform ${
+                    isDirty ? "group-hover:scale-110" : ""
+                  }`}
+                />
               )}
+
               <span className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.25em]">
                 {isLoading
                   ? isNew
                     ? "Publishing..."
                     : "Updating..."
                   : isNew
-                    ? "Publish"
-                    : "Update"}
+                  ? "Publish"
+                  : "Update"}
               </span>
             </button>
           </div>
         </div>
       </header>
 
-      {/* Error Message - Below header */}
+      {/* Error Message */}
       {error && (
         <div id="update-form" className="px-4 md:px-8 pt-4">
           <div className="mx-auto">
@@ -94,7 +110,7 @@ export const UpdateEditorHeader = ({
                 className="w-full"
               >
                 <div className="flex items-center gap-3 px-4 py-2.5 bg-red-50/60 dark:bg-red-900/20 border border-red-100 dark:border-red-800 rounded-full backdrop-blur-md relative overflow-hidden shadow-sm shadow-red-100/20">
-                  {/* Icon Area: Fixed size */}
+                  {/* Icon */}
                   <div className="shrink-0 w-8 h-8 sm:w-9 sm:h-9 bg-red-100 dark:bg-red-900/40 rounded-2xl flex items-center justify-center text-red-600 dark:text-red-400">
                     <motion.div
                       animate={{ rotate: [0, 10, -10, 10, 0] }}
@@ -108,14 +124,14 @@ export const UpdateEditorHeader = ({
                     </motion.div>
                   </div>
 
-                  {/* Text Area: Flexible width */}
+                  {/* Text */}
                   <div className="flex-1 min-w-0">
                     <p className="text-xs sm:text-sm font-medium text-red-800 dark:text-red-300 leading-tight sm:leading-snug">
                       {error}
                     </p>
                   </div>
 
-                  {/* Decorative Blur Element */}
+                  {/* Decorative Blur */}
                   <div className="hidden sm:block absolute top-0 right-0 -mr-4 -mt-4 w-12 h-12 bg-red-200/30 dark:bg-red-500/20 blur-2xl rounded-full" />
                 </div>
               </motion.div>

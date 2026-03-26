@@ -25,8 +25,7 @@ interface UpdateCardProps {
   createdAt: string;
   updatedAt?: string;
 
-  onPin?: () => void;
-  onUnpin?: () => void;
+  onTogglePin?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
   showActions?: boolean;
@@ -44,8 +43,7 @@ export default function UpdateCard({
   isPinned,
   createdAt,
   updatedAt,
-  onPin,
-  onUnpin,
+  onTogglePin,
   onEdit,
   onDelete,
   showActions,
@@ -106,8 +104,7 @@ export default function UpdateCard({
         {showActions && (
           <UpdateActionMenu
             isPinned={isPinned}
-            onPin={onPin}
-            onUnpin={onUnpin}
+            onTogglePin={onTogglePin}
             onEdit={onEdit}
             onDelete={onDelete}
           />
