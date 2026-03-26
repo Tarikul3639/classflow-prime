@@ -90,13 +90,7 @@ export function MaterialsSection({ form, setForm }: MaterialsSectionProps) {
                 ...m,
                 name: m.name || getFileName(file),
                 type: detectedType,
-                url:
-                  detectedType === "pdf"
-                    ? result.secure_url.replace(
-                        "/upload/",
-                        "/upload/fl_inline/",
-                      )
-                    : result.secure_url,
+                url: result.secure_url,
                 size: file.size,
               }
             : m,
