@@ -1,7 +1,14 @@
 "use client";
 
-import React from "react";
-import { Link as LinkIcon, PlusCircle, Trash2 } from "lucide-react";
+import React, { useState } from "react";
+import {
+  Link as LinkIcon,
+  PlusCircle,
+  Trash2,
+  Loader,
+  CheckCircle2,
+  Upload,
+} from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import {
@@ -9,6 +16,9 @@ import {
   CreateUpdateFormData,
   MATERIAL_TYPE_CONFIG,
 } from "@/types/update.types";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { useFileUpload } from "@/hooks/useCloudinary";
+import { toast } from "sonner";
 
 interface MaterialsSectionProps {
   form: CreateUpdateFormData;
@@ -16,6 +26,9 @@ interface MaterialsSectionProps {
 }
 
 export function MaterialsSection({ form, setForm }: MaterialsSectionProps) {
+  const [uploadingId, setUploadingId] = useState<string | null>(null);
+  const { upload } = useFileUpload();
+
   const addMaterial = () => {
     setForm({
       ...form,
@@ -42,7 +55,7 @@ export function MaterialsSection({ form, setForm }: MaterialsSectionProps) {
   const updateMaterial = (
     id: string,
     field: keyof Material,
-    value: string,
+    value: string | number,
   ) => {
     setForm({
       ...form,
@@ -50,6 +63,30 @@ export function MaterialsSection({ form, setForm }: MaterialsSectionProps) {
         a._id === id ? { ...a, [field]: value } : a,
       ),
     });
+  };
+
+  const handleFileUpload = async (id: string, file: File) => {
+    try {
+      setUploadingId(id);
+
+      const currentMaterial = form.materials.find((m) => m._id === id);
+      if (currentMaterial && !currentMaterial.name) {
+        updateMaterial(id, "name", file.name.split(".")[0]);
+      }
+
+      // ✅ Cloudinary upload
+      const result = await upload(file, "materials");
+
+      updateMaterial(id, "url", result.secure_url);
+      updateMaterial(id, "size", file.size);
+    } catch (error) {
+      console.error("Upload failed", error);
+      toast.error("File upload failed. Please try again.", {
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
+    } finally {
+      setUploadingId(null);
+    }
   };
 
   return (
@@ -67,7 +104,7 @@ export function MaterialsSection({ form, setForm }: MaterialsSectionProps) {
         <button
           type="button"
           onClick={addMaterial}
-          className="flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg bg-[#399aef] text-white text-[10px] sm:text-[11px] font-bold uppercase tracking-wide hover:bg-[#2d82cc] transition-all shadow-lg shadow-[#399aef]/10 cursor-pointer"
+          className="flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-1.5 rounded-lg bg-[#399aef] text-white text-[10px] md:text-[11px] font-bold uppercase tracking-wide hover:bg-[#2d82cc] transition-all shadow shadow-[#399aef]/10 cursor-pointer"
         >
           <PlusCircle className="size-3 md:size-4" /> Add Material
         </button>
@@ -89,7 +126,7 @@ export function MaterialsSection({ form, setForm }: MaterialsSectionProps) {
                   updateMaterial(material._id, "name", e.target.value)
                 }
                 placeholder="e.g. Lecture Notes"
-                description="Enter a descriptive name for the material."
+                description="Descriptive name for the material."
               />
             </div>
 
@@ -108,29 +145,63 @@ export function MaterialsSection({ form, setForm }: MaterialsSectionProps) {
                   }),
                 )}
                 placeholder="Select type"
-                description="Select the type of material."
+                description="Resource format."
               />
             </div>
 
-            {/* URL */}
-            <div className="md:w-full">
+            {/* URL with Upload Button */}
+            <div className="relative md:w-full group/url">
               <Input
                 label="URL"
+                disabled={uploadingId === material._id}
                 value={material.url}
                 onChange={(e) =>
                   updateMaterial(material._id, "url", e.target.value)
                 }
                 type="url"
                 placeholder="https://example.com/file.pdf"
-                description="Enter the URL of the material."
+                description="Direct link or upload a file."
+                className="pr-12" // Space for the upload button
               />
+
+              <div className="absolute right-2 bottom-2.5 md:bottom-3 xl:bottom-6">
+                <input
+                  type="file"
+                  id={`file-upload-${material._id}`}
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleFileUpload(material._id, file);
+                  }}
+                />
+
+                <label
+                  htmlFor={`file-upload-${material._id}`}
+                  className={`flex items-center justify-center p-2 rounded-lg cursor-pointer transition-all duration-300 
+                    ${
+                      uploadingId === material._id
+                        ? "bg-slate-100 text-slate-400"
+                        : material.url
+                          ? "bg-green-50 text-green-600 border border-green-100"
+                          : "bg-white border border-slate-200 text-[#399aef] hover:bg-[#399aef] hover:text-white"
+                    }`}
+                >
+                  {uploadingId === material._id ? (
+                    <Loader className="size-3.5 animate-spin" />
+                  ) : material.url ? (
+                    <CheckCircle2 className="size-3.5" />
+                  ) : (
+                    <Upload className="size-3.5" />
+                  )}
+                </label>
+              </div>
             </div>
 
             {/* Remove Button */}
             <button
               type="button"
               onClick={() => removeMaterial(material._id)}
-              className="self-end md:self-center p-2 text-slate-400 hover:text-red-500 transition-colors bg-white md:bg-transparent rounded-lg border border-slate-200 md:border-none"
+              className="self-end md:self-center bottom-2 right-2 p-2 text-slate-400 hover:text-red-500 transition-colors bg-white rounded-lg border border-slate-200 cursor-pointer shadow-sm active:scale-95"
               title="Remove Material"
             >
               <Trash2 size={16} />
@@ -140,11 +211,13 @@ export function MaterialsSection({ form, setForm }: MaterialsSectionProps) {
 
         {/* Empty State */}
         {form.materials.length === 0 && (
-          <div className="py-10 border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center gap-2 opacity-50 bg-slate-50/50">
-            <p className="text-xs font-semibold text-slate-500">
-              No materials added yet.
-            </p>
-          </div>
+          <EmptyState
+            size="sm"
+            icon={LinkIcon}
+            title="No Materials Added"
+            description="Add materials like lecture notes, slides, or links to support your update."
+            actionLabel="Add Material"
+          />
         )}
       </div>
     </div>

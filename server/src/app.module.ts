@@ -9,6 +9,7 @@ import { MailModule } from './modules/mail/mail.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { ClassModule } from './modules/class/class.module';
+import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 import { CoreModule } from './core/core.module';
 
 @Module({
@@ -24,9 +25,10 @@ import { CoreModule } from './core/core.module';
     NotificationModule,
     ClassModule,
     CoreModule,
+    CloudinaryModule,
     ProfileModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }

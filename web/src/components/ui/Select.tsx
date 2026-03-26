@@ -54,7 +54,7 @@ export const Select = ({
       </div>
 
       {/* Error & Description Section */}
-      <div className="min-h-4">
+      <div className="min-h-0">
         {" "}
         {/* Prevents layout jumping */}
         {error ? (

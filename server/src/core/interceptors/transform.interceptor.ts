@@ -39,6 +39,7 @@ export class TransformInterceptor<T> implements NestInterceptor<
 
     return next.handle().pipe(
       map((res: IServiceResponse<T>) => {
+        console.log("Cloudinary: ", res);
         return {
           success: res.success ?? (statusCode >= 200 && statusCode < 300),
           message: res.message ?? null,
