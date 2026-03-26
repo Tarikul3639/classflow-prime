@@ -61,37 +61,36 @@ export const UpdateEditorHeader = ({
 
             <button
               onClick={onSubmit}
-              disabled={isLoading || !isDirty}
+              disabled={isLoading || (!isNew && !isDirty)}
               className={`group relative flex items-center justify-center gap-2 px-6 py-2.5 md:py-3 rounded-2xl text-white overflow-hidden transition-all duration-500 active:scale-[0.96]
-              ${
-                isDirty && !isLoading
-                  ? "bg-[#399aef] hover:bg-[#2d82cc] hover:shadow-[0_0_20px_rgba(57,154,239,0.4)] cursor-pointer"
-                  : "bg-slate-400 opacity-60 cursor-not-allowed"
-              }`}
+                ${
+                  !isLoading && (isNew || isDirty)
+                    ? "bg-[#399aef] hover:bg-[#2d82cc] hover:shadow-[0_0_20px_rgba(57,154,239,0.4)] cursor-pointer"
+                    : "bg-slate-400 opacity-60 cursor-not-allowed"
+                }`}
             >
-              {/* Shine effect */}
-              {isDirty && !isLoading && (
-                <div className="absolute inset-0 w-1/2 h-full bg-white/20 skew-x-[-25deg] -translate-x-full group-hover:animate-shine" />
+              {!isLoading && (isNew || isDirty) && (
+                <div className="absolute inset-0 w-1/2 h-full bg-white/20 skew-x-[-25deg] -translate-x-full group-hover:translate-x-[250%] transition-transform duration-1000 ease-in-out" />
               )}
 
               {isLoading ? (
-                <Loader2 className="size-3.5 md:size-4 animate-spin transition-transform" />
+                <Loader2 className="size-3.5 md:size-4 animate-spin shrink-0" />
               ) : (
                 <Save
-                  className={`size-3.5 md:size-4 transition-transform ${
-                    isDirty ? "group-hover:scale-110" : ""
+                  className={`size-3.5 md:size-4 transition-transform shrink-0 ${
+                    isNew || isDirty ? "group-hover:scale-110" : ""
                   }`}
                 />
               )}
 
-              <span className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.25em]">
+              <span className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em] leading-none">
                 {isLoading
                   ? isNew
                     ? "Publishing..."
                     : "Updating..."
                   : isNew
-                  ? "Publish"
-                  : "Update"}
+                    ? "Publish"
+                    : "Update"}
               </span>
             </button>
           </div>

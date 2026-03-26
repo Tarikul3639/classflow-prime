@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { fetchClassUpdate } from "../thunks/fetch-class-update.thunk";
 import type { ClassUpdateItem } from "@/types/update.types";
 import { togglePinClassUpdate } from "../thunks/toggle-pin-class-update.thunk";
+import { deleteSingleClassUpdate } from "../thunks/delete-single-class-update.thunk";
 
 interface ClassUpdatesState {
     updates: ClassUpdateItem[];
@@ -9,11 +10,13 @@ interface ClassUpdatesState {
         fetch: boolean;
         update: boolean;
         togglePin: boolean;
+        delete: boolean;
     };
     error: {
         fetch: string | null;
         update: string | null;
         togglePin: string | null;
+        delete: string | null;
     };
 }
 
@@ -23,11 +26,13 @@ const initialState: ClassUpdatesState = {
         fetch: false,
         update: false,
         togglePin: false,
+        delete: false,
     },
     error: {
         fetch: null,
         update: null,
         togglePin: null,
+        delete: null,
     },
 };
 
@@ -38,8 +43,8 @@ const classUpdatesSlice = createSlice({
         // Optional: A reducer to clear updates, if needed
         clearUpdates: (state) => {
             state.updates = [];
-            state.error = { fetch: null, update: null, togglePin: null };
-            state.loading = { fetch: false, update: false, togglePin: false };
+            state.error = { fetch: null, update: null, togglePin: null, delete: null };
+            state.loading = { fetch: false, update: false, togglePin: false, delete: false };
         },
     },
     extraReducers: (builder) => {
@@ -76,6 +81,22 @@ const classUpdatesSlice = createSlice({
             .addCase(togglePinClassUpdate.rejected, (state, action) => {
                 state.loading.togglePin = false;
                 state.error.togglePin = action.payload?.message || "Failed to toggle pin status.";
+            })
+
+            // Delete Update
+            .addCase(deleteSingleClassUpdate.pending, (state) => {
+                state.loading.delete = true;
+                state.error.delete = null;
+            })
+            .addCase(deleteSingleClassUpdate.fulfilled, (state, action) => {
+                state.loading.delete = false;
+                state.error.delete = null;
+                // Remove the deleted update from the list
+                state.updates = state.updates.filter(u => u._id !== action.payload.updateId);
+            })
+            .addCase(deleteSingleClassUpdate.rejected, (state, action) => {
+                state.loading.delete = false;
+                state.error.delete = action.payload?.message || "Failed to delete the update.";
             });
     },
 });

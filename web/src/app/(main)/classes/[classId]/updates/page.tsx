@@ -15,6 +15,7 @@ import { UPDATE_TYPE_CONFIG, UpdateCategory } from "@/types/update.types";
 
 import { fetchClassUpdate } from "@/store/features/classes/thunks/fetch-class-update.thunk";
 import { togglePinClassUpdate } from "@/store/features/classes/thunks/toggle-pin-class-update.thunk";
+import { deleteSingleClassUpdate } from "@/store/features/classes/thunks/delete-single-class-update.thunk";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -97,23 +98,39 @@ export default function UpdatesPage() {
   });
 
   const handleTogglePin = async (updateId: string, isPinned: boolean) => {
-    console.log("Hnandle Pin: ", updateId, isPinned);
-    await dispatch(togglePinClassUpdate({ classId, updateId, isPinned }))
-      .unwrap()
-      .then(() => {
-        toast.success(isPinned ? "Update pinned" : "Update unpinned", {
-          position: "top-center",
-        });
-      })
-      .catch((err) => {
-        toast.error("Failed to update pin status", {
-          description: err.message,
-          position: "top-center",
-        });
-      });
+    // 1. Optimistic UI update
+    const promise = dispatch(
+      togglePinClassUpdate({ classId, updateId, isPinned }),
+    ).unwrap();
+
+    // 2. Show toast notifications based on the promise state
+    toast.promise(promise, {
+      loading: "Updating pin status...",
+      success: () => {
+        return !isPinned
+          ? "Update pinned successfully"
+          : "Update unpinned successfully";
+      },
+      error: (err) => {
+        return err.message || "Failed to update pin status";
+      },
+      position: "top-center",
+    });
   };
 
-  const handleDelete = () => console.log("Delete triggered");
+  // Delete handler
+  const handleDelete = async (updateId: string) => {
+    const promise = dispatch(
+      deleteSingleClassUpdate({ classId, updateId }),
+    ).unwrap();
+
+    toast.promise(promise, {
+      loading: "Deleting update...",
+      success: "Update deleted successfully",
+      error: (err) => err.message || "Failed to delete the update",
+      position: "top-center",
+    });
+  };
 
   return (
     <div className="min-h-screen">
@@ -161,7 +178,7 @@ export default function UpdatesPage() {
                     onEdit={() =>
                       router.push(`/classes/${classId}/updates/${update._id}`)
                     }
-                    onDelete={handleDelete}
+                    onDelete={() => handleDelete(update._id)}
                     showActions={
                       classDetails?.isInstructor || classDetails?.isAssistant
                     }
