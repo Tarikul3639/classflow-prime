@@ -54,6 +54,15 @@ export const MATERIAL_TYPE_CONFIG: Record<MaterialType, MaterialConfig> = {
     },
 };
 
+// For file input accept attribute
+export const MATERIAL_ACCEPT_MAP: Record<MaterialType, string> = {
+    pdf: ".pdf",
+    docx: ".doc,.docx",
+    image: "image/*",
+    video: "video/*",
+    link: "", // no file upload
+};
+
 // ==================== Update Type ====================
 
 export type UpdateCategory = "announcement" | "assignment" | "exam" | "material";

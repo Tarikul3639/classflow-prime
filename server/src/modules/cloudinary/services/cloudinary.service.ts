@@ -27,7 +27,7 @@ export class CloudinaryService {
             config.apiSecret,
         );
 
-        console.log(`Generated Cloudinary signature for folder: ${folder} | Timestamp: ${timestamp}`);
+        // console.log(`Generated Cloudinary signature for folder: ${folder} | Timestamp: ${timestamp}`);
 
         return {
             success: true,

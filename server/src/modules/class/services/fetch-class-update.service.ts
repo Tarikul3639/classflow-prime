@@ -10,7 +10,7 @@ export class FetchClassUpdateService {
   constructor(
     @InjectModel(Class.name)
     private readonly classModel: Model<ClassDocument>,
-  ) {}
+  ) { }
 
   async execute(
     userId: string,
@@ -92,20 +92,7 @@ export class FetchClassUpdateService {
                 url: '$$mat.url',
                 type: '$$mat.type',
                 size: {
-                  $cond: {
-                    if: { $ifNull: ['$$mat.size', false] },
-                    then: {
-                      $concat: [
-                        {
-                          $toString: {
-                            $round: [{ $divide: ['$$mat.size', 1048576] }, 1],
-                          },
-                        },
-                        ' MB',
-                      ],
-                    },
-                    else: '0 MB',
-                  },
+                  $ifNull: ['$$mat.size', 0]
                 },
               },
             },

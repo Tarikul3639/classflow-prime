@@ -13,10 +13,6 @@ export class CloudinaryController {
     getSignature(
         @Query() query: GetSignatureRequestDto,
     ): GetSignatureResponseDto {
-        const result= this.cloudinaryService.getSignature(query.subfolder);
-        console.log('Cloudinary signature response:', result);
-        return result;
-
-        
+        return this.cloudinaryService.getSignature(query.subfolder);        
     }
 }

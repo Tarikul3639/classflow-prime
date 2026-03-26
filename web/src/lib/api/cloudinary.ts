@@ -1,58 +1,44 @@
 // src/api/cloudinary.ts
+import axios from "axios";
+
 export interface CloudinarySignature {
-    signature: string;
-    timestamp: number;
-    apiKey: string;
-    cloudName: string;
-    folder: string;
+  signature: string;
+  timestamp: number;
+  apiKey: string;
+  cloudName: string;
+  folder: string;
 }
 
-// NEXT_PUBLIC_ prefix = accessible on both server and browser
-// Without NEXT_PUBLIC_ prefix = server only, undefined in browser
-const API_PREFIX = process.env.NEXT_PUBLIC_API_PREFIX || "/api/v2";
-
-// 1️) Get signature from backend
-import axios from 'axios';
-
-export async function getCloudinarySignature(subfolder = 'uploads'): Promise<CloudinarySignature> {
-    const res = await axios.get(`${API_PREFIX}/cloudinary/signature`, {
-        params: { subfolder }
-    });
-
-    // Assuming the backend returns a structure like { success: true, message: '...', data: { signature, timestamp, apiKey, cloudName, folder } }
-    return res.data.data;
+/**
+ * Get signed Cloudinary info from backend
+ */
+export async function getCloudinarySignature(subfolder = "uploads"): Promise<CloudinarySignature> {
+  const res = await axios.get("/api/v2/cloudinary/signature", { params: { subfolder } });
+  return res.data.data;
 }
 
-export async function uploadToCloudinary(file: File, subfolder = 'uploads') {
-    try {
-        const signatureData = await getCloudinarySignature(subfolder);
-        const { signature, timestamp, apiKey, cloudName, folder } = signatureData;
+/**
+ * Uploads a file to Cloudinary using the proper resource_type
+ */
+export async function uploadToCloudinary(
+  file: File,
+  subfolder = "uploads",
+  resourceType: "auto" | "image" | "raw" = "auto"
+) {
+  const sig = await getCloudinarySignature(subfolder);
 
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('api_key', apiKey);
-        formData.append('timestamp', timestamp.toString());
-        formData.append('signature', signature);
-        formData.append('folder', folder);
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("api_key", sig.apiKey);
+  formData.append("timestamp", sig.timestamp.toString());
+  formData.append("signature", sig.signature);
+  formData.append("folder", sig.folder);
 
-        const cloudRes = await axios.post(
-            `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`,
-            formData,
-            {
-                headers: { 'Content-Type': 'multipart/form-data' },
-                // Bonus: Upload progress check helper
-                onUploadProgress: (progressEvent) => {
-                    const percentCompleted = Math.round(
-                        (progressEvent.loaded * 100) / (progressEvent.total || 1)
-                    );
-                    console.log(`Upload progress: ${percentCompleted}%`);
-                },
-            }
-        );
+  const url = `https://api.cloudinary.com/v1_1/${sig.cloudName}/${resourceType}/upload`;
 
-        return cloudRes.data; // Cloudinary response (secure_url, public_id, etc.)
-    } catch (error: any) {
-        console.error("Axios Upload Error:", error.response?.data || error.message);
-        throw new Error('Cloudinary upload failed');
-    }
+  const cloudRes = await axios.post(url, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+
+  return cloudRes.data; // contains secure_url, public_id, etc.
 }
