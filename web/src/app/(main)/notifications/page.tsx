@@ -1,33 +1,29 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Bell, X, EllipsisVertical } from "lucide-react";
 import {
-  ArrowLeft,
-  ClipboardCheck,
-  FileText,
-  UserPlus,
-  Calendar,
-  MessageSquare,
-  Award,
-  Search,
-  Bell,
-  BookOpen,
-} from "lucide-react";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
-// Types
-interface Notification {
-  id: string;
-  type: "exam" | "update" | "member" | "schedule" | "message" | "grade";
-  title: string;
-  description: string;
-  timestamp: string;
-  date: string;
-  isRead: boolean;
-  icon: React.ElementType;
-  iconBg: string;
-  iconColor: string;
-  avatar?: string;
-}
+import { fetchNotifications } from "@/store/features/notifications/thunks/fetch-notifications.thunk";
+import { fetchUnreadCount } from "@/store/features/notifications/thunks/fetch-unread-count.thunk";
+import { deleteNotification } from "@/store/features/notifications/thunks/delete-notification.thunk";
+// import { markNotificationAsRead } from "@/store/features/notifications/thunks/mark-as-read.thunk";
+import { markAllNotificationsAsRead } from "@/store/features/notifications/thunks/mark-all-as-read.thunk";
+import {
+  INotification,
+  INotificationMeta,
+  NOTIFICATION_TYPE_CONFIG,
+  NOTIFICATION_FILTER_LABELS,
+} from "@/store/features/notifications/notification.types";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { formatRelativeDate } from "@/utils/date.utils";
+import { toast } from "sonner";
 
 interface Filter {
   id: string;
@@ -35,121 +31,81 @@ interface Filter {
 }
 
 const Notifications: React.FC = () => {
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: "1",
-      type: "exam",
-      title: "Exam Reminder: Advanced Calculus",
-      description:
-        "Room 402 • 10:00 AM. Don't forget to bring your scientific calculator and student ID.",
-      timestamp: "2 hours ago",
-      date: "today",
-      isRead: false,
-      icon: ClipboardCheck,
-      iconBg: "bg-blue-100",
-      iconColor: "text-primary",
-    },
-    {
-      id: "2",
-      type: "update",
-      title: "Course Update: Physics 101",
-      description:
-        "Dr. Smith uploaded new lecture notes for Week 8: Quantum Mechanics Intro.",
-      timestamp: "5 hours ago",
-      date: "today",
-      isRead: false,
-      icon: FileText,
-      iconBg: "bg-orange-100",
-      iconColor: "text-orange-600",
-    },
-    {
-      id: "3",
-      type: "member",
-      title: "New Study Group Request",
-      description: 'Sarah Jenkins wants to enroll your "Final Prep" study group.',
-      timestamp: "8 hours ago",
-      date: "today",
-      isRead: true,
-      icon: UserPlus,
-      iconBg: "bg-emerald-100",
-      iconColor: "text-emerald-600",
-    },
-    {
-      id: "4",
-      type: "schedule",
-      title: "Schedule Changed",
-      description:
-        'The workshop for "Digital Arts" has been moved to Friday at 2:00 PM.',
-      timestamp: "Yesterday, 4:30 PM",
-      date: "yesterday",
-      isRead: true,
-      icon: Calendar,
-      iconBg: "bg-slate-100",
-      iconColor: "text-slate-600",
-    },
-    {
-      id: "5",
-      type: "message",
-      title: "Message from Prof. Alistair",
-      description:
-        '"Please review the feedback I\'ve left on your thesis proposal draft."',
-      timestamp: "Yesterday, 11:15 AM",
-      date: "yesterday",
-      isRead: true,
-      icon: MessageSquare,
-      iconBg: "bg-slate-100",
-      iconColor: "text-slate-600",
-      avatar:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuB-mXxei8fNIE27SSJUhRoahYOWwn-VFfRaVlqfubJyUqJFXPuE1ikEJpXqbINkzXqZMYiCcokRqpNjL3SKqoQQAjlVkwZqRlE9ZlA6ulunMtHETI5vKUfn5ghcTi5gM9C6IL6GRZ9qFTsJrVj0iTVXKszNQhuhaFlMnVGjLA3PTFN-r4pJ4ZxtwW0N8d1lXsGNuyTgPItWCruz0vOF3FtppGID3JPmplXVa5Hm1uF7L0SICpS_1u9SsmFP_MrLMpCFpLsWWV2f61JA",
-    },
-    {
-      id: "6",
-      type: "grade",
-      title: "Grades Published",
-      description:
-        'Grades for "Linear Algebra - Midterm" are now available in the portal.',
-      timestamp: "Yesterday, 09:00 AM",
-      date: "yesterday",
-      isRead: true,
-      icon: Award,
-      iconBg: "bg-slate-100",
-      iconColor: "text-slate-600",
-    },
-  ]);
+  const dispatch = useAppDispatch();
+  const { notifications, meta, unreadCount, isLoading, error } = useAppSelector(
+    (state) => state.notification,
+  );
+
+  useEffect(() => {
+    dispatch(fetchNotifications({ page: 1, limit: 20 }))
+      .then(() => {
+        dispatch(fetchUnreadCount());
+      })
+      .catch(() => {
+        toast.error("Failed to load notifications. Please try again.");
+      });
+    // dispatch(fetchUnreadCount());
+  }, [dispatch]);
 
   const [activeFilter, setActiveFilter] = useState("all");
 
   // Demo Data - Easy to replace with API
   const filters: Filter[] = [
     { id: "all", label: "All" },
-    { id: "exams", label: "Exams" },
-    { id: "tests", label: "Class Tests" },
-    { id: "vivas", label: "Vivas" },
-    { id: "assignments", label: "Assignments" },
+    { id: "unread", label: "Unread" },
+    ...Object.entries(NOTIFICATION_FILTER_LABELS).map(([id, label]) => ({
+      id,
+      label,
+    })),
   ];
 
-  // Group notifications by date
-  const groupedNotifications = notifications.reduce(
-    (acc, notification) => {
-      const dateKey = notification.date;
-      if (!acc[dateKey]) {
-        acc[dateKey] = [];
+  // Apply active filter to notifications list
+  const filteredNotifications = notifications.filter((n) => {
+    if (activeFilter === "all") return true;
+    if (activeFilter === "unread") return !n.isRead;
+    return n.type === activeFilter;
+  });
+
+  // Group notifications by date (e.g. Today, Yesterday, Mar 25, 2026)
+  const groupedNotifications = filteredNotifications.reduce(
+    (grouped, notification) => {
+      // Convert createdAt → readable date label
+      // e.g. "Today", "Yesterday", "Mar 25, 2026"
+      const dateKey = formatRelativeDate(notification.createdAt, {
+        showTime: false,
+        showYear: true,
+        relativeDaysLimit: 3,
+      });
+
+      // If this date group does not exist yet,
+      // create an empty array for it
+      if (!grouped[dateKey]) {
+        grouped[dateKey] = [];
       }
-      acc[dateKey].push(notification);
-      return acc;
+
+      // Push current notification into its corresponding date group
+      grouped[dateKey].push(notification);
+
+      // Return updated grouped simulator for next iteration
+      return grouped;
     },
-    {} as Record<string, Notification[]>,
+
+    // Initial value: empty object
+    // Structure should: { [date: string]: INotification[] }
+    {} as Record<string, INotification[]>,
   );
 
-  const dateLabels: Record<string, string> = {
-    today: "Today",
-    yesterday: "Yesterday",
-  };
-
-  const markAllAsRead = () => {
-    setNotifications(
-      notifications.map((notif) => ({ ...notif, isRead: true })),
-    );
+  const markAllAsRead = async () => {
+    await dispatch(markAllNotificationsAsRead())
+      .unwrap()
+      .then(() => {
+        toast.success("All notifications marked as read");
+      })
+      .catch((error) => {
+        toast.error("Failed to mark all as read. Please try again.", {
+          description: error.message,
+        });
+      });
   };
 
   return (
@@ -171,12 +127,27 @@ const Notifications: React.FC = () => {
                 notifications
               </p>
             </div>
-            <button
-              onClick={markAllAsRead}
-              className="text-sm font-semibold text-blue-500 hover:text-blue-600 transition-colors whitespace-nowrap cursor-pointer"
-            >
-              Mark all read
-            </button>
+
+            {notifications.length > 0 &&
+              notifications.some((n) => !n.isRead) && (
+                <button
+                  onClick={markAllAsRead}
+                  className="text-sm font-semibold text-primary hover:underline transition-colors whitespace-nowrap cursor-pointer"
+                >
+                  Mark all read
+                </button>
+              )}
+
+            {/* Delete All if all read */}
+            {/* {notifications.length > 0 &&
+              notifications.every((n) => n.isRead) && (
+                <button
+                  onClick={() => {}}
+                  className="text-sm font-semibold text-red-400 hover:underline transition-colors whitespace-nowrap cursor-pointer"
+                >
+                  Delete all
+                </button>
+              )} */}
           </div>
         </div>
 
@@ -210,56 +181,93 @@ const Notifications: React.FC = () => {
                   {/* Section Header */}
                   <div className="mb-3">
                     <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                      {dateLabels[dateKey] || dateKey}
+                      {dateKey}
                     </h2>
                   </div>
 
                   {/* Notifications List */}
                   <div className="space-y-1">
                     {dateNotifications.map((notification) => {
-                      const Icon = notification.icon;
+                      const config =
+                        NOTIFICATION_TYPE_CONFIG[notification.type];
+                      const Icon = config.icon;
                       return (
                         <div
-                          key={notification.id}
-                          className={`flex items-start gap-4 px-4 py-4 rounded-lg transition-colors ${
+                          key={notification._id}
+                          className={`relative group flex items-start gap-3 px-3 py-3 rounded-lg transition-colors ${
                             !notification.isRead
-                              ? "bg-blue-50 border-l-4 border-primary"
-                              : "bg-white border-l-4 border-transparent"
+                              ? "bg-blue-50 border-primary"
+                              : "bg-white border-transparent"
                           }`}
                         >
-                          {/* Icon or Avatar */}
-                          {notification.avatar ? (
-                            <div className="shrink-0 w-12 h-12 rounded-full overflow-hidden border border-slate-100">
-                              <img
-                                alt={notification.title}
-                                className="w-full h-full object-cover"
-                                src={notification.avatar}
-                              />
-                            </div>
-                          ) : (
-                            <div
-                              className={`shrink-0 w-12 h-12 rounded-lg ${notification.iconBg} flex items-center justify-center ${notification.iconColor}`}
-                            >
-                              <Icon size={24} />
-                            </div>
+                          {/* Unread Indicator Dot */}
+                          {!notification.isRead && (
+                            <div className="absolute top-1.5 right-5 h-2 w-2 rounded-full bg-primary mt-1.5 shrink-0" />
                           )}
+                          {/* Icon or Avatar */}
+                          <div
+                            className={`shrink-0 w-10 md:w-11 h-10 md:h-11 rounded-lg ${config.iconBg} flex items-center justify-center ${config.iconColor}`}
+                          >
+                            <Icon size={22} />
+                          </div>
 
                           {/* Content */}
-                          <div className="flex-1 min-w-0">
+                          <div className="flex-1 min-w-0 mr-10">
                             <div className="flex justify-between items-start gap-2">
                               <h3 className="text-sm font-bold leading-tight">
                                 {notification.title}
                               </h3>
-                              {!notification.isRead && (
-                                <div className="h-2 w-2 rounded-full bg-primary mt-1.5 shrink-0" />
-                              )}
                             </div>
-                            <p className="text-sm text-slate-600 mt-1 line-clamp-2">
-                              {notification.description}
+                            <p className="text-sm text-slate-600 line-clamp-2">
+                              {notification.message}
                             </p>
-                            <span className="text-[11px] font-medium text-slate-400 mt-2 block uppercase">
-                              {notification.timestamp}
+                            <span className="text-[11px] font-medium text-slate-400 mt-1 block capitalize">
+                              {notification.createdAt
+                                ? formatRelativeDate(notification.createdAt, {
+                                    showTime: true,
+                                    showYear: false,
+                                  })
+                                : ""}
                             </span>
+                          </div>
+                          {/* Individual Dropdown Action */}
+                          <div className="absolute top-1/2 right-3.5 -translate-y-1/2">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <button className="p-2 hover:bg-slate-200 rounded-md transition-colors outline-none cursor-pointer opacity-100 md:opacity-0 group-hover:opacity-100 focus:opacity-100">
+                                  <EllipsisVertical className="size-4 text-slate-500" />
+                                </button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent
+                                align="end"
+                                className="w-32 shadow border border-slate-100"
+                              >
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    dispatch(
+                                      deleteNotification(notification._id),
+                                    )
+                                      .unwrap()
+                                      .then(() => {
+                                        toast.success("Notification deleted");
+                                      })
+                                      .catch((error) => {
+                                        toast.error(
+                                          "Failed to delete notification. Please try again.",
+                                          { description: error.message },
+                                        );
+                                      });
+                                  }}
+                                  className="text-slate-600 cursor-pointer py-2"
+                                >
+                                  <X
+                                    strokeWidth={2.5}
+                                    className="mr-2 size-4 text-slate-600"
+                                  />
+                                  <span className="font-medium">Clear</span>
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </div>
                         </div>
                       );

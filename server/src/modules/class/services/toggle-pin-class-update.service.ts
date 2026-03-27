@@ -31,7 +31,7 @@ export class TogglePinClassUpdateService {
         const userObjectId = new Types.ObjectId(userId);
         const classObjectId = new Types.ObjectId(classId);
         const updateObjectId = new Types.ObjectId(updateId);
-console.log(dto);
+
         // Step 1: Check if class exists
         const classData = await this.classModel.findOne({
             _id: classObjectId as any,

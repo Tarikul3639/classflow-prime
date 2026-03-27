@@ -6,44 +6,43 @@ import {
 } from '@nestjs/common';
 import { map, Observable } from 'rxjs';
 
-/**
- * TransformInterceptor
- * Intercepts responses and transforms them into a consistent format
- * Wraps the original response data in an object with a 'data' property
- * Example:-
- * Original response: { id: 1, name: 'John' }
- * Transformed response: { status: 'success', data: { id: 1, name: 'John' } }
- * This allows for a standardized API response structure across the application.
- */
 export interface IApiResponse<T> {
   success: boolean;
   message: string | null;
-  data: T;
+  data: T | null; // Allow null data for responses without content
 }
+
 export interface IServiceResponse<T> {
   success?: boolean;
   message?: string;
   data: T;
 }
+
 @Injectable()
 export class TransformInterceptor<T> implements NestInterceptor<
-  IServiceResponse<T>,
-  IApiResponse<T>
+  T,
+  IApiResponse<T> | void
 > {
   intercept(
     context: ExecutionContext,
     next: CallHandler,
-  ): Observable<IApiResponse<T>> {
+  ): Observable<IApiResponse<T> | void> {
     const response = context.switchToHttp().getResponse();
-    const statusCode = response.statusCode;
 
     return next.handle().pipe(
       map((res: IServiceResponse<T>) => {
-        console.log("Cloudinary: ", res);
+        const statusCode = response.statusCode as number;
+
+        // 204 No Content — return nothing
+        if (statusCode === 204) {
+          return;
+        }
+
+        // Wrap all other responses
         return {
-          success: res.success ?? (statusCode >= 200 && statusCode < 300),
-          message: res.message ?? null,
-          data: res.data,
+          success: res?.success ?? (statusCode >= 200 && statusCode < 300),
+          message: res?.message ?? null,
+          data: res.data ?? null,
         };
       }),
     );

@@ -71,7 +71,7 @@ export function formatRelativeDate(
   else if (diffDays > 1 && diffDays <= relativeDaysLimit)
     relative = `after ${diffDays} day${diffDays > 1 ? "s" : ""}`;
   else if (diffDays < -1 && diffDays >= -relativeDaysLimit)
-    relative = `${Math.abs(diffDays)} day${Math.abs(diffDays) > 1 ? "s" : ""} before`;
+    relative = `${Math.abs(diffDays)} day${Math.abs(diffDays) > 1 ? "s" : ""} ago`;
 
   // Base date formatting if beyond limit
   let datePart: string;

@@ -46,14 +46,8 @@ const profileReducer = combineReducers({
   updateProfile: updateProfileReducer,
 });
 
-// // Notifications slices
-// import fetchNotificationsReducer from "./features/notifications/slices/fetch-notifications.slice";
-// import markAsReadReducer from "./features/notifications/slices/mark-as-read.slice";
-
-// const notificationsReducer = combineReducers({
-//   fetchNotifications: fetchNotificationsReducer,
-//   markAsRead: markAsReadReducer,
-// });
+// Notifications slices
+import notificationReducer from "./features/notifications/slices/notification.slice";
 
 // Root store
 export const store = configureStore({
@@ -61,7 +55,7 @@ export const store = configureStore({
     auth: authReducer,
     classes: classesReducer,
     profile: profileReducer,
-    // notifications: notificationsReducer,
+    notification: notificationReducer,
   },
 });
 
