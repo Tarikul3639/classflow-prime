@@ -276,7 +276,7 @@ export default function ClassLayout({
             }}
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.3}
+            dragElastic={1}
             onDragEnd={(_, info) => {
               const threshold = 120;
               if (info.offset.x < -threshold) {
