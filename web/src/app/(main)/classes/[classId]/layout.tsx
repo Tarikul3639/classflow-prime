@@ -4,8 +4,8 @@ import Link from "next/link";
 import { ArrowLeft, Share2 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
-import { motion } from "framer-motion";
-import { useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { fetchSingleClass } from "@/store/features/classes/thunks/fetch-single-class.thunk";
@@ -31,9 +31,7 @@ export default function ClassLayout({
     if (classId && classId !== "undefined") {
       dispatch(fetchSingleClass(classId))
         .unwrap()
-        .then((res) => {
-          // console.log("Fetched Class Details:", res);
-        })
+        .then((res) => {})
         .catch((err) => {
           console.error("Error fetching class details:", err);
           toast.error("Failed to load class details", {
@@ -79,13 +77,15 @@ export default function ClassLayout({
 
   const isActiveTab = (href: string) => pathname === href;
 
-  // if (isLoading) {
-  //   return (
-  //     <div className="flex items-center justify-center h-screen">
-  //       <p className="text-lg font-medium text-slate-600">Loading class details...</p>
-  //     </div>
-  //   );
-  // }
+  const tabIndex = tabs.findIndex((t) => t.href === pathname);
+  const [direction, setDirection] = useState(0);
+  const prevTabIndex = useRef(tabIndex);
+
+  useEffect(() => {
+    const newDirection = tabIndex > prevTabIndex.current ? 1 : -1;
+    setDirection(newDirection);
+    prevTabIndex.current = tabIndex;
+  }, [tabIndex]);
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
@@ -147,10 +147,7 @@ export default function ClassLayout({
 
           <div className="absolute inset-0 p-6 flex flex-col justify-between text-white">
             <div className="flex justify-between items-start">
-              <span
-                className="px-3 py-1 text-[11px] font-bold rounded-full bg-white/20 backdrop-blur-md uppercase tracking-wider"
-                // style={{ backgroundColor: classDetails?.themeColor }}
-              >
+              <span className="px-3 py-1 text-[11px] font-bold rounded-full bg-white/20 backdrop-blur-md uppercase tracking-wider">
                 {classDetails?.status === "active" ? "Active" : "Archived"}
               </span>
               <div className="flex items-center gap-1 bg-white/20 backdrop-blur-md px-2 py-1 rounded-lg">
@@ -190,6 +187,7 @@ export default function ClassLayout({
                     alt={classDetails?.instructor || "Instructor Avatar"}
                   />
                   <AvatarFallback className="w-full h-full text-sm font-semibold bg-white/20 text-white text-center p-1">
+                    0a5.
                     {classDetails?.instructor
                       ?.split(" ")
                       .map((n) => n[0])
@@ -211,7 +209,7 @@ export default function ClassLayout({
       </div>
 
       {/* Sticky Tabs */}
-      <div className="sticky top-16 z-20 bg-slate-100 backdrop-blur-md border-b border-slate-200  mx-auto w-full">
+      <div className="sticky top-16 z-20 bg-slate-100 backdrop-blur-md border-b border-slate-200 mx-auto w-full">
         <div className="flex overflow-x-auto no-scrollbar px-4 relative">
           {tabs.map((tab) => {
             const active = isActiveTab(tab.href);
@@ -230,7 +228,6 @@ export default function ClassLayout({
 
                 {active && (
                   <>
-                    {/* Glow Light */}
                     <motion.span
                       layoutId="activeGlow"
                       className="absolute -bottom-1 left-2 right-2 h-3 bg-primary/40 blur-md rounded-full"
@@ -240,8 +237,6 @@ export default function ClassLayout({
                         damping: 30,
                       }}
                     />
-
-                    {/* Main Underline */}
                     <motion.span
                       layoutId="activeTab"
                       className="absolute bottom-0 left-0 right-0 h-1 rounded-t-full bg-primary"
@@ -260,7 +255,50 @@ export default function ClassLayout({
       </div>
 
       {/* Page Content */}
-      <div className="flex-1">{children}</div>
+      <div className="flex-1 overflow-hidden">
+        <AnimatePresence mode="wait" custom={direction}>
+          <motion.div
+            key={pathname}
+            custom={direction}
+            variants={{
+              initial: (d: number) => ({ x: d * 100 + "%", opacity: 0 }),
+              animate: { x: 0, opacity: 1 },
+              exit: (d: number) => ({ x: d * -100 + "%", opacity: 0 }),
+            }}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={{
+              type: "spring",
+              stiffness: 380,
+              damping: 32,
+              mass: 0.8,
+            }}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.3}
+            onDragEnd={(_, info) => {
+              const threshold = 120;
+              if (info.offset.x < -threshold) {
+                const nextIndex = Math.min(tabIndex + 1, tabs.length - 1);
+                if (nextIndex !== tabIndex) {
+                  setDirection(1);
+                  router.push(tabs[nextIndex].href);
+                }
+              } else if (info.offset.x > threshold) {
+                const prevIndex = Math.max(tabIndex - 1, 0);
+                if (prevIndex !== tabIndex) {
+                  setDirection(-1);
+                  router.push(tabs[prevIndex].href);
+                }
+              }
+            }}
+            className="w-full cursor-grab active:cursor-grabbing"
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
