@@ -42,11 +42,13 @@ export default function UpdatesPage() {
 
   const { error } = useAppSelector((state) => state.classes.fetchClassUpdates);
 
-  useEffect(() => {
-    if (classId && classId !== "undefined") {
-      dispatch(fetchClassUpdate(classId));
-    }
-  }, [dispatch, classId]);
+useEffect(() => {
+  if (!classId || !classDetails?.classId) return;
+
+  if (updates.length > 0) return; // already fetched
+
+  dispatch(fetchClassUpdate(classId));
+}, [dispatch, classId, classDetails?.classId]);
 
   const filters: Filter[] = [
     { id: "all", label: "All Updates" },
