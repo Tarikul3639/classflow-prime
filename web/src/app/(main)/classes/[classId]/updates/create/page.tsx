@@ -67,7 +67,7 @@ export default function CreateUpdatePage() {
         onSubmit={handleSubmit}
       />
 
-      <main className="flex-1 overflow-y-auto p-2 md:p-4 lg:p-6">
+      <main className="p-2 md:p-4 lg:p-6">
         <div className="mx-auto grid grid-cols-1 xl:grid-cols-12 gap-8">
           <div className="xl:col-span-7">
             {/* ✅ Removed stray semicolon after component */}

@@ -6,15 +6,21 @@ import { Notification, NotificationSchema } from '../../database/entities/notifi
 import { NotificationService } from './services/notification.service';
 import { NotificationController } from './controllers/notification.controller';
 
+// Push Subscription
+import { PushSubscription, PushSubscriptionSchema } from '../../database/entities/push-subscription.entity';
+import { PushSubscriptionController } from './controllers/push-subscription.controller';
+import { PushSubscriptionService } from './services/push-subscription.service';
+
 @Global()
 @Module({
     imports: [
         MongooseModule.forFeature([
             { name: Notification.name, schema: NotificationSchema },
+            { name: PushSubscription.name, schema: PushSubscriptionSchema },
         ]),
     ],
-    controllers: [NotificationController],
-    providers: [NotificationService],
-    exports: [NotificationService],
+    controllers: [NotificationController, PushSubscriptionController],
+    providers: [NotificationService, PushSubscriptionService],
+    exports: [NotificationService, PushSubscriptionService],
 })
 export class NotificationModule { }

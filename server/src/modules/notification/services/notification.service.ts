@@ -1,3 +1,5 @@
+import * as webpush from 'web-push';
+import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
@@ -12,12 +14,23 @@ import {
 } from '../dto/create-notification.dto';
 import { QueryNotificationDto } from '../dto/query-notification.dto';
 
+import { PushSubscriptionService } from './push-subscription.service';
+
 @Injectable()
 export class NotificationService {
     constructor(
         @InjectModel(Notification.name)
         private readonly notificationModel: Model<NotificationDocument>,
-    ) { }
+        private readonly pushSubscriptionService: PushSubscriptionService,
+        private readonly configService: ConfigService,
+    ) {
+        webpush.setVapidDetails(
+            this.configService.get<string>('webPush.mailto')!,
+            this.configService.get<string>('webPush.publicKey')!,
+            this.configService.get<string>('webPush.privateKey')!,
+        );
+    }
+
 
     // ─── Single Create ────────────────────────────────────────
     async create(dto: CreateNotificationDto): Promise<Notification> {
@@ -30,15 +43,50 @@ export class NotificationService {
 
         const { recipientIds, ...rest } = dto;
 
+        // 1) Save to DB
         await this.notificationModel.insertMany(
-            recipientIds.map((recipientId) => ({ ...rest, recipientId })),
+            recipientIds.map((recipientId) => ({
+                ...rest,
+                recipientId: new Types.ObjectId(recipientId),
+            })),
             { ordered: false },
         );
+
+        // 2) Send Browser Push Notifications
+        const subscriptions = await this.pushSubscriptionService.getByUserIds(
+            recipientIds,
+        );
+
+        if (subscriptions.length > 0) {
+            const payload = JSON.stringify({
+                title: dto.title,
+                body: dto.message,
+                data: dto.metadata ?? {},
+            });
+
+            const results = await Promise.allSettled(
+                subscriptions.map((sub) =>
+                    webpush.sendNotification(
+                        { endpoint: sub.endpoint, keys: sub.keys },
+                        payload,
+                    ),
+                ),
+            );
+
+            // ── Error log ─────────────────────────────────
+            results.forEach((result, i) => {
+                if (result.status === 'rejected') {
+                    console.error(`Push failed for subscription ${i}:`, result.reason);
+                } else {
+                    console.log(`Push sent successfully for subscription ${i}`);
+                }
+            });
+        }
     }
 
     // ─── Get Paginated List ───────────────────────────────────
     async getUserNotifications(userId: string, query: QueryNotificationDto) {
-        console.log("Call for all notifications: ", userId);
+        console.log('Call for all notifications: ', userId);
         const { page = 1, limit = 20, onlyUnread, type } = query;
         const skip = (page - 1) * limit;
 
@@ -125,8 +173,8 @@ export class NotificationService {
             message: 'Unread count fetched successfully',
             data: {
                 count,
-            }
-        }
+            },
+        };
     }
 
     // ─── Mark Single as Read ──────────────────────────────────

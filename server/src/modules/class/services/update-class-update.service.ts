@@ -19,6 +19,12 @@ import {
 import { UpdateClassUpdateRequestDto } from '../dto/update-class-update.dto';
 import { UpdateClassUpdateResponseDto } from '../dto/update-class-update.dto';
 
+import { Enrollment, EnrollmentDocument } from '../../../database/entities/enrollment.entity';
+import { EnrollmentRole } from '../../../database/interface/enrollment.interface';
+
+import { NotificationService } from '../../notification/services/notification.service';
+import { NotificationType } from '../../../database/entities/notification.entity';
+
 @Injectable()
 export class UpdateClassUpdateService {
   constructor(
@@ -30,7 +36,12 @@ export class UpdateClassUpdateService {
 
     @InjectModel(Material.name)
     private readonly materialModel: Model<MaterialDocument>,
-  ) {}
+
+    @InjectModel(Enrollment.name)
+    private readonly enrollmentModel: Model<EnrollmentDocument>,
+
+    private readonly notificationService: NotificationService,
+  ) { }
 
   async execute(
     userId: string,
@@ -144,6 +155,44 @@ export class UpdateClassUpdateService {
     const materials = await this.materialModel
       .find({ updateId: updateObjectId })
       .lean();
+
+    /**
+     * After successfully updating the class update and associated materials,
+     * we need to notify all relevant users (learners, assistants, instructor).
+     * This is done after the transaction commits to ensure we only notify if the update was modified successfully.
+     */
+
+    // ── 1. Get all enrolled learners ───────────────────────
+    const enrollments = await this.enrollmentModel
+      .find({ classId: classObjectId, role: EnrollmentRole.LEARNER })
+      .select('userId')
+      .lean();
+
+    const learnerIds = enrollments.map((e) => e.userId.toString());
+
+    // ── 2. Get assistants and instructor ───────────────────
+    const assistantIds = classData.assistantIds?.map((id) => id.toString()) || [];
+    const instructorId = classData.instructorId.toString();
+
+    // ── 3. Combine all recipient IDs and remove duplicates ──
+    const allRecipients = [
+      ...new Set([...learnerIds, ...assistantIds, instructorId]),
+    ].filter((id) => id !== userId); // remove whoever posted
+
+    // ── 4. Send notifications ───────────────────────────────
+    if (allRecipients.length > 0) {
+      await this.notificationService.createBulk({
+        recipientIds: allRecipients,
+        senderId: userObjectId as any,
+        title: classData.name,
+        message: `An update has been modified please check the latest changes in the class.`,
+        type: NotificationType.UPDATE,
+        metadata: {
+          classId,
+          updateId: updateObjectId.toString(),
+        },
+      });
+    }
 
     return {
       success: true,

@@ -94,7 +94,7 @@ export default function ClassLayout({
         <div className="flex items-center justify-between mx-auto">
           <div className="flex items-center gap-3">
             <button
-              onClick={router.back}
+              onClick={()=> router.replace("/classes")}
               className="group flex items-center justify-center p-2 rounded-lg hover:bg-white transition-colors border border-slate-200 bg-white cursor-pointer hover:border-primary/30"
             >
               <ArrowLeft
@@ -255,7 +255,7 @@ export default function ClassLayout({
       </div>
 
       {/* Page Content */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 ">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={pathname}
