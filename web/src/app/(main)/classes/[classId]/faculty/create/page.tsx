@@ -9,6 +9,7 @@ import ContactInfoSection from "./_components/ContactInfoSection";
 import FormNote from "./_components/FormNote";
 import FacultyPreview from "./_components/FacultyPreview";
 import { toast } from "sonner";
+import { useFileUpload } from "@/hooks/useCloudinary";
 
 import {
   createClassFaculty,
@@ -36,21 +37,33 @@ export default function AddFacultyPage() {
     (state) => state.classes.classFaculty.loading.create,
   );
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const { upload, loading: uploadLoading } = useFileUpload();
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData((prev) => ({
-          ...prev,
-          avatarUrl: reader.result as string,
-        }));
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    const promise = upload(file, "avatars");
+
+    toast.promise(promise, {
+      loading: "Uploading image...",
+      success: "Image uploaded",
+      error: "Failed to upload image",
+    });
+
+    try {
+      const res = await promise;
+
+      setFormData((prev) => ({
+        ...prev,
+        avatarUrl: res.secure_url, // 🔥 real URL from Cloudinary
+      }));
+    } catch (err) {
+      console.error(err);
     }
   };
 
-  const removeImage = () => {
+  const removeAvatar = () => {
     setFormData((prev) => ({
       ...prev,
       avatarUrl: "",
@@ -72,6 +85,7 @@ export default function AddFacultyPage() {
         facultyData: formData,
       }),
     )
+      .unwrap()
       .then((res) => {
         if (createClassFaculty.fulfilled.match(res)) {
           router.push(`/classes/${classId}/faculty`);
@@ -85,7 +99,7 @@ export default function AddFacultyPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 cursor-default">
       {/* Header */}
       <EditorHeader
         classId={classId}
@@ -100,8 +114,9 @@ export default function AddFacultyPage() {
           <div className="md:col-span-2 p-6 flex items-center justify-center">
             <PhotoUpload
               imagePreview={formData.avatarUrl || null}
-              onImageUpload={handleImageUpload}
-              onRemoveImage={removeImage}
+              onImageUpload={handleAvatarUpload}
+              onRemoveImage={removeAvatar}
+              isUploading={uploadLoading}
             />
           </div>
 

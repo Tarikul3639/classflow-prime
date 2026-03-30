@@ -1,0 +1,86 @@
+import {
+    Injectable,
+    NotFoundException,
+    ForbiddenException,
+} from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, Types } from 'mongoose';
+
+import { Class, ClassDocument } from '../../../database/entities/class.entity';
+import {
+    Faculty,
+    FacultyDocument,
+} from '../../../database/entities/faculty.entity';
+
+import {
+    UpdateSingleClassFacultyRequestDto,
+    ClassFacultyResponseDto,
+} from '../dto/class-faculty.dto';
+
+@Injectable()
+export class UpdateSingleClassFacultyService {
+    constructor(
+        @InjectModel(Class.name) private readonly classModel: Model<ClassDocument>,
+        @InjectModel(Faculty.name)
+        private readonly facultyModel: Model<FacultyDocument>,
+    ) { }
+
+    async execute(
+        userId: string,
+        classId: string,
+        facultyId: string,
+        dto: UpdateSingleClassFacultyRequestDto,
+    ): Promise<ClassFacultyResponseDto> {
+        console.log('Update...', userId, classId, facultyId, dto);
+
+        const userObjectId = new Types.ObjectId(userId);
+        const classObjectId = new Types.ObjectId(classId);
+        const facultyObjectId = new Types.ObjectId(facultyId);
+
+        const existingClass = await this.classModel.findById(classObjectId);
+        if (!existingClass) throw new NotFoundException('Class not found');
+
+        if (
+            !existingClass.instructorId.equals(userObjectId) &&
+            !existingClass.assistantIds?.some((id) => id.equals(userObjectId))
+        ) {
+            throw new ForbiddenException('Only the instructor or assistants can update faculties');
+        }
+
+        const updateData = Object.fromEntries(
+            Object.entries(dto).filter(([_, v]) => v !== undefined),
+        );
+
+        if (Object.keys(updateData).length === 0) {
+            throw new NotFoundException('No valid fields provided for update');
+        }
+
+        console.log('Fields: ', updateData);
+
+        const faculty = await this.facultyModel.findOneAndUpdate(
+            { _id: facultyObjectId as any, classId: classObjectId },
+            { $set: updateData },
+            { new: true },
+        );
+
+        if (!faculty) throw new NotFoundException('Faculty not found');
+
+        return {
+            success: true,
+            message: 'Faculty updated successfully',
+            data: {
+                classId,
+                faculty: {
+                    facultyId: faculty._id.toString(),
+                    name: faculty.name,
+                    designation: faculty.designation,
+                    location: faculty.location,
+                    email: faculty.email,
+                    avatarUrl: faculty.avatarUrl,
+                    phone: faculty.phone,
+                    classroomCode: faculty.classroomCode,
+                },
+            },
+        };
+    }
+}

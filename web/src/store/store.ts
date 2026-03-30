@@ -26,6 +26,7 @@ import fetchSingleClassUpdateReducer from "./features/classes/slices/fetch-singl
 import updateClassUpdateReducer from "./features/classes/slices/update-class-update.slice";
 
 import classFacultyReducer from "./features/classes/slices/class-faculty.slice";
+import fetchSingleClassFaculty from './features/classes/slices/fetch-single-class-faculty.slice'
 
 const classesReducer = combineReducers({
   createClass: createClassReducer,
@@ -39,6 +40,7 @@ const classesReducer = combineReducers({
   updateClassUpdate: updateClassUpdateReducer,
 
   classFaculty: classFacultyReducer,
+  fetchSingleClassFaculty: fetchSingleClassFaculty,
 });
 
 // Profile slices

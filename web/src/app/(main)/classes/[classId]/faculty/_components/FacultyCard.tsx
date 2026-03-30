@@ -7,9 +7,24 @@ import {
   Copy,
   CheckCircle,
 } from "lucide-react";
+import ActionMenu from "./ActionMenu";
 import type { ClassFaculty } from "@/store/features/classes/thunks/class-faculty.thunk";
 
-export const FacultyCard = ({ faculty }: { faculty: ClassFaculty }) => {
+interface FacultyCardProps {
+  faculty: ClassFaculty;
+  onTogglePin?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  showActions?: boolean;
+}
+
+export const FacultyCard = ({
+  faculty,
+  onDelete,
+  onEdit,
+  onTogglePin,
+  showActions = true,
+}: FacultyCardProps) => {
   const [copied, setCopied] = useState<string | null>(null);
 
   const copyClassroomCode = async (
@@ -56,6 +71,15 @@ export const FacultyCard = ({ faculty }: { faculty: ClassFaculty }) => {
             </span>
           </div>
         </div>
+        {showActions && (
+          <div className="ml-auto">
+            <ActionMenu
+              onDelete={onDelete}
+              onEdit={onEdit}
+              onTogglePin={onTogglePin}
+            />
+          </div>
+        )}
       </div>
 
       {/* Contact Info */}

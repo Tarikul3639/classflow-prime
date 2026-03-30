@@ -52,8 +52,9 @@ import { DeleteSingleClassUpdateService } from './services/delete-single-class-u
 import { ClassFacultyController } from './controllers/class-faculty.controller';
 import { FetchClassFacultiesService } from './services/fetch-class-faculties.service';
 import { CreateClassFacultyService } from './services/create-class-faculty.service';
-import { UpdateClassFacultyService } from './services/update-class-faculty.service';
+import { UpdateSingleClassFacultyService } from './services/update-single-class-faculty.service';
 import { DeleteClassFacultyService } from './services/delete-class-faculty.service';
+import { FetchSingleClassFacultyService } from './services/fetch-single-class-faculty.service';
 
 @Module({
   imports: [
@@ -101,8 +102,9 @@ import { DeleteClassFacultyService } from './services/delete-class-faculty.servi
     // Class Faculty Services
     FetchClassFacultiesService,
     CreateClassFacultyService,
-    UpdateClassFacultyService,
+    UpdateSingleClassFacultyService,
     DeleteClassFacultyService,
+    FetchSingleClassFacultyService,
   ],
 })
 export class ClassModule { }

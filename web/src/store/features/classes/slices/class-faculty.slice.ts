@@ -1,11 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
     createClassFaculty,
-    updateClassFaculty,
     deleteClassFaculty,
     fetchClassFaculties,
     type ClassFaculty,
 } from "../thunks/class-faculty.thunk";
+import { updateSingleClassFaculty } from "../thunks/update-single-class-faculty.thunk";
 
 interface ClassFacultyState {
     faculties: ClassFaculty[];
@@ -86,19 +86,19 @@ const classFacultySlice = createSlice({
 
         // ─── Update ───────────────────────────────────────────
         builder
-            .addCase(updateClassFaculty.pending, (state) => {
+            .addCase(updateSingleClassFaculty.pending, (state) => {
                 state.loading.update = true;
                 state.error.update = null;
             })
-            .addCase(updateClassFaculty.fulfilled, (state, action) => {
+            .addCase(updateSingleClassFaculty.fulfilled, (state, action) => {
                 state.loading.update = false;
-                const updated = action.payload.data.faculty; // ClassFaculty
+                const updated = action.payload; // ClassFaculty
                 const index = state.faculties.findIndex(
                     (f) => f.facultyId === updated.facultyId
                 );
                 if (index !== -1) state.faculties[index] = updated;
             })
-            .addCase(updateClassFaculty.rejected, (state, action) => {
+            .addCase(updateSingleClassFaculty.rejected, (state, action) => {
                 state.loading.update = false;
                 state.error.update = action.payload ?? "Failed to update faculty";
             });

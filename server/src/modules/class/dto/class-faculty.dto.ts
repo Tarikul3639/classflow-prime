@@ -54,7 +54,7 @@ export class CreateClassFacultyRequestDto {
     classroomCode?: string;
 }
 
-export class UpdateClassFacultyRequestDto {
+export class UpdateSingleClassFacultyRequestDto {
     @ApiProperty({ example: 'Dr. Jane Doe', required: false })
     @IsOptional()
     @IsString()
@@ -172,4 +172,14 @@ export class FetchClassFacultiesResponseDto {
 
     @ApiProperty({ type: FacultiesDataDto })
     data: FacultiesDataDto;
+}
+
+// ─── Additional DTO for Fetching Single Faculty ─────────────────────────────
+export class FetchSingleClassFacultyResponseDto {
+    @ApiProperty({ example: true })
+    success: boolean;
+    @ApiProperty({ example: 'Faculty fetched successfully' })
+    message: string;
+    @ApiProperty({ type: ClassFacultyDataDto })
+    data: ClassFacultyDataDto;
 }

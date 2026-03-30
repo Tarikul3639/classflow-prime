@@ -1,34 +1,50 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 import { Class, ClassDocument } from '../../../database/entities/class.entity';
-import { Faculty, FacultyDocument } from '../../../database/entities/faculty.entity';
+import {
+  Faculty,
+  FacultyDocument,
+} from '../../../database/entities/faculty.entity';
 
 import { DeleteClassFacultyResponseDto } from '../dto/class-faculty.dto';
 
 @Injectable()
 export class DeleteClassFacultyService {
   constructor(
-    @InjectModel(Class.name)  private readonly classModel: Model<ClassDocument>,
-    @InjectModel(Faculty.name) private readonly facultyModel: Model<FacultyDocument>,
-  ) {}
+    @InjectModel(Class.name) private readonly classModel: Model<ClassDocument>,
+    @InjectModel(Faculty.name)
+    private readonly facultyModel: Model<FacultyDocument>,
+  ) { }
 
   async execute(
     userId: string,
     classId: string,
     facultyId: string,
   ): Promise<DeleteClassFacultyResponseDto> {
-    const existingClass = await this.classModel.findById(classId);
+
+    const userObjectId = new Types.ObjectId(userId);
+    const classObjectId = new Types.ObjectId(classId);
+    const facultyObjectId = new Types.ObjectId(facultyId);
+
+    const existingClass = await this.classModel.findById(classObjectId);
     if (!existingClass) throw new NotFoundException('Class not found');
 
-    if (existingClass.instructorId.toString() !== userId) {
+    if (
+      !existingClass.instructorId.equals(userObjectId) &&
+      !existingClass.assistantIds?.some((id) => id.equals(userObjectId))
+    ) {
       throw new ForbiddenException('Only the instructor can remove faculties');
     }
 
     const faculty = await this.facultyModel.findOneAndDelete({
-      _id: facultyId,
-      classId,
+      _id: facultyObjectId as any,
+      classId: classObjectId,
     });
 
     if (!faculty) throw new NotFoundException('Faculty not found');

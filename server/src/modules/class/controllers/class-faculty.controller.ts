@@ -14,16 +14,19 @@ import type { IJwtPayload } from '../../../modules/auth/interfaces/jwt-payload.i
 
 import {
     FetchClassFacultiesResponseDto,
+    FetchSingleClassFacultyResponseDto,
     CreateClassFacultyRequestDto,
-    UpdateClassFacultyRequestDto,
+    UpdateSingleClassFacultyRequestDto,
     ClassFacultyResponseDto,
     DeleteClassFacultyResponseDto,
 } from '../dto/class-faculty.dto';
 
 import { FetchClassFacultiesService } from '../services/fetch-class-faculties.service';
 import { CreateClassFacultyService } from '../services/create-class-faculty.service';
-import { UpdateClassFacultyService } from '../services/update-class-faculty.service';
+import { UpdateSingleClassFacultyService } from '../services/update-single-class-faculty.service';
 import { DeleteClassFacultyService } from '../services/delete-class-faculty.service';
+
+import { FetchSingleClassFacultyService } from '../services/fetch-single-class-faculty.service';
 
 @ApiTags('Class Faculty')
 @Controller('classes/:classId/faculties')
@@ -31,8 +34,9 @@ export class ClassFacultyController {
     constructor(
         private readonly fetchClassFacultiesService: FetchClassFacultiesService,
         private readonly createClassFacultyService: CreateClassFacultyService,
-        private readonly updateClassFacultyService: UpdateClassFacultyService,
+        private readonly updateSingleClassFacultyService: UpdateSingleClassFacultyService,
         private readonly deleteClassFacultyService: DeleteClassFacultyService,
+        private readonly fetchSingleClassFacultyService: FetchSingleClassFacultyService,
     ) { }
 
     @Get()
@@ -45,6 +49,21 @@ export class ClassFacultyController {
         return await this.fetchClassFacultiesService.execute(
             user.userId.toString(),
             classId,
+        );
+    }
+
+    @Get(':facultyId')
+    @ApiOperation({ summary: 'Fetch a single faculty of a class' })
+    @ApiResponse({ status: 200, type: FetchSingleClassFacultyResponseDto })
+    async fetchSingleFaculty(
+        @CurrentUser() user: IJwtPayload,
+        @Param('classId') classId: string,
+        @Param('facultyId') facultyId: string,
+    ): Promise<FetchSingleClassFacultyResponseDto> {
+        return await this.fetchSingleClassFacultyService.execute(
+            user.userId.toString(),
+            classId,
+            facultyId,
         );
     }
 
@@ -70,9 +89,9 @@ export class ClassFacultyController {
         @CurrentUser() user: IJwtPayload,
         @Param('classId') classId: string,
         @Param('facultyId') facultyId: string,
-        @Body() dto: UpdateClassFacultyRequestDto,
+        @Body() dto: UpdateSingleClassFacultyRequestDto,
     ): Promise<ClassFacultyResponseDto> {
-        return await this.updateClassFacultyService.execute(
+        return await this.updateSingleClassFacultyService.execute(
             user.userId.toString(),
             classId,
             facultyId,

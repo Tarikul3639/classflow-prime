@@ -1,19 +1,23 @@
 "use client";
 
 import React from "react";
-import { Camera, Trash2, Plus } from "lucide-react";
+import { Camera, Trash2, Plus, Loader } from "lucide-react";
+import { is } from "date-fns/locale";
 
 interface PhotoUploadProps {
   imagePreview: string | null;
   onImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onRemoveImage: () => void;
+  isUploading?: boolean;
 }
 
 export default function PhotoUpload({
   imagePreview,
   onImageUpload,
   onRemoveImage,
+  isUploading = false,
 }: PhotoUploadProps) {
+  // isUploading = true;
   return (
     <div className=" w-full max-w-70">
       <div className="flex flex-col items-center gap-6">
@@ -34,6 +38,7 @@ export default function PhotoUpload({
 
             {/* Hidden Input */}
             <input
+              disabled={isUploading}
               type="file"
               accept="image/*"
               onChange={onImageUpload}
@@ -46,15 +51,22 @@ export default function PhotoUpload({
             <button
               onClick={onRemoveImage}
               type="button"
-              className="absolute -bottom-1 -right-1 z-30 p-1.5 md:p-2.5 bg-white text-rose-500 rounded-full shadow-lg border border-slate-100 hover:bg-rose-50 transition-all active:scale-90"
+              className="absolute -bottom-1 -right-1 z-30 p-1.5 md:p-2.5 bg-white text-rose-500 rounded-full shadow-lg border border-slate-100 hover:bg-rose-50 transition-all active:scale-90 cursor-pointer"
               title="Remove Photo"
             >
               <Trash2 className="size-4 md:size-5" />
             </button>
           ) : (
-            <div className="absolute -bottom-1 -right-1 z-10 p-1.5 md:p-2.5 bg-primary text-white rounded-full shadow-lg ring-4 ring-white group-hover:scale-110 transition-transform">
-              <Plus className="size-4 md:size-5" strokeWidth={3} />
-            </div>
+            <button
+              disabled={isUploading}
+              className={`absolute -bottom-1 -right-1 z-10 p-1.5 md:p-2.5 bg-primary text-white rounded-full shadow-lg ring-4 ring-white transition-transform ${isUploading ? "cursor-not-allowed opacity-70" : "group-hover:scale-105 active:scale-90"}`}
+            >
+              {isUploading ? (
+                <Loader className="size-4 md:size-5 animate-spin cursor-not-allowed" />
+              ) : (
+                <Plus className="size-4 md:size-5 cursor-not-allowed" strokeWidth={3} />
+              )}
+            </button>
           )}
         </div>
 

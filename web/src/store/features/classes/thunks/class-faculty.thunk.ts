@@ -27,7 +27,7 @@ interface FetchClassFacultiesResponse {
     data: FetchClassFacultiesData;
 }
 
-// Response from API for Create/Update Faculty
+// Response from API for Create Faculty
 interface ClassFacultyResponse {
     success: boolean;
     message: string;
@@ -68,29 +68,6 @@ export const createClassFaculty = createAsyncThunk<
                 facultyData
             );
             return data.data.faculty; // single faculty object
-        } catch (error: unknown) {
-            return rejectWithValue(extractAxiosError(error));
-        }
-    }
-);
-
-/**
- * Update Faculty
- */
-export const updateClassFaculty = createAsyncThunk<
-    ClassFacultyResponse,
-    UpdateClassFacultyPayload,
-    { rejectValue: string }
->(
-    "classes/updateFaculty",
-    async ({ classId, facultyId, facultyData }, { rejectWithValue }) => {
-        try {
-            const { data } = await apiClient.patch<ClassFacultyResponse>(
-                `/classes/${classId}/faculties/${facultyId}`,
-                facultyData
-            );
-
-            return data;
         } catch (error: unknown) {
             return rejectWithValue(extractAxiosError(error));
         }
