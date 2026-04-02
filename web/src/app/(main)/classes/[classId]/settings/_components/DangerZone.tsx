@@ -5,16 +5,16 @@ import { LogOut, Trash2, Archive, AlertTriangle } from "lucide-react";
 import ConfirmDialog from "./ConfirmDialog";
 
 interface DangerZoneProps {
-  classId: string;
   className: string;
+  isInstructor: boolean;
   onLeaveClass: () => void;
   onDeleteClass: () => void;
   onMarkAsEnded: () => void;
 }
 
 export default function DangerZone({
-  classId,
   className,
+  isInstructor,
   onLeaveClass,
   onDeleteClass,
   onMarkAsEnded,
@@ -36,78 +36,82 @@ export default function DangerZone({
 
         <div className="space-y-3">
           {/* Mark as Ended */}
-          <div className="border border-slate-200 rounded-lg p-4">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <Archive size={18} className="text-amber-600 shrink-0" />
-                  <h4 className="font-semibold text-slate-900 text-sm truncate">
-                    Mark Semester Ended
-                  </h4>
+          {isInstructor ? (
+            <>
+              <div className="border border-slate-200 rounded-lg p-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Archive size={18} className="text-amber-600 shrink-0" />
+                      <h4 className="font-semibold text-slate-900 text-sm truncate">
+                        Mark Semester Ended
+                      </h4>
+                    </div>
+                    <p className="text-xs text-slate-600">
+                      Archive this class. You can still view it but won't
+                      receive updates.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setShowEndedDialog(true)}
+                    className="flex items-center gap-1 px-4 py-2 rounded-sm border border-amber-500/30 bg-amber-50 text-amber-700 font-semibold text-sm hover:bg-amber-100 transition-colors duration-300 cursor-pointer shrink-0"
+                  >
+                    <span>Mark</span>
+                    <span className="hidden md:block">as Ended</span>
+                  </button>
                 </div>
-                <p className="text-xs text-slate-600">
-                  Archive this class. You can still view it but won't receive
-                  updates.
-                </p>
               </div>
-              <button
-                onClick={() => setShowEndedDialog(true)}
-                className="flex items-center gap-1 px-4 py-2 rounded-sm border border-amber-500/30 bg-amber-50 text-amber-700 font-semibold text-sm hover:bg-amber-100 transition-colors duration-300 cursor-pointer shrink-0"
-              >
-                <span>Mark</span>
-                <span className="hidden md:block">as Ended</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Leave Class */}
-          <div className="border border-slate-200 rounded-lg p-4">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <LogOut size={18} className="text-orange-600 shrink-0" />
-                  <h4 className="font-semibold text-slate-900 text-sm truncate">
-                    Leave Class
-                  </h4>
+              
+              {/* Delete Class (only for instructors) */}
+              <div className="border border-red-200 rounded-lg p-4 bg-red-50/30">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Trash2 size={18} className="text-red-600 shrink-0" />
+                      <h4 className="font-semibold text-slate-900 text-sm truncate">
+                        Delete Class
+                      </h4>
+                    </div>
+                    <p className="text-xs text-slate-600">
+                      Permanently delete all class data. This action cannot be
+                      undone.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setShowDeleteDialog(true)}
+                    className="flex items-center gap-1 px-4 py-2 rounded-sm border-2 border-red-500/30 font-semibold text-sm bg-red-500 text-white hover:bg-red-600 transition-colors duration-300 cursor-pointer shrink-0"
+                  >
+                    <span>Delete</span>
+                  </button>
                 </div>
-                <p className="text-xs text-slate-600">
-                  Remove yourself from this class. You'll lose access
-                  immediately.
-                </p>
               </div>
-              <button
-                onClick={() => setShowLeaveDialog(true)}
-                className="flex items-center gap-1 px-4 py-2 rounded-sm border border-orange-500/30 bg-orange-50 text-orange-700 font-semibold text-sm hover:bg-orange-100 transition-colors duration-300 cursor-pointer shrink-0"
-              >
-                <span>Leave</span>
-                <span className="hidden md:block">Class</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Delete Class */}
-          <div className="border border-red-200 rounded-lg p-4 bg-red-50/30">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <Trash2 size={18} className="text-red-600 shrink-0" />
-                  <h4 className="font-semibold text-slate-900 text-sm truncate">
-                    Delete Class
-                  </h4>
+            </>
+          ) : (
+            // Leave Class (only for students)
+            <div className="border border-slate-200 rounded-lg p-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <LogOut size={18} className="text-orange-600 shrink-0" />
+                    <h4 className="font-semibold text-slate-900 text-sm truncate">
+                      Leave Class
+                    </h4>
+                  </div>
+                  <p className="text-xs text-slate-600">
+                    Remove yourself from this class. You'll lose access
+                    immediately.
+                  </p>
                 </div>
-                <p className="text-xs text-slate-600">
-                  Permanently delete all class data. This action cannot be
-                  undone.
-                </p>
+                <button
+                  onClick={() => setShowLeaveDialog(true)}
+                  className="flex items-center gap-1 px-4 py-2 rounded-sm border border-orange-500/30 bg-orange-50 text-orange-700 font-semibold text-sm hover:bg-orange-100 transition-colors duration-300 cursor-pointer shrink-0"
+                >
+                  <span>Leave</span>
+                  <span className="hidden md:block">Class</span>
+                </button>
               </div>
-              <button
-                onClick={() => setShowDeleteDialog(true)}
-                className="flex items-center gap-1 px-4 py-2 rounded-sm border-2 border-red-500/30 font-semibold text-sm bg-red-500 text-white hover:bg-red-600 transition-colors duration-300 cursor-pointer shrink-0"
-              >
-                <span>Delete</span>
-              </button>
             </div>
-          </div>
+          )}
         </div>
       </div>
 

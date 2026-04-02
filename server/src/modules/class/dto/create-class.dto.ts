@@ -12,17 +12,7 @@ import { Transform } from 'class-transformer';
  * DTO for creating a new class
  * Includes validation rules and API documentation for each field
  */
-
-interface ICreateClassDto {
-  className: string;
-  department: string;
-  semester: string;
-  about?: string;
-  coverImage?: string;
-  themeColor?: string;
-  allowEnroll?: boolean;
-}
-export class CreateClassRequestDto implements ICreateClassDto {
+export class CreateClassRequestDto {
   @ApiProperty({
     example: 'Math 101',
     description: 'Name of the class',
@@ -52,15 +42,6 @@ export class CreateClassRequestDto implements ICreateClassDto {
   @MinLength(2, { message: 'Semester must be at least 2 characters' })
   @MaxLength(10, { message: 'Semester must be at most 10 characters' })
   semester: string;
-
-  @ApiProperty({
-    example: 'This is an introductory course to mathematics.',
-    description: 'Detailed description about the class',
-  })
-  @IsOptional()
-  @IsString()
-  @MaxLength(500, { message: 'About section must be at most 500 characters' })
-  about?: string;
 
   @ApiProperty({
     example: 'https://example.com/cover-image.png',

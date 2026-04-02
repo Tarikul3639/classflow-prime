@@ -5,7 +5,6 @@ export type Errorfield =
     | "ClassName"
     | "Department"
     | "Semester"
-    | "About"
     | "CoverImage"
     | null;
 
@@ -26,7 +25,6 @@ interface IClassFormData {
     themeColor?: string;
     coverImage?: string;
 
-    about?: string;
     allowEnroll?: boolean;
 }
 
@@ -41,7 +39,6 @@ const initialState: CreateClassState = {
         semester: "",
         themeColor: "#3B82F6", // Default blue
         coverImage: "https://shorturl.at/ccHJp",
-        about: "",
         allowEnroll: true,
     },
     loading: false,
@@ -114,8 +111,6 @@ function mapFieldToError(field: string): Errorfield {
             return "Department";
         case "semester":
             return "Semester";
-        case "about":
-            return "About";
         case "coverImage":
             return "CoverImage";
         default:

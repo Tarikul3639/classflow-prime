@@ -5,7 +5,6 @@ import { ArrowLeft, WandSparkles, Link } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
-import { Textarea } from "@/components/ui/Textarea";
 
 import {
   updateFormData,
@@ -19,7 +18,6 @@ const errorFieldMap: Record<string, string> = {
   ClassName: "className",
   Department: "department",
   Semester: "semester",
-  About: "about",
   CoverImage: "coverImage",
 };
 
@@ -267,18 +265,6 @@ export default function CreateClassPage() {
                       description="The semester or term for this class (e.g., Fall 2026). Max 10 characters."
                     />
                   </div>
-
-                  {/* About this class */}
-                  <Textarea
-                    label="About this class"
-                    placeholder="Provide a brief description of the class content and objectives."
-                    value={formData.about}
-                    onChange={(e) => {
-                      if (e.target.value.length <= 300)
-                        despatch(updateFormData({ about: e.target.value }));
-                    }}
-                    description="A short description to help students understand what this class is about. Max 300 characters."
-                  />
                 </div>
               </div>
             </div>

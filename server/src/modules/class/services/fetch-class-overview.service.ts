@@ -97,7 +97,6 @@ export class FetchClassOverviewService {
         $project: {
           _id: 0,
           classId: { $toString: '$_id' },
-          about: { $ifNull: ['$about', null] },
           studentsCount: { $ifNull: ['$studentCountArray.total', 0] },
           eventsCount: { $ifNull: ['$eventCountArray.total', 0] },
         },

@@ -15,7 +15,12 @@ export class Class implements IClass {
   })
   name: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({
+    required: true,
+    unique: true,
+    minlength: 6,
+    maxlength: 6,
+  })
   enrollCode: string; // Teacher generated code
 
   @Prop({
@@ -24,12 +29,6 @@ export class Class implements IClass {
     required: true,
   })
   instructorId: Types.ObjectId;
-
-  @Prop({
-    trim: true,
-    maxlength: 1000,
-  })
-  about?: string;
 
   @Prop({
     trim: true,
@@ -51,12 +50,6 @@ export class Class implements IClass {
   coverImage?: string;
 
   @Prop({
-    type: [String],
-    default: [],
-  })
-  tags: string[];
-
-  @Prop({
     enum: Object.values(ClassStatus),
     default: ClassStatus.ACTIVE,
     index: true,
@@ -65,9 +58,6 @@ export class Class implements IClass {
 
   @Prop({ default: true })
   allowEnroll: boolean;
-
-  @Prop({ default: false })
-  isArchived: boolean;
 }
 
 export const ClassSchema = SchemaFactory.createForClass(Class);

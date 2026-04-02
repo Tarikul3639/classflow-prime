@@ -26,15 +26,6 @@ class ClassOverviewDto {
   classId: string;
 
   @ApiProperty({
-    example: 'This is a class about computer science.',
-    description: 'Brief description about the class',
-    required: false,
-  })
-  @IsOptional()
-  @IsString({ message: 'About must be a string' })
-  about: string | null;
-
-  @ApiProperty({
     example: 30,
     description: 'Number of students enrolled in the class',
   })

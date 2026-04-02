@@ -4,7 +4,6 @@ import { fetchClassOverview } from "../thunks/fetch-class-overview.thunk";
 interface ClassOverviewState {
     data: {
         classId: string;
-        about: string | null;
         studentsCount: number;
         updateCount: number;
     } | null;

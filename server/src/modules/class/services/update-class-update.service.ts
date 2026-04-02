@@ -8,6 +8,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Class, ClassDocument } from '../../../database/entities/class.entity';
+import { ClassStatus } from '../../../database/interface/class.interface';
 import {
   ClassUpdate,
   ClassUpdateDocument,
@@ -60,7 +61,7 @@ export class UpdateClassUpdateService {
     // Step 1: check if class exists
     const classData = await this.classModel.findOne({
       _id: classObjectId,
-      isArchived: false,
+      status: ClassStatus.ACTIVE,
     });
 
     if (!classData) {

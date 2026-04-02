@@ -16,24 +16,24 @@ export class CreateClassFacultyRequestDto {
     @IsNotEmpty({ message: 'Name is required' })
     @MinLength(3, { message: 'Name must be at least 3 characters' })
     @MaxLength(100, { message: 'Name must be at most 100 characters' })
-    name: string;
+    name!: string;
 
     @ApiProperty({ example: 'Professor', description: 'Designation of the faculty' })
     @IsString()
     @IsNotEmpty({ message: 'Designation is required' })
     @MaxLength(100, { message: 'Designation must be at most 100 characters' })
-    designation: string;
+    designation!: string;
 
     @ApiProperty({ example: 'Room 204, Building A', description: 'Office location' })
     @IsString()
     @IsNotEmpty({ message: 'Location is required' })
     @MaxLength(255, { message: 'Location must be at most 255 characters' })
-    location: string;
+    location!: string;
 
     @ApiProperty({ example: 'john.doe@university.edu', description: 'Faculty email' })
     @IsEmail({}, { message: 'Invalid email address' })
     @IsNotEmpty({ message: 'Email is required' })
-    email: string;
+    email!: string;
 
     @ApiProperty({ example: 'https://example.com/avatar.png', required: false })
     @IsOptional()
@@ -102,22 +102,22 @@ export class UpdateSingleClassFacultyRequestDto {
 
 class FacultyDataDto {
     @ApiProperty({ example: '65f1a2b3c4d5e6f7a8b9c0d1' })
-    facultyId: string;
+    facultyId!: string;
 
     @ApiProperty({ example: 'Dr. John Doe' })
-    name: string;
+    name!: string;
 
     @ApiProperty({ example: 'https://example.com/avatar.png', required: false })
     avatarUrl?: string;
 
     @ApiProperty({ example: 'Professor' })
-    designation: string;
+    designation!: string;
 
     @ApiProperty({ example: 'Room 204, Building A' })
-    location: string;
+    location!: string;
 
     @ApiProperty({ example: 'john.doe@university.edu' })
-    email: string;
+    email!: string;
 
     @ApiProperty({ example: '+8801700000000', required: false })
     phone?: string;
@@ -128,58 +128,58 @@ class FacultyDataDto {
 
 class ClassFacultyDataDto {
     @ApiProperty({ example: '65f1a2b3c4d5e6f7a8b9c0d1' })
-    classId: string;
+    classId!: string;
 
     @ApiProperty({ type: FacultyDataDto })
-    faculty: FacultyDataDto;
+    faculty!: FacultyDataDto;
 }
 
 export class ClassFacultyResponseDto {
     @ApiProperty({ example: true })
-    success: boolean;
+    success!: boolean;
 
     @ApiProperty({ example: 'Faculty added successfully' })
-    message: string;
+    message!: string;
 
     @ApiProperty({ type: ClassFacultyDataDto })
-    data: ClassFacultyDataDto;
+    data!: ClassFacultyDataDto;
 }
 
 export class DeleteClassFacultyResponseDto {
     @ApiProperty({ example: true })
-    success: boolean;
+    success!: boolean;
 
     @ApiProperty({ example: 'Faculty removed successfully' })
-    message: string;
+    message!: string;
 }
 
 
 // ─── Additional DTOs for Fetching Multiple Faculties ─────────────────────────
 class FacultiesDataDto {
     @ApiProperty({ example: '65f1a2b3c4d5e6f7a8b9c0d1' })
-    classId: string;
+    classId!: string;
 
     @ApiProperty({ type: [FacultyDataDto] })
-    faculties: FacultyDataDto[];
+    faculties!: FacultyDataDto[];
 }
 
 export class FetchClassFacultiesResponseDto {
     @ApiProperty({ example: true })
-    success: boolean;
+    success!: boolean;
 
     @ApiProperty({ example: 'Faculties fetched successfully' })
-    message: string;
+    message!: string;
 
     @ApiProperty({ type: FacultiesDataDto })
-    data: FacultiesDataDto;
+    data!: FacultiesDataDto;
 }
 
 // ─── Additional DTO for Fetching Single Faculty ─────────────────────────────
 export class FetchSingleClassFacultyResponseDto {
     @ApiProperty({ example: true })
-    success: boolean;
+    success!: boolean;
     @ApiProperty({ example: 'Faculty fetched successfully' })
-    message: string;
+    message!: string;
     @ApiProperty({ type: ClassFacultyDataDto })
-    data: ClassFacultyDataDto;
+    data!: ClassFacultyDataDto;
 }

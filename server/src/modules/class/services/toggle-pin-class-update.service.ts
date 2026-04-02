@@ -6,6 +6,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Class, ClassDocument } from '../../../database/entities/class.entity';
+import { ClassStatus } from '../../../database/interface/class.interface';
 import { Enrollment, EnrollmentDocument } from '../../../database/entities/enrollment.entity';
 import { EnrollmentRole } from '../../../database/interface/enrollment.interface';
 import {
@@ -38,8 +39,8 @@ export class TogglePinClassUpdateService {
 
         // Step 1: Check if class exists
         const classData = await this.classModel.findOne({
-            _id: classObjectId as any,
-            isArchived: false,
+            _id: classObjectId,
+            status: { $ne: ClassStatus.ENDED },
         });
 
         if (!classData) {

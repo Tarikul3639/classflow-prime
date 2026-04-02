@@ -111,7 +111,7 @@ export class FetchEnrolledClassesService {
           coverImage: { $ifNull: ['$coverImage', null] },
           status: {
             $cond: {
-              if: { $eq: ['$isArchived', true] },
+              if: { $eq: ['$status', 'ended'] },
               then: 'archived',
               else: 'active',
             },

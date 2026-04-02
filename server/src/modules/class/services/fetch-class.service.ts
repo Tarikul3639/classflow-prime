@@ -22,7 +22,7 @@ export class FetchClassService {
     const pipeline: PipelineStage[] = [
       // 1️) Match the class (not archived)
       {
-        $match: { _id: classObjectId, isArchived: false },
+        $match: { _id: classObjectId, status: { $ne: 'ended' } },
       },
 
       // 2️) Lookup all enrollments for this class
@@ -119,7 +119,6 @@ export class FetchClassService {
           name: 1,
           department: { $ifNull: ['$department', 'General'] },
           semester: { $ifNull: ['$semester', 'TBA'] },
-          about: { $ifNull: ['$about', null] },
           themeColor: 1,
           coverImage: { $ifNull: ['$coverImage', null] },
           status: 1,

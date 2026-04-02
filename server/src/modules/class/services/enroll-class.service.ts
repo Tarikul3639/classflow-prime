@@ -89,7 +89,7 @@ export class EnrollClassService {
         $project: {
           name: 1,
           allowEnroll: 1,
-          isArchived: 1,
+          status: 1,
           instructorId: 1,
 
           // True if the user already has any enrollment record in this class
@@ -139,7 +139,7 @@ export class EnrollClassService {
       };
     }
 
-    if (!classInfo.allowEnroll || classInfo.isArchived) {
+    if (!classInfo.allowEnroll || classInfo.status === 'ended') {
       return {
         success: false,
         message: 'This class is currently closed for new enrollments.',

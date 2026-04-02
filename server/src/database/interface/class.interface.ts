@@ -16,10 +16,7 @@ export interface IClass {
   allowEnroll?: boolean; // Whether students can enroll using the enroll code
   themeColor?: string; // UI theme color (e.g., "#3B82F6")
   coverImage?: string; // Cover image URL (e.g., "https://example.com/image.png")
-  about?: string; // Detailed class description
-  tags: string[]; // e.g., ["Computer Science", "AI"]
   status: ClassStatus; // active, ended, upcoming
-  isArchived?: boolean; // Whether the class is archived (soft delete)
   createdAt?: Date;
   updatedAt?: Date;
 }

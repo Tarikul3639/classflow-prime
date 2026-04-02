@@ -11,7 +11,6 @@ interface CreateClassPayload {
     className: string;
     department: string;
     semester: string;
-    about?: string;
     coverImage?: string;
     themeColor?: string;
     allowEnroll?: boolean;

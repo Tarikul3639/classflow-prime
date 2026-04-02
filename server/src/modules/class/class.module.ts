@@ -75,6 +75,13 @@ import { CreateClassGroupService } from './services/create-class-group.service';
 import { UpdateClassGroupService } from './services/update-class-group.service';
 import { DeleteClassGroupService } from './services/delete-class-group.service';
 
+import { ClassActionsController } from './controllers/class-settings.controller';
+import { LeaveClassService } from './services/leave-class.service';
+import { DeleteClassService } from './services/delete-class.service';
+import { MarkClassAsEndedService } from './services/mark-class-as-ended.service';
+import { FetchClassCodeService } from './services/fetch-class-code.service';
+import { RegenerateClassCodeService } from './services/regenerate-class-code.service';
+
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
@@ -111,6 +118,8 @@ import { DeleteClassGroupService } from './services/delete-class-group.service';
     ClassMemberController,
     // Class Group Controller
     ClassGroupController,
+    // class settings controller
+    ClassActionsController,
   ],
   providers: [
     CreateClassService,
@@ -141,6 +150,12 @@ import { DeleteClassGroupService } from './services/delete-class-group.service';
     CreateClassGroupService,
     UpdateClassGroupService,
     DeleteClassGroupService,
+    // Class Settings Services
+    LeaveClassService,
+    DeleteClassService,
+    MarkClassAsEndedService,
+    FetchClassCodeService,
+    RegenerateClassCodeService,
   ],
 })
 export class ClassModule { }

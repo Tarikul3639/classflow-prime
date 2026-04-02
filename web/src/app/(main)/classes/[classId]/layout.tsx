@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, Share2 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -94,7 +94,7 @@ export default function ClassLayout({
         <div className="flex items-center justify-between mx-auto">
           <div className="flex items-center gap-3">
             <button
-              onClick={()=> router.replace("/classes")}
+              onClick={() => router.replace("/classes")}
               className="group flex items-center justify-center p-2 rounded-lg hover:bg-white transition-colors border border-slate-200 bg-white cursor-pointer hover:border-primary/30"
             >
               <ArrowLeft
@@ -255,50 +255,7 @@ export default function ClassLayout({
       </div>
 
       {/* Page Content */}
-      <div className="flex-1 ">
-        <AnimatePresence mode="wait" custom={direction}>
-          <motion.div
-            key={pathname}
-            custom={direction}
-            variants={{
-              initial: (d: number) => ({ x: d * 100 + "%", opacity: 0 }),
-              animate: { x: 0, opacity: 1 },
-              exit: (d: number) => ({ x: d * -100 + "%", opacity: 0 }),
-            }}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={{
-              type: "spring",
-              stiffness: 380,
-              damping: 32,
-              mass: 0.8,
-            }}
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={1}
-            onDragEnd={(_, info) => {
-              const threshold = 120;
-              if (info.offset.x < -threshold) {
-                const nextIndex = Math.min(tabIndex + 1, tabs.length - 1);
-                if (nextIndex !== tabIndex) {
-                  setDirection(1);
-                  router.push(tabs[nextIndex].href);
-                }
-              } else if (info.offset.x > threshold) {
-                const prevIndex = Math.max(tabIndex - 1, 0);
-                if (prevIndex !== tabIndex) {
-                  setDirection(-1);
-                  router.push(tabs[prevIndex].href);
-                }
-              }
-            }}
-            className="w-full cursor-grab active:cursor-grabbing"
-          >
-            {children}
-          </motion.div>
-        </AnimatePresence>
-      </div>
+      <div className="flex-1 ">{children}</div>
     </div>
   );
 }
