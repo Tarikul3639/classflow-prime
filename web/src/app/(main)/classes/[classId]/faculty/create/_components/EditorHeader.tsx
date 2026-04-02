@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 interface EditorHeaderProps {
   classId: string;
   isNew: boolean;
+  isDirty?: boolean;
   isLoading: boolean;
   error?: string | null;
   onSubmit: () => void;

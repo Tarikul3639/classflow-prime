@@ -4,13 +4,14 @@ import { GroupCard } from "../../_components/GroupCard";
 import { ClassGroup } from "@/types/group.types";
 
 interface GroupPreviewProps {
-  formData: Omit<ClassGroup, "groupId" | "createdAt" | "updatedAt">;
+  formData: Omit<ClassGroup, "groupId" | "createdAt" | "updatedAt" | "createdBy">;
 }
 
 export default function GroupPreview({ formData }: GroupPreviewProps) {
   const previewGroup: ClassGroup = {
     ...formData,
     groupId: "preview",
+    createdBy: "You",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };

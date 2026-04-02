@@ -7,7 +7,7 @@ import { Select } from "@/components/ui/Select";
 import { ClassGroup, GroupPlatform } from "@/types/group.types";
 
 interface GroupLinkInputProps {
-  formData: Omit<ClassGroup, "groupId" | "createdAt" | "updatedAt">;
+  formData: Omit<ClassGroup, "groupId" | "createdAt" | "updatedAt" | "createdBy">;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onPlatformChange: (platform: GroupPlatform) => void;
 }

@@ -1,7 +1,7 @@
 // fetch-class-groups.service.ts
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 import { Class, ClassDocument } from '../../../database/entities/class.entity';
 import { ClassGroup, GroupDocument } from '../../../database/entities/group.entity';
@@ -15,14 +15,13 @@ export class FetchClassGroupsService {
     ) { }
 
     async execute(userId: string, classId: string): Promise<GetClassGroupsResponseDto> {
-        const existingClass = await this.classModel.findById(classId);
+        const classObjectId = new Types.ObjectId(classId);
+        const userObjectId = new Types.ObjectId(userId);
+
+        const existingClass = await this.classModel.findById(classObjectId);
         if (!existingClass) throw new NotFoundException('Class not found');
 
-        if (existingClass.instructorId.toString() !== userId) {
-            throw new ForbiddenException('You do not have access to this class');
-        }
-
-        const groups = await this.groupModel.find({ classId });
+        const groups = await this.groupModel.find({ classId: classObjectId }).lean();
 
         return {
             success: true,

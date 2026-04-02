@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/Textarea";
 import { ClassGroup} from "@/types/group.types";
 
 interface GroupBasicInfoProps {
-  formData: Omit<ClassGroup, "groupId" | "createdAt" | "updatedAt">;
+  formData: Omit<ClassGroup, "groupId" | "createdAt" | "updatedAt" | "createdBy">;
   onInputChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => void;
@@ -36,6 +36,7 @@ export default function GroupBasicInfo({
       <Textarea
         label="Group Description"
         name="description"
+        required
         value={formData.description}
         onChange={onInputChange}
         placeholder="Provide a brief description of the group's purpose, rules, or any other relevant information for students."

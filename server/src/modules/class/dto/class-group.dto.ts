@@ -95,4 +95,5 @@ export class CreateClassGroupRequestDto extends OmitType(ClassGroupDto, [
     'groupId',
     'createdAt',
     'updatedAt',
+    'createdBy',
 ] as const) {}

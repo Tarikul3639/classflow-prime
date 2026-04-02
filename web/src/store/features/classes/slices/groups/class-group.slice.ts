@@ -1,9 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { createClassGroup, updateClassGroup, deleteClassGroup, fetchClassGroups } from "../../thunks/groups/class-group.thunk";
+import { createClassGroup, updateClassGroup, deleteClassGroup, fetchClassGroups, fetchSingleClassGroup } from "../../thunks/groups/class-group.thunk";
 import { ClassGroup } from "@/types/group.types";
 
 interface ClassGroupState {
     groups: ClassGroup[];
+    selectedGroup: ClassGroup | null;
     loading: {
         fetchGroups: boolean;
         fetchSingleGroup: boolean;
@@ -22,6 +23,7 @@ interface ClassGroupState {
 
 const initialState: ClassGroupState = {
     groups: [],
+    selectedGroup: null,
     loading: {
         fetchGroups: false,
         fetchSingleGroup: false,
@@ -55,6 +57,19 @@ const classGroupSlice = createSlice({
         builder.addCase(fetchClassGroups.rejected, (state, action) => {
             state.loading.fetchGroups = false;
             state.error.fetchGroups = action.payload || "Failed to fetch groups.";
+        });
+        // Fetch Single Group
+        builder.addCase(fetchSingleClassGroup.pending, (state) => {
+            state.loading.fetchSingleGroup = true;
+            state.error.fetchSingleGroup = null;
+        });
+        builder.addCase(fetchSingleClassGroup.fulfilled, (state, action) => {
+            state.loading.fetchSingleGroup = false;
+            state.selectedGroup = action.payload;
+        });
+        builder.addCase(fetchSingleClassGroup.rejected, (state, action) => {
+            state.loading.fetchSingleGroup = false;
+            state.error.fetchSingleGroup = action.payload || "Failed to fetch group.";
         });
         // Create Group
         builder.addCase(createClassGroup.pending, (state) => {

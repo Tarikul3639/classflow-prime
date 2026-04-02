@@ -1,8 +1,23 @@
 import { ExternalLink } from "lucide-react";
+import ActionMenu from "./ActionMenu";
 import { ClassGroup } from "@/types/group.types";
 import { GROUP_PLATFORM_CONFIG } from "@/types/group.types";
 
-export const GroupCard = ({ group }: { group: ClassGroup }) => {
+interface GroupCardProps {
+  group: ClassGroup;
+  onDelete?: () => void;
+  onEdit?: () => void;
+  onTogglePin?: () => void;
+  showActions?: boolean;
+}
+
+export const GroupCard = ({
+  group,
+  onDelete,
+  onEdit,
+  onTogglePin,
+  showActions = false,
+}: GroupCardProps) => {
   const config = GROUP_PLATFORM_CONFIG[group.platform];
   const Icon = config.icon;
 
@@ -31,6 +46,16 @@ export const GroupCard = ({ group }: { group: ClassGroup }) => {
             </p>
           </div>
         </div>
+
+        {showActions && (
+          <div className="ml-auto">
+            <ActionMenu
+              onDelete={onDelete}
+              onEdit={onEdit}
+              onTogglePin={onTogglePin}
+            />
+          </div>
+        )}
       </div>
 
       {/* Description */}

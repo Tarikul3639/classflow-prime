@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 interface EditorHeaderProps {
   classId: string;
   isNew: boolean;
+  isDirty?: boolean;
   isLoading: boolean;
   error?: string | null;
 }
@@ -15,6 +16,7 @@ interface EditorHeaderProps {
 export const EditorHeader = ({
   classId,
   isNew,
+  isDirty,
   isLoading,
   error,
 }: EditorHeaderProps) => {
@@ -57,7 +59,7 @@ export const EditorHeader = ({
             <button
               type="submit"
               form="groupForm"
-              disabled={isLoading}
+              disabled={isLoading || (!isNew && !isDirty)}
               className="group relative flex items-center justify-center gap-2 px-6 py-2.5 md:py-3 rounded-2xl bg-[#399aef] text-white overflow-hidden transition-all duration-500 hover:bg-[#2d82cc] hover:shadow-[0_0_20px_rgba(57,154,239,0.4)] active:scale-[0.96] disabled:opacity-50 cursor-pointer"
             >
               {/* Shine effect */}
@@ -69,7 +71,13 @@ export const EditorHeader = ({
                 <Save className="size-3.5 md:size-4 group-hover:scale-110 transition-transform" />
               )}
               <span className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.25em]">
-                {isLoading ? "Publishing..." : isNew ? "Publish" : "Update"}
+                {isNew
+                  ? isLoading
+                    ? "Publishing..."
+                    : "Publish"
+                  : isLoading
+                    ? "Updating..."
+                    : "Update"}
               </span>
             </button>
           </div>

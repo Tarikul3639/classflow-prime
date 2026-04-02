@@ -1,32 +1,50 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { EditorHeader } from "./_components/EditorHeader";
-import GroupBasicInfo from "./_components/GroupBasicInfo";
-import GroupLinkInput from "./_components/GroupLinkInput";
-import GroupPreview from "./_components/GroupPreview";
+import { EditorHeader } from "../create/_components/EditorHeader";
+import GroupBasicInfo from "../create/_components/GroupBasicInfo";
+import GroupLinkInput from "../create/_components/GroupLinkInput";
+import GroupPreview from "../create/_components/GroupPreview";
 import { toast } from "sonner";
 import {
   ClassGroup,
   GroupPlatform,
   GROUP_PLATFORM_CONFIG,
 } from "@/types/group.types";
+import { getDirtyFields } from "@/utils/form.utils";
 
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { createClassGroup } from "@/store/features/classes/thunks/groups/class-group.thunk";
+import {
+  updateClassGroup,
+  fetchSingleClassGroup,
+} from "@/store/features/classes/thunks/groups/class-group.thunk";
+import { i } from "motion/react-client";
 
-export default function AddGroupPage() {
+export default function UpdateGroupPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { classId } = useParams();
+  const { classId, groupId } = useParams();
+  const [isDirty, setIsDirty] = useState(false);
 
-  const isCreating = useAppSelector(
-    (state) => state.classes.classGroups.loading.createGroup,
+  const singleGroup = useAppSelector(
+    (state) => state.classes.classGroups.selectedGroup,
+  );
+
+  const isUpdating = useAppSelector(
+    (state) => state.classes.classGroups.loading.updateGroup,
   );
   const error = useAppSelector(
-    (state) => state.classes.classGroups.error.createGroup,
+    (state) =>
+      state.classes.classGroups.error.updateGroup ||
+      state.classes.classGroups.error.fetchSingleGroup,
   );
+
+  // Original snapshot —> for dirty tracking
+  const originalFormRef = useRef<Omit<
+    ClassGroup,
+    "groupId" | "createdAt" | "updatedAt" | "createdBy"
+  > | null>(null);
 
   const [formData, setFormData] = useState<
     Omit<ClassGroup, "groupId" | "createdAt" | "updatedAt" | "createdBy">
@@ -42,6 +60,39 @@ export default function AddGroupPage() {
       iconName: "MessageCircle",
     },
   });
+
+  useEffect(() => {
+    if (classId && groupId) {
+      dispatch(
+        fetchSingleClassGroup({
+          classId: classId as string,
+          groupId: groupId as string,
+        }),
+      );
+    }
+  }, [classId, groupId]);
+
+  // populate form once singleGroup loads
+  useEffect(() => {
+    if (singleGroup) {
+      const snapshot = {
+        name: singleGroup.name,
+        description: singleGroup.description,
+        link: singleGroup.link,
+        platform: singleGroup.platform,
+        uiConfig: singleGroup.uiConfig,
+      };
+      setFormData(snapshot);
+      originalFormRef.current = snapshot; // for dirty tracking
+    }
+  }, [singleGroup]);
+
+  // run after every formData change
+  useEffect(() => {
+    if (!originalFormRef.current) return;
+    const dirty = getDirtyFields(originalFormRef.current, formData);
+    setIsDirty(Object.keys(dirty).length > 0);
+  }, [formData]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -73,11 +124,19 @@ export default function AddGroupPage() {
       return;
     }
 
-    if (!classId) return;
+    if (!classId && !groupId) return;
+
+    if (!isDirty) {
+      toast("No changes to save.", {
+        description: "You haven't made any changes to the group.",
+      });
+      return;
+    }
 
     const promise = dispatch(
-      createClassGroup({
+      updateClassGroup({
         classId: classId as string,
+        groupId: groupId as string,
         groupData: formData,
       }),
     ).unwrap();
@@ -102,8 +161,9 @@ export default function AddGroupPage() {
       {/* Header */}
       <EditorHeader
         classId={classId as string}
-        isNew={true}
-        isLoading={isCreating}
+        isNew={false}
+        isDirty={isDirty}
+        isLoading={isUpdating}
       />
 
       {/* Error Alert */}

@@ -67,6 +67,11 @@ export const createClassFaculty = createAsyncThunk<
                 `/classes/${classId}/faculties`,
                 facultyData
             );
+
+            if (!data.success) {
+                return rejectWithValue(data.message || "Failed to create faculty.");
+            }
+            
             return data.data.faculty; // single faculty object
         } catch (error: unknown) {
             return rejectWithValue(extractAxiosError(error));

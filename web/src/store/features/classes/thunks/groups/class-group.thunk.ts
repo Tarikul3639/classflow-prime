@@ -19,7 +19,7 @@ interface FetchClassGroupsResponse {
 
 export interface CreateClassGroupPayload {
     classId: string;
-    groupData: Omit<ClassGroup, "groupId" | "createdAt" | "updatedAt">;
+    groupData: Omit<ClassGroup, "groupId" | "createdAt" | "updatedAt" | "createdBy">;
 }
 
 export interface UpdateClassGroupPayload {
