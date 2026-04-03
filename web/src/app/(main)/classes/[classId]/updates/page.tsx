@@ -122,12 +122,10 @@ export default function UpdatesPage() {
   };
 
   const isAdmin = classDetails?.isInstructor || classDetails?.isAssistant;
-  const isEmpty = sortedDateKeys.length === 0;
+  const isEmpty = sortedDateKeys.length === 0 && !loading.update;
 
   return (
     <main className="relative bg-slate-50 flex flex-col">
-      <TopLoader isLoading={loading.update} />
-
       {/* Header: Search + Filters */}
       <div className="shrink-0 p-4 flex flex-col gap-3 bg-white border-b border-slate-200">
         <SearchBar value={searchQuery} onChange={setSearchQuery} />
@@ -139,7 +137,10 @@ export default function UpdatesPage() {
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 flex flex-col px-4 py-4 space-y-6 pb-24 lg:pb-8">
+      <div className="flex-1 relative flex flex-col px-4 py-4 space-y-6 pb-24 lg:pb-8">
+        {/* Loading State */}
+        <TopLoader isLoading={loading.update} />
+
         {/* Create Card Area */}
         {isAdmin && (
           <div className="shrink-0">

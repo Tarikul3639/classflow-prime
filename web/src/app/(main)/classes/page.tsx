@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Search, Users, Plus, UserPlus, BookOpen } from "lucide-react";
+import { Search, Users, Plus, UserPlus, BookOpen, LayersPlus } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -84,14 +84,14 @@ const Classes: React.FC = () => {
                 href="/classes/enroll"
                 className="flex items-center gap-2 bg-white border border-slate-300 text-slate-600 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-100 transition-colors cursor-pointer"
               >
-                <UserPlus size={18} />
+                <UserPlus size={16} />
                 <span>Enroll</span>
               </Link>
               <Link
                 href="/classes/create"
                 className="flex items-center gap-2 bg-primary text-white px-4 py-2 border border-primary rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors cursor-pointer"
               >
-                <Plus size={18} />
+                <LayersPlus size={16} />
                 <span>Create</span>
               </Link>
             </div>
@@ -102,13 +102,13 @@ const Classes: React.FC = () => {
                 href="/classes/enroll"
                 className="flex items-center justify-center w-10 h-10 bg-white border border-slate-300 text-slate-600 rounded-lg hover:bg-slate-100 transition-colors shadow-sm"
               >
-                <UserPlus size={18} />
+                <UserPlus size={16} />
               </Link>
               <Link
                 href="/classes/create"
                 className="flex items-center justify-center w-10 h-10 bg-primary border border-primary text-white rounded-lg hover:bg-primary/90 transition-colors shadow-sm"
               >
-                <Plus size={18} />
+                <LayersPlus size={16} />
               </Link>
             </div>
           </div>

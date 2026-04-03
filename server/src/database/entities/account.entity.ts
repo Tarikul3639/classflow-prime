@@ -20,20 +20,20 @@ export class Account implements IAccount {
     type: Types.ObjectId,
     ref: 'User',
   })
-  userId: Types.ObjectId;
+  userId!: Types.ObjectId;
 
   @Prop({
     required: true,
     trim: true,
   })
-  accountId: string; // unique ID given by the provider to identify the user (e.g., Google/GitHub ID)
+  accountId!: string; // unique ID given by the provider to identify the user (e.g., Google/GitHub ID)
 
   @Prop({
     required: true,
     enum: AccountProvider,
     trim: true,
   })
-  providerId: AccountProvider; // e.g., 'google', 'github', 'password'
+  providerId!: AccountProvider; // e.g., 'google', 'github', 'password'
 
   @Prop({
     select: false,

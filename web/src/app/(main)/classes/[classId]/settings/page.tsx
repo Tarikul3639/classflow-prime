@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import ClassInfoCard from "./_components/ClassInfoCard";
 import NotificationSettings from "./_components/NotificationSettings";
 import DangerZone from "./_components/DangerZone";
+import { TopLoader } from "@/components/ui/TopLoader";
 import { toast } from "sonner";
 
 import {
@@ -22,7 +23,7 @@ export default function ClassSettingsPage() {
   const { classId } = useParams();
   const dispatch = useAppDispatch();
 
-  const { classDetails, isLoading } = useAppSelector(
+  const { classDetails } = useAppSelector(
     (state) => state.classes.fetchSingleClass,
   );
 
@@ -135,31 +136,41 @@ export default function ClassSettingsPage() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-slate-50 px-3 lg:px-6 py-6">
-      <div className="mx-auto grid gap-6">
-        <ClassInfoCard
-          className={classDetails.name}
-          classCode={classCode}
-          instructor={classDetails.instructor}
-          isInstructor={classDetails.isInstructor}
-          totalStudents={classDetails.members}
-          semester={classDetails.semester}
-          handleGenerateClassCode={handleGenerateClassCode}
-        />
-        <NotificationSettings />
+  const loading = useAppSelector(
+    (state) =>
+      state.classes.classSettings.loading.fetchClassCode ||
+      state.classes.fetchSingleClass.isLoading,
+  );
 
-        <DangerZone
-          className={classDetails.name}
-          isInstructor={classDetails.isInstructor}
-          isJoiningAllowed={isJoiningAllowed}
-          isClassEnded={classDetails.status === "ended"}
-          onLeaveClass={handleLeaveClass}
-          onDeleteClass={handleDeleteClass}
-          onMarkAsEnded={handleMarkAsEnded}
-          onToggleJoining={onToggleJoining}
-        />
-      </div>
+  return (
+    <div className="relative bg-slate-50 px-3 lg:px-6 py-6">
+      {loading ? (
+        <TopLoader isLoading={loading} />
+      ) : (
+        <div className="mx-auto grid gap-6">
+          <ClassInfoCard
+            className={classDetails.name}
+            classCode={classCode}
+            instructor={classDetails.instructor}
+            isInstructor={classDetails.isInstructor}
+            totalStudents={classDetails.members}
+            semester={classDetails.semester}
+            handleGenerateClassCode={handleGenerateClassCode}
+          />
+          <NotificationSettings />
+
+          <DangerZone
+            className={classDetails.name}
+            isInstructor={classDetails.isInstructor}
+            isJoiningAllowed={isJoiningAllowed}
+            isClassEnded={classDetails.status === "ended"}
+            onLeaveClass={handleLeaveClass}
+            onDeleteClass={handleDeleteClass}
+            onMarkAsEnded={handleMarkAsEnded}
+            onToggleJoining={onToggleJoining}
+          />
+        </div>
+      )}
     </div>
   );
 }

@@ -20,9 +20,9 @@ import { ITokens } from '../token/token.types';
 import { IUser } from '../../../../database/interface/user.interface';
 
 export class SignInResponseDto {
-  success: boolean;
-  message: string;
-  data: {
+  success!: boolean;
+  message!: string;
+  data!: {
     user: IUser;
     tokens: ITokens;
   };

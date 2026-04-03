@@ -6,13 +6,13 @@ export type PushSubscriptionDocument = HydratedDocument<PushSubscription>;
 @Schema({ timestamps: true, strict: true })
 export class PushSubscription {
     @Prop({ type: Types.ObjectId, ref: 'User', required: true, index: true })
-    userId: Types.ObjectId;
+    userId!: Types.ObjectId;
 
     @Prop({ required: true })
-    endpoint: string;
+    endpoint!: string;
 
     @Prop({ type: Object, required: true })
-    keys: {
+    keys!: {
         p256dh: string;
         auth: string;
     };
