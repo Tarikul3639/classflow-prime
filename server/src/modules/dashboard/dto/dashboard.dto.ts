@@ -23,7 +23,6 @@ export class DashboardClassDto {
   @ApiProperty() themeColor: string;
   @ApiPropertyOptional() coverImage?: string | null;
   @ApiProperty({ enum: ClassStatus }) status: ClassStatus;
-  @ApiProperty() allowEnroll: boolean;
   @ApiProperty() instructorName: string; // populated from User
   @ApiProperty() studentCount: number; // computed
 }

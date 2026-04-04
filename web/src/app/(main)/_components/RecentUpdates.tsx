@@ -79,7 +79,7 @@ function UpdateCard({ update }: { update: DashboardUpdateItem }) {
                         <div className="flex items-center gap-1 text-slate-500">
                             <Calendar size={11} />
                             <span className="text-[11px] font-medium">
-                                {formatEventDate(update.eventAt)}
+                                {/* {formatEventDate(update.eventAt)} */}
                             </span>
                         </div>
                     )}
@@ -93,7 +93,7 @@ function UpdateCard({ update }: { update: DashboardUpdateItem }) {
                         </div>
                     )}
                     <span className="ml-auto text-[11px] text-slate-400 font-medium">
-                        {timeAgo(update.createdAt)}
+                        {/* {timeAgo(update.createdAt)} */}
                     </span>
                 </div>
             </div>

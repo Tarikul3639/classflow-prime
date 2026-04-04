@@ -9,6 +9,12 @@ import { Material, MaterialDocument } from '../../../database/entities/material.
 import { Faculty, FacultyDocument } from '../../../database/entities/faculty.entity';
 import { ClassGroup, GroupDocument } from '../../../database/entities/group.entity';
 
+import { IClass } from '../../../database/interface/class.interface';
+import { IClassUpdate } from '../../../database/interface/update.interface';
+import { IFaculty } from '../../../database/interface/faculty.interface';
+import { IClassGroup } from '../../../database/interface/group.interface';
+import { IMaterial } from '../../../database/interface/material.interface';
+
 import {
     DashboardResponseDto,
     DashboardClassDto,
@@ -17,6 +23,30 @@ import {
     DashboardGroupDto,
     DashboardMaterialDto,
 } from '../dto/dashboard.dto';
+
+// ─── Internal populated types ─────────────────────────────────────────────────
+
+// Instructor name is populated from instructorId
+interface PopulatedInstructor {
+    name: string;
+}
+
+// Class document after instructorId is populated
+interface PopulatedClass extends Omit<IClass, 'instructorId'> {
+    _id: Types.ObjectId;
+    instructorId: PopulatedInstructor;
+}
+
+// Enrollment document after classId is populated with PopulatedClass
+interface PopulatedEnrollment extends Omit<EnrollmentDocument, 'classId'> {
+    classId: PopulatedClass;
+}
+
+// Result shape from the studentCount aggregation
+interface StudentCountAggResult {
+    _id: Types.ObjectId;
+    count: number;
+}
 
 @Injectable()
 export class DashboardService {
@@ -40,14 +70,18 @@ export class DashboardService {
     async execute(userId: string): Promise<DashboardResponseDto> {
         const userObjectId = new Types.ObjectId(userId);
 
+        console.log("User ID: ",userObjectId);
+
         // ── Step 1: Enrolled classes ──────────────────────────────────────────
         const enrollments = await this.enrollmentModel
             .find({ userId: userObjectId })
-            .populate<{ classId: any }>({
+            .populate<{ classId: PopulatedClass }>({
                 path: 'classId',
                 populate: { path: 'instructorId', select: 'name' },
             })
-            .lean();
+            .lean<PopulatedEnrollment[]>();
+
+            console.log("All Enrollment: ", enrollments);
 
         const classIds = enrollments
             .map((e) => e.classId?._id)
@@ -59,17 +93,17 @@ export class DashboardService {
                 .find({ classId: { $in: classIds } })
                 .sort({ isPinned: -1, createdAt: -1 })
                 .limit(10)
-                .lean(),
+                .lean<IClassUpdate[]>(),
 
             this.facultyModel
                 .find({ classId: { $in: classIds } })
-                .lean(),
+                .lean<IFaculty[]>(),
 
             this.groupModel
                 .find({ classId: { $in: classIds } })
-                .lean(),
+                .lean<IClassGroup[]>(),
 
-            this.enrollmentModel.aggregate<{ _id: Types.ObjectId; count: number }>([
+            this.enrollmentModel.aggregate<StudentCountAggResult>([
                 { $match: { classId: { $in: classIds }, role: EnrollmentRole.LEARNER } },
                 { $group: { _id: '$classId', count: { $sum: 1 } } },
             ]),
@@ -78,25 +112,27 @@ export class DashboardService {
         // ── Step 3: Populate materials for updates that have them ─────────────
         const updateIds = updates
             .filter((u) => u.materials?.length > 0)
-            .map((u) => u._id);
+            .map((u) => u._id as Types.ObjectId);
 
-        const materials = updateIds.length
-            ? await this.materialModel.find({ updateId: { $in: updateIds } }).lean()
+        const materials: IMaterial[] = updateIds.length
+            ? await this.materialModel
+                .find({ updateId: { $in: updateIds } })
+                .lean<IMaterial[]>()
             : [];
 
         // ── Step 4: Lookup maps ───────────────────────────────────────────────
-        const studentCountMap = new Map(
+        const studentCountMap = new Map<string, number>(
             studentCounts.map((s) => [s._id.toString(), s.count]),
         );
 
-        const materialsByUpdate = new Map<string, MaterialDocument[]>();
+        const materialsByUpdate = new Map<string, IMaterial[]>();
         for (const mat of materials) {
-            const key = (mat as any).updateId.toString();
+            const key = (mat.updateId as Types.ObjectId).toString();
             if (!materialsByUpdate.has(key)) materialsByUpdate.set(key, []);
-            materialsByUpdate.get(key)!.push(mat as any);
+            materialsByUpdate.get(key)!.push(mat);
         }
 
-        const classNameMap = new Map(
+        const classNameMap = new Map<string, string>(
             enrollments.map((e) => [
                 e.classId?._id?.toString(),
                 e.classId?.name ?? 'Unknown',
@@ -105,17 +141,16 @@ export class DashboardService {
 
         // ── Step 5: Shape DTOs ────────────────────────────────────────────────
         const classDto: DashboardClassDto[] = enrollments.map((e) => {
-            const cls = e.classId as any;
+            const cls = e.classId;
             return {
                 _id: cls._id.toString(),
                 name: cls.name,
                 enrollCode: cls.enrollCode,
                 department: cls.department,
                 semester: cls.semester,
-                themeColor: cls.themeColor,
+                themeColor: cls.themeColor ?? '',   // DTO: string (required)
                 coverImage: cls.coverImage ?? null,
                 status: cls.status,
-                allowEnroll: cls.allowEnroll,
                 instructorName: cls.instructorId?.name ?? 'Unknown',
                 studentCount: studentCountMap.get(cls._id.toString()) ?? 0,
             };
@@ -123,34 +158,34 @@ export class DashboardService {
 
         const updateDto: DashboardUpdateDto[] = updates.map((u) => {
             const mats: DashboardMaterialDto[] = (
-                materialsByUpdate.get(u._id.toString()) ?? []
-            ).map((m: any) => ({
-                _id: m._id.toString(),
+                materialsByUpdate.get((u._id as Types.ObjectId).toString()) ?? []
+            ).map((m) => ({
+                _id: (m._id as Types.ObjectId).toString(),
                 url: m.url,
                 name: m.name,
                 type: m.type,
-                size: m.size,
+                size: (m as IMaterial & { size?: number }).size,
             }));
 
             return {
-                _id: u._id.toString(),
-                classId: u.classId.toString(),
-                className: classNameMap.get(u.classId.toString()) ?? 'Unknown',
+                _id: (u._id as Types.ObjectId).toString(),
+                classId: (u.classId as Types.ObjectId).toString(),
+                className: classNameMap.get((u.classId as Types.ObjectId).toString()) ?? 'Unknown',
                 title: u.title,
                 description: u.description,
                 category: u.category,
                 eventAt: u.eventAt ? (u.eventAt as Date).toISOString() : null,
                 materials: mats,
-                isPinned: u.isPinned,
-                postedBy: u.postedBy?.toString() ?? '',
-                createdAt: (u as any).createdAt.toISOString(),
-                updatedAt: (u as any).updatedAt.toISOString(),
+                isPinned: (u as IClassUpdate & { isPinned: boolean }).isPinned,
+                postedBy: (u.postedBy as Types.ObjectId)?.toString() ?? '',
+                createdAt: (u as IClassUpdate & { createdAt: Date }).createdAt.toISOString(),
+                updatedAt: (u as IClassUpdate & { updatedAt: Date }).updatedAt.toISOString(),
             };
         });
 
-        const facultyDto: DashboardFacultyDto[] = faculty.map((f: any) => ({
-            _id: f._id.toString(),
-            classId: f.classId.toString(),
+        const facultyDto: DashboardFacultyDto[] = faculty.map((f) => ({
+            _id: (f._id as Types.ObjectId).toString(),
+            classId: (f.classId as Types.ObjectId).toString(),
             name: f.name,
             avatarUrl: f.avatarUrl ?? null,
             designation: f.designation,
@@ -160,15 +195,15 @@ export class DashboardService {
             classroomCode: f.classroomCode ?? null,
         }));
 
-        const groupDto: DashboardGroupDto[] = groups.map((g: any) => ({
-            _id: g._id.toString(),
-            classId: g.classId.toString(),
+        const groupDto: DashboardGroupDto[] = groups.map((g) => ({
+            _id: (g._id as Types.ObjectId).toString(),
+            classId: (g.classId as Types.ObjectId).toString(),
             name: g.name,
-            description: g.description,
+            description: g.description ?? '',
             link: g.link,
             platform: g.platform,
             uiConfig: g.uiConfig ?? undefined,
-            memberCount: studentCountMap.get(g.classId.toString()) ?? 0,
+            memberCount: studentCountMap.get((g.classId as Types.ObjectId).toString()) ?? 0,
         }));
 
         return {

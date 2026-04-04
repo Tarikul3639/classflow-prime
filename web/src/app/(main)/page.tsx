@@ -13,7 +13,7 @@ import {
   selectUpcomingEvents,
   selectFaculty,
   selectGroups,
-} from "@/store/features/dashboard/slice/dashboard.slice";
+} from "@/store/features/dashboard/selectors/dashboard.selectors";
 
 import DashboardHeader from "./_components/DashboardHeader";
 import DashboardStats from "./_components/DashboardStats";

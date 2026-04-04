@@ -7,8 +7,6 @@ import {
     DashboardUpdateItem,
 } from "../dashboard.types";
 
-import { RootState } from "@/store/store";
-
 // ─── State ────────────────────────────────────────────────────────────────────
 
 interface DashboardState {
@@ -61,10 +59,14 @@ const dashboardSlice = createSlice({
             })
             .addCase(fetchDashboardData.fulfilled, (state, action) => {
                 state.loading.fetchDashboard = false;
-                state.classes = action.payload.classes;
-                state.updates = action.payload.updates;
-                state.faculty = action.payload.faculty;
-                state.groups = action.payload.groups;
+
+                // Guard against null/undefined payload from the API
+                if (!action.payload) return;
+
+                state.classes = action.payload.classes ?? [];
+                state.updates = action.payload.updates ?? [];
+                state.faculty = action.payload.faculty ?? [];
+                state.groups  = action.payload.groups  ?? [];
             })
             .addCase(fetchDashboardData.rejected, (state, action) => {
                 state.loading.fetchDashboard = false;
@@ -76,34 +78,3 @@ const dashboardSlice = createSlice({
 
 export const { togglePinUpdate, resetDashboard } = dashboardSlice.actions;
 export default dashboardSlice.reducer;
-
-// ─── Selectors ────────────────────────────────────────────────────────────────
-
-export const selectDashboardLoading = (state: { dashboard: RootState }) =>
-    state.dashboard.dashboard.loading.fetchDashboard;
-
-export const selectDashboardError = (state: { dashboard: RootState }) =>
-    state.dashboard.dashboard.error.fetchDashboard;
-
-export const selectClasses = (state: { dashboard: RootState }) =>
-    state.dashboard.dashboard.classes;
-
-export const selectActiveClasses = (state: { dashboard: RootState }) =>
-    state.dashboard.dashboard.classes.filter((c) => c.status === "active");
-
-export const selectUpdates = (state: { dashboard: RootState }) =>
-    state.dashboard.dashboard.updates;
-
-export const selectPinnedUpdates = (state: { dashboard: RootState }) =>
-    state.dashboard.dashboard.updates.filter((u) => u.isPinned);
-
-export const selectUpcomingEvents = (state: { dashboard: RootState }) =>
-    state.dashboard.dashboard.updates.filter(
-        (u) => u.eventAt && new Date(u.eventAt) > new Date(),
-    );
-
-export const selectFaculty = (state: { dashboard: RootState }) =>
-    state.dashboard.dashboard.faculty;
-
-export const selectGroups = (state: { dashboard: RootState }) =>
-    state.dashboard.dashboard.groups;
