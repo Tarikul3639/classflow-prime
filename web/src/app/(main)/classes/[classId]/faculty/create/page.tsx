@@ -78,7 +78,7 @@ export default function AddFacultyPage() {
     }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     dispatch(
       createClassFaculty({
         classId,
@@ -86,10 +86,9 @@ export default function AddFacultyPage() {
       }),
     )
       .unwrap()
-      .then((res) => {
-        if (createClassFaculty.fulfilled.match(res)) {
+      .then((_) => {
           router.push(`/classes/${classId}/faculty`);
-        }
+          toast.success("Faculty created successfully");
       })
       .catch((err) => {
         toast.error("Failed to create faculty", {

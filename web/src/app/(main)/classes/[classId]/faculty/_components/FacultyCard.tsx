@@ -84,51 +84,62 @@ export const FacultyCard = ({
 
       {/* Contact Info */}
       <div className="grid grid-cols-1 gap-1.5 md:gap-2 pt-2 border-t border-slate-200">
-        <a
-          className="flex items-center gap-3 text-[13px] md:text-[14px] lg:text-[15px] text-slate-600 hover:text-primary transition-colors"
-          href={`mailto:${faculty.email}`}
-        >
-          <Mail size={16} className="shrink-0" />
-          <span className="truncate">{faculty.email}</span>
-        </a>
-        <a
-          className="flex items-center gap-3 text-[13px] md:text-[14px] lg:text-[15px] text-slate-600 hover:text-primary transition-colors"
-          href={`tel:${faculty.phone}`}
-        >
-          <Phone size={16} className="shrink-0" />
-          <span>{faculty.phone}</span>
-        </a>
-        <button
-          onClick={() =>
-            copyClassroomCode(faculty.classroomCode, faculty.facultyId)
-          }
-          className="flex items-center gap-3 w-full rounded-md hover:bg-slate-50 text-[13px] md:text-[14px] lg:text-[15px] text-slate-600 hover:text-primary transition-all group active:scale-[0.98]"
-          title="Click to copy code"
-        >
-          <BookOpenText
-            size={16}
-            className="shrink-0 text-slate-400 group-hover:text-primary"
-          />
+        {/* Email */}
+        {faculty.email && (
+          <a
+            className="flex items-center gap-3 text-[13px] md:text-[14px] lg:text-[15px] text-slate-600 hover:text-primary transition-colors"
+            href={`mailto:${faculty.email}`}
+          >
+            <Mail size={16} className="shrink-0" />
+            <span className="truncate">{faculty.email}</span>
+          </a>
+        )}
 
-          <span className="flex-1 text-left font-medium">
-            <span className="text-slate-600 font-normal">Classroom Code: </span>
-            {faculty.classroomCode}
-          </span>
+        {/* Phone */}
+        {faculty.phone && (
+          <a
+            className="flex items-center gap-3 text-[13px] md:text-[14px] lg:text-[15px] text-slate-600 hover:text-primary transition-colors"
+            href={`tel:${faculty.phone}`}
+          >
+            <Phone size={16} className="shrink-0" />
+            <span>{faculty.phone}</span>
+          </a>
+        )}
 
-          <div className="flex items-center justify-end min-w-16.25">
-            {copied === faculty.facultyId ? (
-              <div className="flex items-center gap-1 text-primary text-xs font-bold animate-in fade-in zoom-in duration-200">
-                <CheckCircle size={14} />
-                <span>Copied</span>
-              </div>
-            ) : (
-              <Copy
-                size={14}
-                className="text-slate-400 group-hover:text-primary transition-colors"
-              />
-            )}
-          </div>
-        </button>
+        {/* ClassRoom Code */}
+        {faculty.classroomCode && (
+          <button
+            onClick={() =>
+              copyClassroomCode(faculty.classroomCode, faculty.facultyId)
+            }
+            className="flex items-center gap-3 w-full rounded-md hover:bg-slate-50 text-[13px] md:text-[14px] lg:text-[15px] text-slate-600 hover:text-primary transition-all group active:scale-[0.98]"
+            title="Click to copy code"
+          >
+            <BookOpenText
+              size={16}
+              className="shrink-0 text-slate-400 group-hover:text-primary"
+            />
+
+            <span className="flex-1 text-left font-medium">
+              <span className="text-slate-600 font-normal">Classroom Code: </span>
+              {faculty.classroomCode}
+            </span>
+
+            <div className="flex items-center justify-end min-w-16.25">
+              {copied === faculty.facultyId ? (
+                <div className="flex items-center gap-1 text-primary text-xs font-bold animate-in fade-in zoom-in duration-200">
+                  <CheckCircle size={14} />
+                  <span>Copied</span>
+                </div>
+              ) : (
+                <Copy
+                  size={14}
+                  className="text-slate-400 group-hover:text-primary transition-colors"
+                />
+              )}
+            </div>
+          </button>
+        )}
       </div>
     </div>
   );
