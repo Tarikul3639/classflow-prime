@@ -62,6 +62,7 @@ export class FetchClassUpdateService {
       {
         $sort: {
           'updates.isPinned': -1,
+          'updates.eventAt': 1,
           'updates.createdAt': -1,
         },
       },

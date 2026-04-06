@@ -109,17 +109,21 @@ export function formatRelativeDate(
 
 /** Local YYYY-MM-DD + HH:mm → UTC ISO string */
 export function localToISO(localDate: string, localTime: string): string {
+  if (!localDate || !localTime) return "";
   return new Date(`${localDate}T${localTime}`).toISOString();
 }
 
 /** UTC ISO → local YYYY-MM-DD */
 export function isoToLocalDate(iso: string): string {
+  if (!iso) return "";
+
   const d = new Date(iso);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
 /** UTC ISO → local HH:mm */
 export function isoToLocalTime(iso: string): string {
+  if (!iso) return "";
   const d = new Date(iso);
   return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }

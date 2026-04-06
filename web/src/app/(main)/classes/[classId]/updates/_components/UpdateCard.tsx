@@ -6,6 +6,7 @@ import UpdateActionMenu from "./UpdateActionMenu";
 import UpdateMaterial from "./UpdateMaterials";
 import type { Material, PostedBy, UpdateEngagement } from "@/types/update.types";
 import { formatRelativeDate } from "@/utils/date.utils";
+import { RichTextContent } from "@/components/ui/RichTextContent";
 
 interface UpdateCardProps {
   icon?: LucideIcon;
@@ -110,8 +111,12 @@ export default function UpdateCard({
         </div>
       )}
 
-      {/* Description */}
-      <p className="text-sm text-slate-600 leading-relaxed">{description}</p>
+      {/* Description Section in UpdateCard */}
+      {description && (
+        <div className="py-1">
+          <RichTextContent html={description} className="px-2"/>
+        </div>
+      )}
 
       {/* Materials */}
       {materials && materials.length > 0 && (

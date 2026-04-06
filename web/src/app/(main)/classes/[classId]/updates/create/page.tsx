@@ -70,7 +70,7 @@ export default function CreateUpdatePage() {
       <main className="p-2 md:p-4 lg:p-6">
         <div className="mx-auto grid grid-cols-1 xl:grid-cols-12 gap-8">
           <div className="xl:col-span-7">
-            {/* ✅ Removed stray semicolon after component */}
+            {/* Removed stray semicolon after component */}
             <UpdateForm form={form} setForm={setForm} error={error} />
           </div>
 

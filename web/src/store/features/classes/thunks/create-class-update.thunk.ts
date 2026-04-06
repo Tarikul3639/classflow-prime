@@ -23,6 +23,7 @@ export const createClassUpdate = createAsyncThunk<
     { rejectValue: ApiError }
 >("classes/createUpdate", async ({ classId, updateData }, { rejectWithValue }) => {
     try {
+        console.log("Creating update for classId: ", updateData.description.length);
         // Basic validation before making the API call
         if (!updateData.title || !updateData.category) {
             return rejectWithValue({
