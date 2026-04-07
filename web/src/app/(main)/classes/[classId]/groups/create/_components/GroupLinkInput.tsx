@@ -4,16 +4,19 @@ import React from "react";
 import { Link as LinkIcon } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
-import { ClassGroup, GroupPlatform } from "@/types/group.types";
+import { ClassGroup, GroupPlatform, GroupErrorFieldType, GroupErrorField } from "@/types/group.types";
+import { ApiError } from "@/lib/errors/api-error.mapper";
 
 interface GroupLinkInputProps {
   formData: Omit<ClassGroup, "groupId" | "createdAt" | "updatedAt" | "createdBy">;
+  error: ApiError<GroupErrorFieldType> | null;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onPlatformChange: (platform: GroupPlatform) => void;
 }
 
 export default function GroupLinkInput({
   formData,
+  error,
   onInputChange,
   onPlatformChange,
 }: GroupLinkInputProps) {
@@ -24,6 +27,7 @@ export default function GroupLinkInput({
       <Select
         label="Platform"
         description="Choose the platform where this group is hosted"
+        error={error?.field === GroupErrorField.platform ? error.message : undefined}
         value={formData.platform}
         onChange={(e) => onPlatformChange(e.target.value as GroupPlatform)}
         options={[
@@ -44,6 +48,7 @@ export default function GroupLinkInput({
         onChange={onInputChange}
         placeholder="e.g., https://chat.whatsapp.com/..."
         description="Paste the invite link that students can use to enroll the group."
+        error={error?.field === GroupErrorField.link ? error.message : undefined}
         required
         icon={LinkIcon}
       />

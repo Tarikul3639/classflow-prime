@@ -4,10 +4,12 @@ import React from "react";
 import { Hash } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
-import { ClassGroup} from "@/types/group.types";
+import { ClassGroup, GroupErrorFieldType, GroupErrorField } from "@/types/group.types";
+import { ApiError } from "@/lib/errors/api-error.mapper";
 
 interface GroupBasicInfoProps {
   formData: Omit<ClassGroup, "groupId" | "createdAt" | "updatedAt" | "createdBy">;
+  error: ApiError<GroupErrorFieldType> | null;
   onInputChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => void;
@@ -15,6 +17,7 @@ interface GroupBasicInfoProps {
 
 export default function GroupBasicInfo({
   formData,
+  error,
   onInputChange,
 }: GroupBasicInfoProps) {
   return (
@@ -32,6 +35,7 @@ export default function GroupBasicInfo({
         description="A clear, descriptive name for the group that helps identify its purpose."
         required
         icon={Hash}
+        error={error?.field === GroupErrorField.name ? error.message : undefined}
       />
       <Textarea
         label="Group Description"
@@ -39,6 +43,7 @@ export default function GroupBasicInfo({
         required
         value={formData.description}
         onChange={onInputChange}
+        error={error?.field === GroupErrorField.description ? error.message : undefined}
         placeholder="Provide a brief description of the group's purpose, rules, or any other relevant information for students."
         description="This will help students understand the purpose of the group and any guidelines they should follow when enrolling."
       />

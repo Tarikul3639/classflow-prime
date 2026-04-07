@@ -15,18 +15,27 @@ import {
 
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { createClassGroup } from "@/store/features/classes/thunks/groups/class-group.thunk";
+import {
+  selectClassGroupLoading,
+  selectClassGroupError
+} from "@/store/features/classes/selectors/class-group.selectors";
 
 export default function AddGroupPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { classId } = useParams();
+  const params = useParams();
+  const classId = params.classId as string;
 
-  const isCreating = useAppSelector(
-    (state) => state.classes.classGroups.loading.createGroup,
+  // ─── Data Selection (Using Normalized Selectors) ──────────────────────────
+  const loadingState = useAppSelector((state) =>
+    selectClassGroupLoading(state, classId)
   );
-  const error = useAppSelector(
-    (state) => state.classes.classGroups.error.createGroup,
+  const apiError = useAppSelector((state) =>
+    selectClassGroupError(state, classId)
   );
+
+  const isCreating = loadingState.create;
+  const createError = apiError.create;
 
   const [formData, setFormData] = useState<
     Omit<ClassGroup, "groupId" | "createdAt" | "updatedAt" | "createdBy">
@@ -107,9 +116,9 @@ export default function AddGroupPage() {
       />
 
       {/* Error Alert */}
-      {error && (
+      {createError && !createError.field && (
         <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mx-4 mt-4">
-          <p className="text-sm">{error}</p>
+          <p className="text-sm">{createError.message}</p>
         </div>
       )}
 
@@ -123,12 +132,14 @@ export default function AddGroupPage() {
           <GroupBasicInfo
             formData={formData}
             onInputChange={handleInputChange}
+            error={createError}
           />
 
           <GroupLinkInput
             formData={formData}
             onInputChange={handleInputChange}
             onPlatformChange={handlePlatformChange}
+            error={createError}
           />
 
           <GroupPreview formData={formData} />

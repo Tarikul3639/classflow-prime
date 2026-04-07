@@ -12,32 +12,41 @@ import {
   fetchClassGroups,
   deleteClassGroup,
 } from "@/store/features/classes/thunks/groups/class-group.thunk";
+
+import {
+  selectClassGroups,
+  selectClassGroupLoading,
+  selectClassGroupError,
+  selectIsGroupsFetched,
+} from "@/store/features/classes/selectors/class-group.selectors";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 export default function GroupsPage() {
-  const { classId } = useParams();
+  const params = useParams();
   const router = useRouter();
-
   const dispatch = useAppDispatch();
-  const { classDetails } = useAppSelector(
-    (state) => state.classes.fetchSingleClass,
-  );
 
-  const isAdmin = classDetails?.isInstructor || classDetails?.isAssistant;
+  // ─── Context ───────────────────────────────────────────────────────────
+  const classId = params.classId as string;
 
-  const isLoading = useAppSelector(
-    (state) => state.classes.classGroups.loading.fetchGroups,
-  );
-  const error = useAppSelector(
-    (state) => state.classes.classGroups.error.fetchGroups,
-  );
-  const groups = useAppSelector((state) => state.classes.classGroups.groups);
+  // ─── Data Selection (Using New Selectors) ──────────────────────────────
+  const groups = useAppSelector((state) => selectClassGroups(state, classId));
+  const loading = useAppSelector((state) => selectClassGroupLoading(state, classId));
+  const error = useAppSelector((state) => selectClassGroupError(state, classId));
+  const isFetched = useAppSelector((state) => selectIsGroupsFetched(state, classId));
 
+  const { classDetails } = useAppSelector((state) => state.classes.fetchSingleClass);
+
+  // ─── Initialization ────────────────────────────────────────────────────
   useEffect(() => {
-    if (classId) {
-      dispatch(fetchClassGroups({ classId: classId as string }));
+    if (classId && !isFetched) {
+      dispatch(fetchClassGroups(classId));
     }
-  }, [classId, dispatch]);
+  }, [classId, dispatch, isFetched]);
+
+  // ─── Logic ─────────────────────────────────────────────────────────────
+  const isAdmin = classDetails?.isInstructor || classDetails?.isAssistant;
+  const fetchErrorMessage = error.fetch;
 
   const handleDelete = async (groupId: string) => {
     const promise = dispatch(
@@ -69,7 +78,7 @@ export default function GroupsPage() {
 
   return (
     <main className="relative bg-slate-50 p-4 space-y-4 pb-8 mx-auto flex flex-col">
-      <TopLoader isLoading={isLoading} />
+      <TopLoader isLoading={loading.fetch} />
       {/* Add New Group - Dashed Border */}
       {isAdmin && (
         <div className="shrink-0 border-2 border-dashed border-slate-300 rounded-2xl bg-transparent p-6 flex flex-col items-center text-center gap-3">
@@ -93,14 +102,14 @@ export default function GroupsPage() {
         </div>
       )}
 
-      {error && (
+      {fetchErrorMessage && (
         <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mt-4">
-          <p className="text-sm">{error}</p>
+          <p className="text-sm">{fetchErrorMessage}</p>
         </div>
       )}
 
       {/* Content Section */}
-      {isEmpty && !error ? (
+      {isEmpty && !fetchErrorMessage ? (
         <div className="flex-1 flex flex-col items-center justify-center py-10">
           <EmptyState
             title="No Groups Found"

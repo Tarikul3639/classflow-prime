@@ -1,5 +1,15 @@
 import { MessageCircle, Radio, Send, Facebook, MessageSquare, Globe } from "lucide-react";
 
+export const GroupErrorField = {
+    name: "name",
+    link: "link",
+    description: "description",
+    platform: "platform",
+} as const;
+
+export type GroupErrorFieldType =
+    typeof GroupErrorField[keyof typeof GroupErrorField];
+
 export enum GroupPlatform {
     WHATSAPP = 'WhatsApp',
     DISCORD = 'Discord',

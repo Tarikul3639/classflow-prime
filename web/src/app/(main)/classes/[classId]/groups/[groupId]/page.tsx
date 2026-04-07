@@ -19,26 +19,35 @@ import {
   updateClassGroup,
   fetchSingleClassGroup,
 } from "@/store/features/classes/thunks/groups/class-group.thunk";
-import { i } from "motion/react-client";
+
+import {
+  selectSingleGroup,
+  selectClassGroupLoading,
+  selectClassGroupError,
+} from "@/store/features/classes/selectors/class-group.selectors";
 
 export default function UpdateGroupPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { classId, groupId } = useParams();
+  const params = useParams();
+
+  const classId = params.classId as string;
+  const groupId = params.groupId as string;
+
   const [isDirty, setIsDirty] = useState(false);
 
-  const singleGroup = useAppSelector(
-    (state) => state.classes.classGroups.selectedGroup,
+  const singleGroup = useAppSelector((state) =>
+    selectSingleGroup(state, classId, groupId)
   );
 
-  const isUpdating = useAppSelector(
-    (state) => state.classes.classGroups.loading.updateGroup,
+  const loadingState = useAppSelector((state) =>
+    selectClassGroupLoading(state, classId)
   );
-  const error = useAppSelector(
-    (state) =>
-      state.classes.classGroups.error.updateGroup ||
-      state.classes.classGroups.error.fetchSingleGroup,
+
+  const apiError = useAppSelector((state) =>
+    selectClassGroupError(state, classId)
   );
+  const displayError = apiError.update || apiError.fetchSingle;
 
   // Original snapshot —> for dirty tracking
   const originalFormRef = useRef<Omit<
@@ -163,13 +172,17 @@ export default function UpdateGroupPage() {
         classId={classId as string}
         isNew={false}
         isDirty={isDirty}
-        isLoading={isUpdating}
+        isLoading={loadingState.update}
       />
 
       {/* Error Alert */}
-      {error && (
+      {displayError && (
         <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mx-4 mt-4">
-          <p className="text-sm">{error}</p>
+          <p className="text-sm">
+            {typeof displayError === "string"
+              ? displayError
+              : displayError.message}
+          </p>
         </div>
       )}
 
@@ -183,12 +196,14 @@ export default function UpdateGroupPage() {
           <GroupBasicInfo
             formData={formData}
             onInputChange={handleInputChange}
+            error={apiError.update}
           />
 
           <GroupLinkInput
             formData={formData}
             onInputChange={handleInputChange}
             onPlatformChange={handlePlatformChange}
+            error={apiError.update}
           />
 
           <GroupPreview formData={formData} />

@@ -42,11 +42,12 @@ const classesReducer = combineReducers({
   classUpdates: classUpdatesReducer,
   // Class faculty is now organized by classId, allowing for efficient access and management of faculty data per class.
   classFaculty: classFacultyReducer,
+  // Class Groups are also normalized by classId, ensuring that group data is properly segmented and easily retrievable for each class.
+  classGroups: classGroupReducer,
 
   fetchSingleClass: fetchSingleClassReducer,
   fetchEnrolledClasses: fetchEnrolledClassesReducer,
   classMembers: classMemberReducer,
-  classGroups: classGroupReducer,
   classSettings: classSettingsReducer,
 });
 
