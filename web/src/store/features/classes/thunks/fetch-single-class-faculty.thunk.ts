@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { apiClient } from "@/lib/api/axios";
 import { extractAxiosError } from "@/lib/api/extract-error";
-import type { ClassFaculty } from "./class-faculty.thunk";
+import type { ClassFaculty } from "../class.types";
 
 /**
  * Fetch single faculty by ID (optional, can be derived from state)

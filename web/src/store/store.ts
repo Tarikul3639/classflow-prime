@@ -22,7 +22,6 @@ import fetchEnrolledClassesReducer from "./features/classes/slices/fetch-enrolle
 
 // Class Faculty slices
 import classFacultyReducer from "./features/classes/slices/class-faculty.slice";
-import fetchSingleClassFaculty from './features/classes/slices/fetch-single-class-faculty.slice'
 
 // Class Members slices
 import classMemberReducer from "./features/classes/slices/members/class-member.slice";
@@ -41,11 +40,11 @@ const classesReducer = combineReducers({
   enrollClass: enrollClass,
   // Class updates are now normalized by classId to prevent data overlap and improve performance.
   classUpdates: classUpdatesReducer,
+  // Class faculty is now organized by classId, allowing for efficient access and management of faculty data per class.
+  classFaculty: classFacultyReducer,
 
   fetchSingleClass: fetchSingleClassReducer,
   fetchEnrolledClasses: fetchEnrolledClassesReducer,
-  classFaculty: classFacultyReducer,
-  fetchSingleClassFaculty: fetchSingleClassFaculty,
   classMembers: classMemberReducer,
   classGroups: classGroupReducer,
   classSettings: classSettingsReducer,

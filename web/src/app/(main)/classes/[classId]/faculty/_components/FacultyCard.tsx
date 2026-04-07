@@ -8,7 +8,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import ActionMenu from "./ActionMenu";
-import type { ClassFaculty } from "@/store/features/classes/thunks/class-faculty.thunk";
+import type { ClassFaculty } from "@/store/features/classes/class.types";
 
 interface FacultyCardProps {
   faculty: ClassFaculty;

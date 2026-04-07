@@ -10,21 +10,27 @@ import FormNote from "../create/_components/FormNote";
 import FacultyPreview from "../create/_components/FacultyPreview";
 import { toast } from "sonner";
 
-import type { ClassFaculty } from "@/store/features/classes/thunks/class-faculty.thunk";
+import type { ClassFaculty } from "@/store/features/classes/class.types";
 import { fetchSingleClassFaculty } from "@/store/features/classes/thunks/fetch-single-class-faculty.thunk";
 import { updateSingleClassFaculty } from "@/store/features/classes/thunks/update-single-class-faculty.thunk";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { getDirtyFields } from "@/utils/form.utils";
 import { useFileUpload } from "@/hooks/useCloudinary";
 
-export default function AddFacultyPage() {
+// Selectors
+import {
+  selectSingleFaculty,
+  selectClassFacultyLoading,
+} from "@/store/features/classes/selectors/class-faculty.selectors";
+
+export default function EditFacultyPage() {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const params = useParams();
   const classId = params.classId as string;
   const facultyId = params.facultyId as string;
 
-  // Original snapshot —> for dirty tracking
+  // Original snapshot — for dirty field tracking
   const originalFormRef = useRef<Omit<ClassFaculty, "facultyId"> | null>(null);
 
   const [formData, setFormData] = useState<Omit<ClassFaculty, "facultyId">>({
@@ -37,19 +43,45 @@ export default function AddFacultyPage() {
     classroomCode: "",
   });
 
+  // ── Selectors ──────────────────────────────────────────────────────────────
+
+  // Try to get faculty from normalized store first
+  const cachedFaculty = useAppSelector((state) =>
+    selectSingleFaculty(state, classId, facultyId)
+  );
+
+  const loading = useAppSelector((state) =>
+    selectClassFacultyLoading(state, classId)
+  );
+
+  const { upload, loading: uploadLoading } = useFileUpload();
+
+  // ── Initialization ─────────────────────────────────────────────────────────
   useEffect(() => {
+    // If already cached in store, use it directly without fetching
+    if (cachedFaculty) {
+      const { name, designation, avatarUrl, location, email, phone, classroomCode } =
+        cachedFaculty;
+      const initialData = {
+        name,
+        designation,
+        avatarUrl: avatarUrl || "",
+        location,
+        email,
+        phone: phone || "",
+        classroomCode: classroomCode || "",
+      };
+      originalFormRef.current = initialData;
+      setFormData(initialData);
+      return;
+    }
+
+    // Not in store — fetch from API
     dispatch(fetchSingleClassFaculty({ classId, facultyId }))
       .unwrap()
       .then((res) => {
-        const {
-          name,
-          designation,
-          avatarUrl,
-          location,
-          email,
-          phone,
-          classroomCode,
-        } = res;
+        const { name, designation, avatarUrl, location, email, phone, classroomCode } =
+          res;
         const initialData = {
           name,
           designation,
@@ -59,26 +91,16 @@ export default function AddFacultyPage() {
           phone: phone || "",
           classroomCode: classroomCode || "",
         };
-        originalFormRef.current = initialData; // snapshot save
+        originalFormRef.current = initialData;
         setFormData(initialData);
       })
       .catch((err) => {
-        toast.error("Failed to load faculty details", {
-          description: err,
-        });
+        toast.error("Failed to load faculty details", { description: err });
       });
-  }, [dispatch, classId, facultyId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const { isLoading } = useAppSelector(
-    (state) => state.classes.fetchSingleClassFaculty,
-  );
-
-  const isUpdating = useAppSelector(
-    (state) => state.classes.classFaculty.loading.update,
-  );
-
-  const { upload, loading: uploadLoading } = useFileUpload();
-
+  // ── Event Handlers ─────────────────────────────────────────────────────────
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -93,29 +115,19 @@ export default function AddFacultyPage() {
 
     try {
       const res = await promise;
-
-      setFormData((prev) => ({
-        ...prev,
-        avatarUrl: res.secure_url, // 🔥 real URL from Cloudinary
-      }));
+      setFormData((prev) => ({ ...prev, avatarUrl: res.secure_url }));
     } catch (err) {
       console.error(err);
     }
   };
 
   const removeAvatar = () => {
-    setFormData((prev) => ({
-      ...prev,
-      avatarUrl: "",
-    }));
+    setFormData((prev) => ({ ...prev, avatarUrl: "" }));
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async () => {
@@ -129,11 +141,7 @@ export default function AddFacultyPage() {
     }
 
     const promise = dispatch(
-      updateSingleClassFaculty({
-        classId,
-        facultyId,
-        facultyData: dirtyFields,
-      }),
+      updateSingleClassFaculty({ classId, facultyId, facultyData: dirtyFields })
     ).unwrap();
 
     toast.promise(promise, {
@@ -150,25 +158,25 @@ export default function AddFacultyPage() {
     }
   };
 
-  if (isLoading) {
+  // ── Loading State ──────────────────────────────────────────────────────────
+  if (loading.fetchSingle && !cachedFaculty) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-slate-50">
-        <p className="text-sm text-slate-500">Loading update...</p>
+        <p className="text-sm text-slate-500">Loading faculty details...</p>
       </div>
     );
   }
 
+  // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Header */}
       <EditorHeader
         classId={classId}
         isNew={false}
-        isLoading={isUpdating}
+        isLoading={loading.update}
         onSubmit={handleSubmit}
       />
 
-      {/* Form Content */}
       <main className="p-4 pb-24">
         <form className="grid gap-6 md:grid-cols-2">
           <div className="md:col-span-2 p-6 flex items-center justify-center">

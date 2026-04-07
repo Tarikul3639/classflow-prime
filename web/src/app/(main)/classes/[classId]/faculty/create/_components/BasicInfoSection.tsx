@@ -3,7 +3,7 @@
 import React from "react";
 import { User, Briefcase, MapPin } from "lucide-react";
 import { Input } from "@/components/ui/Input";
-import type { ClassFaculty } from "@/store/features/classes/thunks/class-faculty.thunk";
+import type { ClassFaculty } from "@/store/features/classes/class.types";
 
 interface BasicInfoSectionProps {
   formData: Pick<ClassFaculty, "name" | "designation" | "location">;

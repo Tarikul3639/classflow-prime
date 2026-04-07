@@ -1,126 +1,240 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
     createClassFaculty,
     deleteClassFaculty,
     fetchClassFaculties,
-    type ClassFaculty,
 } from "../thunks/class-faculty.thunk";
+import type { ClassFaculty } from "../class.types";
 import { updateSingleClassFaculty } from "../thunks/update-single-class-faculty.thunk";
+import { fetchSingleClassFaculty } from "../thunks/fetch-single-class-faculty.thunk";
 
-interface ClassFacultyState {
+// ─── Bucket Structure ─────────────────────────────────────────────────────────
+interface ClassFacultyBucket {
     faculties: ClassFaculty[];
     loading: {
         fetch: boolean;
+        fetchSingle: boolean;
         create: boolean;
         update: boolean;
         delete: boolean;
     };
     error: {
         fetch: string | null;
+        fetchSingle: string | null;
         create: string | null;
         update: string | null;
         delete: string | null;
     };
 }
 
-const initialState: ClassFacultyState = {
+// ─── State ────────────────────────────────────────────────────────────────────
+interface ClassFacultyState {
+    facultiesByClass: {
+        [classId: string]: ClassFacultyBucket;
+    };
+}
+
+// ─── Factory ──────────────────────────────────────────────────────────────────
+const createEmptyBucket = (): ClassFacultyBucket => ({
     faculties: [],
     loading: {
         fetch: false,
+        fetchSingle: false,
         create: false,
         update: false,
         delete: false,
     },
     error: {
         fetch: null,
+        fetchSingle: null,
         create: null,
         update: null,
         delete: null,
     },
+});
+
+const initialState: ClassFacultyState = {
+    facultiesByClass: {},
 };
 
+// ─── Slice ────────────────────────────────────────────────────────────────────
 const classFacultySlice = createSlice({
     name: "classFaculty",
     initialState,
     reducers: {
-        clearError(state, action: { payload: keyof ClassFacultyState["error"] }) {
-            state.error[action.payload] = null;
+        clearClassFaculties: (state, action: PayloadAction<string>) => {
+            delete state.facultiesByClass[action.payload];
         },
-        clearAllErrors(state) {
-            Object.keys(state.error).forEach((key) => {
-                state.error[key as keyof ClassFacultyState["error"]] = null;
-            });
+        clearError: (
+            state,
+            action: PayloadAction<{
+                classId: string;
+                key: keyof ClassFacultyBucket["error"];
+            }>,
+        ) => {
+            const { classId, key } = action.payload;
+            const bucket = state.facultiesByClass[classId];
+            if (bucket) bucket.error[key] = null;
+        },
+        clearAllErrors: (state, action: PayloadAction<string>) => {
+            const bucket = state.facultiesByClass[action.payload];
+            if (bucket) {
+                Object.keys(bucket.error).forEach((key) => {
+                    bucket.error[key as keyof ClassFacultyBucket["error"]] = null;
+                });
+            }
         },
     },
     extraReducers: (builder) => {
-
-        // ─── Fetch ────────────────────────────────────────────
         builder
-            .addCase(fetchClassFaculties.pending, (state) => {
-                state.loading.fetch = true;
-                state.error.fetch = null;
+
+            // ── Fetch All ─────────────────────────────────────────────────────
+            .addCase(fetchClassFaculties.pending, (state, action) => {
+                const classId = action.meta.arg;
+                if (!state.facultiesByClass[classId]) {
+                    state.facultiesByClass[classId] = createEmptyBucket();
+                }
+                state.facultiesByClass[classId].loading.fetch = true;
+                state.facultiesByClass[classId].error.fetch = null;
             })
             .addCase(fetchClassFaculties.fulfilled, (state, action) => {
-                state.loading.fetch = false;
-                state.faculties = action.payload; // ClassFaculty[]
+                const classId = action.meta.arg;
+                const bucket = state.facultiesByClass[classId];
+                if (bucket) {
+                    bucket.loading.fetch = false;
+                    bucket.faculties = action.payload;
+                }
             })
             .addCase(fetchClassFaculties.rejected, (state, action) => {
-                state.loading.fetch = false;
-                state.error.fetch = action.payload ?? "Failed to fetch faculties";
-            });
+                const classId = action.meta.arg;
+                const bucket = state.facultiesByClass[classId];
+                if (bucket) {
+                    bucket.loading.fetch = false;
+                    bucket.error.fetch = action.payload ?? "Failed to fetch faculties.";
+                }
+            })
 
-        // ─── Create ───────────────────────────────────────────
-        builder
-            .addCase(createClassFaculty.pending, (state) => {
-                state.loading.create = true;
-                state.error.create = null;
+            // ── Fetch Single ──────────────────────────────────────────────────
+            .addCase(fetchSingleClassFaculty.pending, (state, action) => {
+                const { classId } = action.meta.arg;
+                if (!state.facultiesByClass[classId]) {
+                    state.facultiesByClass[classId] = createEmptyBucket();
+                }
+                state.facultiesByClass[classId].loading.fetchSingle = true;
+                state.facultiesByClass[classId].error.fetchSingle = null;
+            })
+            .addCase(fetchSingleClassFaculty.fulfilled, (state, action) => {
+                const { classId } = action.meta.arg;
+                const bucket = state.facultiesByClass[classId];
+                if (bucket) {
+                    bucket.loading.fetchSingle = false;
+                    const fetched = action.payload;
+                    const index = bucket.faculties.findIndex(
+                        (f) => f.facultyId === fetched.facultyId,
+                    );
+                    if (index !== -1) {
+                        bucket.faculties[index] = fetched; // update existing
+                    } else {
+                        bucket.faculties.push(fetched); // insert if not found
+                    }
+                }
+            })
+            .addCase(fetchSingleClassFaculty.rejected, (state, action) => {
+                const { classId } = action.meta.arg;
+                const bucket = state.facultiesByClass[classId];
+                if (bucket) {
+                    bucket.loading.fetchSingle = false;
+                    bucket.error.fetchSingle =
+                        action.payload ?? "Failed to fetch faculty details.";
+                }
+            })
+
+            // ── Create ────────────────────────────────────────────────────────
+            .addCase(createClassFaculty.pending, (state, action) => {
+                const { classId } = action.meta.arg;
+                if (!state.facultiesByClass[classId]) {
+                    state.facultiesByClass[classId] = createEmptyBucket();
+                }
+                state.facultiesByClass[classId].loading.create = true;
+                state.facultiesByClass[classId].error.create = null;
             })
             .addCase(createClassFaculty.fulfilled, (state, action) => {
-                state.loading.create = false;
-                state.faculties.push(action.payload); // single ClassFaculty
+                const { classId } = action.meta.arg;
+                const bucket = state.facultiesByClass[classId];
+                if (bucket) {
+                    bucket.loading.create = false;
+                    bucket.faculties.push(action.payload);
+                }
             })
             .addCase(createClassFaculty.rejected, (state, action) => {
-                state.loading.create = false;
-                state.error.create = action.payload ?? "Failed to create faculty";
-            });
+                const { classId } = action.meta.arg;
+                const bucket = state.facultiesByClass[classId];
+                if (bucket) {
+                    bucket.loading.create = false;
+                    bucket.error.create = action.payload ?? "Failed to create faculty.";
+                }
+            })
 
-        // ─── Update ───────────────────────────────────────────
-        builder
-            .addCase(updateSingleClassFaculty.pending, (state) => {
-                state.loading.update = true;
-                state.error.update = null;
+            // ── Update ────────────────────────────────────────────────────────
+            .addCase(updateSingleClassFaculty.pending, (state, action) => {
+                const { classId } = action.meta.arg;
+                const bucket = state.facultiesByClass[classId];
+                if (bucket) {
+                    bucket.loading.update = true;
+                    bucket.error.update = null;
+                }
             })
             .addCase(updateSingleClassFaculty.fulfilled, (state, action) => {
-                state.loading.update = false;
-                const updated = action.payload; // ClassFaculty
-                const index = state.faculties.findIndex(
-                    (f) => f.facultyId === updated.facultyId
-                );
-                if (index !== -1) state.faculties[index] = updated;
+                const { classId } = action.meta.arg;
+                const bucket = state.facultiesByClass[classId];
+                if (bucket) {
+                    bucket.loading.update = false;
+                    const updated = action.payload;
+                    const index = bucket.faculties.findIndex(
+                        (f) => f.facultyId === updated.facultyId,
+                    );
+                    if (index !== -1) bucket.faculties[index] = updated;
+                }
             })
             .addCase(updateSingleClassFaculty.rejected, (state, action) => {
-                state.loading.update = false;
-                state.error.update = action.payload ?? "Failed to update faculty";
-            });
+                const { classId } = action.meta.arg;
+                const bucket = state.facultiesByClass[classId];
+                if (bucket) {
+                    bucket.loading.update = false;
+                    bucket.error.update = action.payload ?? "Failed to update faculty.";
+                }
+            })
 
-        // ─── Delete ───────────────────────────────────────────
-        builder
-            .addCase(deleteClassFaculty.pending, (state) => {
-                state.loading.delete = true;
-                state.error.delete = null;
+            // ── Delete ────────────────────────────────────────────────────────
+            .addCase(deleteClassFaculty.pending, (state, action) => {
+                const { classId } = action.meta.arg;
+                const bucket = state.facultiesByClass[classId];
+                if (bucket) {
+                    bucket.loading.delete = true;
+                    bucket.error.delete = null;
+                }
             })
             .addCase(deleteClassFaculty.fulfilled, (state, action) => {
-                state.loading.delete = false;
-                state.faculties = state.faculties.filter(
-                    (f) => f.facultyId !== action.payload.facultyId
-                );
+                const { classId } = action.meta.arg;
+                const bucket = state.facultiesByClass[classId];
+                if (bucket) {
+                    bucket.loading.delete = false;
+                    bucket.faculties = bucket.faculties.filter(
+                        (f) => f.facultyId !== action.payload.facultyId,
+                    );
+                }
             })
             .addCase(deleteClassFaculty.rejected, (state, action) => {
-                state.loading.delete = false;
-                state.error.delete = action.payload ?? "Failed to delete faculty";
+                const { classId } = action.meta.arg;
+                const bucket = state.facultiesByClass[classId];
+                if (bucket) {
+                    bucket.loading.delete = false;
+                    bucket.error.delete = action.payload ?? "Failed to delete faculty.";
+                }
             });
     },
 });
 
-export const { clearError, clearAllErrors } = classFacultySlice.actions;
+export const { clearClassFaculties, clearError, clearAllErrors } =
+    classFacultySlice.actions;
 export default classFacultySlice.reducer;

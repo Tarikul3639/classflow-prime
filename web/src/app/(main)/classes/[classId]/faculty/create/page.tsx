@@ -11,10 +11,9 @@ import FacultyPreview from "./_components/FacultyPreview";
 import { toast } from "sonner";
 import { useFileUpload } from "@/hooks/useCloudinary";
 
-import {
-  createClassFaculty,
-  ClassFaculty,
-} from "@/store/features/classes/thunks/class-faculty.thunk";
+import type { ClassFaculty } from "@/store/features/classes/class.types";
+import { createClassFaculty } from "@/store/features/classes/thunks/class-faculty.thunk";
+import { selectClassFacultyLoading } from "@/store/features/classes/selectors/class-faculty.selectors";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 export default function AddFacultyPage() {
@@ -33,9 +32,11 @@ export default function AddFacultyPage() {
     classroomCode: "",
   });
 
-  const loading = useAppSelector(
-    (state) => state.classes.classFaculty.loading.create,
+  // ── Selectors ──────────────────────────────────────────────────────────────
+  const classLoading = useAppSelector((state) =>
+    selectClassFacultyLoading(state, classId),
   );
+  const isCreating = classLoading.create;
 
   const { upload, loading: uploadLoading } = useFileUpload();
 
@@ -87,8 +88,8 @@ export default function AddFacultyPage() {
     )
       .unwrap()
       .then((_) => {
-          router.push(`/classes/${classId}/faculty`);
-          toast.success("Faculty created successfully");
+        router.push(`/classes/${classId}/faculty`);
+        toast.success("Faculty created successfully");
       })
       .catch((err) => {
         toast.error("Failed to create faculty", {
@@ -103,7 +104,7 @@ export default function AddFacultyPage() {
       <EditorHeader
         classId={classId}
         isNew={true}
-        isLoading={loading}
+        isLoading={isCreating}
         onSubmit={handleSubmit}
       />
 

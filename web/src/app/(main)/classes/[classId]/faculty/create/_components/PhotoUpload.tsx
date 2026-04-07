@@ -2,7 +2,6 @@
 
 import React from "react";
 import { Camera, Trash2, Plus, Loader } from "lucide-react";
-import { is } from "date-fns/locale";
 
 interface PhotoUploadProps {
   imagePreview: string | null;

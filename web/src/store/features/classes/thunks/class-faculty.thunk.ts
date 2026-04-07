@@ -1,33 +1,21 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { apiClient } from "@/lib/api/axios";
 import { extractAxiosError } from "@/lib/api/extract-error";
+import type { ClassFaculty } from "../class.types";
 
 // ─── Interfaces ───────────────────────────────────────────────
-
-export interface ClassFaculty {
-    facultyId: string;
-    name: string;
-    avatarUrl?: string;
-    designation: string;
-    location: string;
-    email: string;
-    phone?: string;
-    classroomCode?: string;
-}
 
 interface FetchClassFacultiesData {
     classId: string;
     faculties: ClassFaculty[];
 }
 
-// Fetch faculties Response type
 interface FetchClassFacultiesResponse {
     success: boolean;
     message: string;
     data: FetchClassFacultiesData;
 }
 
-// Response from API for Create Faculty
 interface ClassFacultyResponse {
     success: boolean;
     message: string;
@@ -53,11 +41,39 @@ export interface UpdateClassFacultyPayload {
 // ─── Thunks ───────────────────────────────────────────────────
 
 /**
+ * Fetch Faculties
+ * arg = plain string → action.meta.arg = classId
+ */
+export const fetchClassFaculties = createAsyncThunk<
+    ClassFaculty[],
+    string,                     // ← plain string (classId)
+    { rejectValue: string }
+>(
+    "classes/fetchFaculties",
+    async (classId, { rejectWithValue }) => {
+        try {
+            const { data } = await apiClient.get<FetchClassFacultiesResponse>(
+                `/classes/${classId}/faculties`
+            );
+
+            if (!data.success) {
+                return rejectWithValue(data.message || "Failed to fetch faculties.");
+            }
+
+            return data.data.faculties;
+        } catch (error: unknown) {
+            return rejectWithValue(extractAxiosError(error));
+        }
+    }
+);
+
+/**
  * Create Faculty
+ * arg = { classId, facultyData } → action.meta.arg.classId
  */
 export const createClassFaculty = createAsyncThunk<
-    ClassFaculty,                 // single faculty
-    CreateClassFacultyPayload,    // { classId: string, facultyData: ClassFacultyPayload }
+    ClassFaculty,
+    CreateClassFacultyPayload,  // { classId, facultyData }
     { rejectValue: string }
 >(
     "classes/createFaculty",
@@ -71,8 +87,8 @@ export const createClassFaculty = createAsyncThunk<
             if (!data.success) {
                 return rejectWithValue(data.message || "Failed to create faculty.");
             }
-            
-            return data.data.faculty; // single faculty object
+
+            return data.data.faculty;
         } catch (error: unknown) {
             return rejectWithValue(extractAxiosError(error));
         }
@@ -81,6 +97,7 @@ export const createClassFaculty = createAsyncThunk<
 
 /**
  * Delete Faculty
+ * arg = { classId, facultyId } → action.meta.arg.classId
  */
 export const deleteClassFaculty = createAsyncThunk<
     { facultyId: string; message: string },
@@ -95,31 +112,11 @@ export const deleteClassFaculty = createAsyncThunk<
                 message: string;
             }>(`/classes/${classId}/faculties/${facultyId}`);
 
-            return {
-                facultyId,
-                message: data.message,
-            };
-        } catch (error: unknown) {
-            return rejectWithValue(extractAxiosError(error));
-        }
-    }
-);
+            if (!data.success) {
+                return rejectWithValue(data.message || "Failed to delete faculty.");
+            }
 
-/**
- * Fetch Faculties for a Class
- */
-export const fetchClassFaculties = createAsyncThunk<
-    ClassFaculty[],            // return type
-    { classId: string },       // argument type
-    { rejectValue: string }    // thunkApi config type
->(
-    "classes/fetchFaculties",
-    async ({ classId }, { rejectWithValue }) => {
-        try {
-            const { data } = await apiClient.get<FetchClassFacultiesResponse>(
-                `/classes/${classId}/faculties`
-            );
-            return data.data.faculties; // return only array
+            return { facultyId, message: data.message };
         } catch (error: unknown) {
             return rejectWithValue(extractAxiosError(error));
         }

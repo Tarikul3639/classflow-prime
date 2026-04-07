@@ -2,7 +2,7 @@
 
 import React from "react";
 import { FacultyCard } from "../../_components/FacultyCard";
-import type { ClassFaculty } from "@/store/features/classes/thunks/class-faculty.thunk";
+import type { ClassFaculty } from "@/store/features/classes/class.types";
 
 interface FacultyPreviewProps {
   formData: Omit<ClassFaculty, "facultyId">;

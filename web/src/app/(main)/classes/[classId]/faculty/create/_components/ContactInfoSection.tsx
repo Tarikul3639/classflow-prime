@@ -3,7 +3,7 @@
 import React from "react";
 import { Mail, Phone, BookOpenText } from "lucide-react";
 import { Input } from "@/components/ui/Input";
-import type { ClassFaculty } from "@/store/features/classes/thunks/class-faculty.thunk";
+import type { ClassFaculty } from "@/store/features/classes/class.types";
 
 interface ContactInfoSectionProps {
   formData: Pick<ClassFaculty, "email" | "phone" | "classroomCode">;
