@@ -5,7 +5,7 @@ import { Link as LinkIcon } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { ClassGroup, GroupPlatform, GroupErrorFieldType, GroupErrorField } from "@/types/group.types";
-import { ApiError } from "@/lib/errors/api-error.mapper";
+import { ApiError } from "@/api/extract-error";
 
 interface GroupLinkInputProps {
   formData: Omit<ClassGroup, "groupId" | "createdAt" | "updatedAt" | "createdBy">;

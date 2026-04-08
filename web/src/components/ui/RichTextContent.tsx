@@ -1,5 +1,5 @@
 // components/ui/RichTextContent.tsx
-import { cn } from "@/utils/clsx";
+import { cn } from "@/lib/utils";
 
 export const RICH_TEXT_STLYES = cn(
     // Base Styles (Max font set to 14px)

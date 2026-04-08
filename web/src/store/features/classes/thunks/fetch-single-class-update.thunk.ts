@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { apiClient } from "@/lib/api/axios";
+import { apiClient } from "@/api/axios";
 import type { ClassUpdateItem } from "@/types/update.types";
-import { extractAxiosError } from "@/lib/api/extract-error";
+import { extractAxiosError } from "@/api/extract-error";
 
 /**
  * API Response Structure

@@ -5,7 +5,7 @@ import { Hash } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { ClassGroup, GroupErrorFieldType, GroupErrorField } from "@/types/group.types";
-import { ApiError } from "@/lib/errors/api-error.mapper";
+import { ApiError } from "@/api/extract-error";
 
 interface GroupBasicInfoProps {
   formData: Omit<ClassGroup, "groupId" | "createdAt" | "updatedAt" | "createdBy">;

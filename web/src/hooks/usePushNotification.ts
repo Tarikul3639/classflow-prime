@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { subscribeToPush, unsubscribeFromPush } from '@/lib/api/push';
+import { subscribeToPush, unsubscribeFromPush } from '@/api/push';
 
 export function usePushNotification(userId: string | null) {
     const [isSubscribed, setIsSubscribed] = useState(false);

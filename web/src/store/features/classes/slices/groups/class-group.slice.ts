@@ -7,7 +7,7 @@ import {
     fetchSingleClassGroup,
 } from "../../thunks/groups/class-group.thunk";
 import { ClassGroup, GroupErrorFieldType } from "@/types/group.types";
-import type { ApiError } from "@/lib/errors/api-error.mapper";
+import type { ApiError } from "@/api/extract-error";
 
 // ─── Group Bucket Interface ────────────────────────────────────────────────
 interface ClassGroupBucket {

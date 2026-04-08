@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { apiClient, getErrorMessage } from '@/lib/api/axios';
+import { apiClient, getErrorMessage } from '@/api/axios';
 
 /**
  * Sign out current session.

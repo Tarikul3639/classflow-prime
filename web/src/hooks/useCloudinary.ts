@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { uploadToCloudinary } from '@/lib/api/cloudinary';
+import { uploadToCloudinary } from '@/api/cloudinary';
 
 export const useFileUpload = () => {
     const [loading, setLoading] = useState(false);

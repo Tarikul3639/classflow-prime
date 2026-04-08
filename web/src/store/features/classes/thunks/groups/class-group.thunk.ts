@@ -1,9 +1,9 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { apiClient } from "@/lib/api/axios";
-import { extractAxiosError } from "@/lib/api/extract-error";
+import { apiClient } from "@/api/axios";
+import { extractAxiosError } from "@/api/extract-error";
 import { ClassGroup, GroupErrorFieldType, GroupErrorField } from "@/types/group.types";
-import type { ApiError } from "@/lib/errors/api-error.mapper";
-import { mapToApiError } from "@/lib/errors/api-error.mapper";
+import type { ApiError } from "@/api/extract-error";
+import { mapToApiError } from "@/api/extract-error";
 
 // ─── Interfaces ────────────────────────────────────────────────────────────
 

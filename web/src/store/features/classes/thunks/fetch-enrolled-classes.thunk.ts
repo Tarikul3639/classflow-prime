@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { apiClient } from "@/lib/api/axios";
+import { apiClient } from "@/api/axios";
 import { AxiosError } from "axios";
 
 export interface IClass {

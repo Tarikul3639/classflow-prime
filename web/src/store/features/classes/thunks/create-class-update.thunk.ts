@@ -1,8 +1,8 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { apiClient } from "@/lib/api/axios";
+import { apiClient } from "@/api/axios";
 import { CreateUpdateFormData, ClassUpdateItem } from "@/types/update.types";
-import { mapToApiError } from "@/lib/errors/api-error.mapper";
-import type { ApiError } from "@/lib/errors/api-error.mapper";
+import { mapToApiError } from "@/api/extract-error";
+import type { ApiError } from "@/api/extract-error";
 import type { UpdateErrorFieldType } from "../class.types";
 
 interface CreateClassUpdatePayload {

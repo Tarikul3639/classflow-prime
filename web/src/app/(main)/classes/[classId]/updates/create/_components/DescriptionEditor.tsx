@@ -23,7 +23,7 @@ import {
   RemoveFormatting,
 } from "lucide-react";
 import type { CreateUpdateFormData } from "@/types/update.types";
-import { cn } from "@/utils/clsx";
+import { cn } from "@/lib/utils";
 import { RICH_TEXT_STLYES } from "@/components/ui/RichTextContent";
 
 interface DescriptionEditorProps {

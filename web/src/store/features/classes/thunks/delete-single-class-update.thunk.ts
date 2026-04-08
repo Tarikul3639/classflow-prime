@@ -1,6 +1,6 @@
 // delete-single-class-update.thunk.ts
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { apiClient } from "@/lib/api/axios";
+import { apiClient } from "@/api/axios";
 import { isAxiosError } from "axios";
 
 /**

@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { apiClient } from "@/lib/api/axios";
-import { extractAxiosError } from "@/lib/api/extract-error";
+import { apiClient } from "@/api/axios";
+import { extractAxiosError } from "@/api/extract-error";
 import type { ClassFaculty } from "../class.types";
 
 // ─── Interfaces ───────────────────────────────────────────────

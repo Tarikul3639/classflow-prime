@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { apiClient } from "@/lib/api/axios";
+import { apiClient } from "@/api/axios";
 import { RejectValue } from "../notification.types";
-import { extractAxiosError } from "@/lib/api/extract-error";
+import { extractAxiosError } from "@/api/extract-error";
 
 // ─── Mark All as Read ─────────────────────────────────────
 export const markAllNotificationsAsRead = createAsyncThunk<

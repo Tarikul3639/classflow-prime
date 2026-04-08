@@ -8,7 +8,7 @@ import { togglePinClassUpdate } from "../thunks/toggle-pin-class-update.thunk";
 import { deleteSingleClassUpdate } from "../thunks/delete-single-class-update.thunk";
 // Types
 import type { ClassUpdateItem } from "@/types/update.types";
-import type { ApiError } from "@/lib/errors/api-error.mapper";
+import type { ApiError } from "@/api/extract-error";
 import type { UpdateErrorFieldType } from "../class.types";
 
 // State Structure

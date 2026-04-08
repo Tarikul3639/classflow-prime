@@ -11,7 +11,7 @@ import {
   CreateUpdateFormData,
   UpdateCategory,
 } from "@/types/update.types";
-import type { ApiError } from "@/lib/errors/api-error.mapper";
+import type { ApiError } from "@/api/extract-error";
 import { UpdateErrorField } from "@/store/features/classes/class.types";
 
 interface UpdateFormProps {
