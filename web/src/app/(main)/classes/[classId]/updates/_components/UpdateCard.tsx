@@ -108,7 +108,7 @@ export default function UpdateCard({
         <div className="flex items-center gap-1.5 text-blue-600 text-[13px] md:text-sm font-semibold bg-blue-50 w-fit px-2.5 py-1 rounded-md capitalize">
           <CalendarClock className="size-4 md:size-4.5 mt-[0.5px]" />
           <span>
-            {formatRelativeDate(eventAt, { showTime: true, showYear: false, relativeDaysLimit: 7 })}
+            {formatRelativeDate(eventAt, { showTime: true, showYear: false, relativeDaysLimit: 0 })}
           </span>
         </div>
       )}

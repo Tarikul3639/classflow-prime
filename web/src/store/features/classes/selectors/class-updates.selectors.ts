@@ -112,7 +112,7 @@ export const selectGroupedUpdates = createSelector(
                 dateKey = formatRelativeDate(u.eventAt ?? u.createdAt, {
                     showTime: false,
                     showYear: true,
-                    relativeDaysLimit: 3,
+                    relativeDaysLimit: 7,
                 });
             }
 

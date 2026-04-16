@@ -56,7 +56,8 @@ export default function DashboardPage() {
         ) : error ? (
           <ErrorState
             message={error || "Failed to load dashboard data"}
-            onRetry={() => dispatch(fetchDashboardData())}
+            // onRetry={() => dispatch(fetchDashboardData())}
+            onRetry={()=> window.location.reload()} // Simple retry by reloading the page
           />
         ) : (
           <>
