@@ -9,6 +9,7 @@ import { formatRelativeDate } from "@/utils/date.utils";
 import { RichTextContent } from "@/components/ui/RichTextContent";
 
 interface UpdateCardProps {
+  updateId: string;
   isPast?: boolean;
   icon?: LucideIcon;
   iconBg?: string;
@@ -29,6 +30,7 @@ interface UpdateCardProps {
 }
 
 export default function UpdateCard({
+  updateId,
   isPast = false,
   icon: Icon,
   iconBg,
@@ -47,7 +49,7 @@ export default function UpdateCard({
   showActions,
 }: UpdateCardProps) {
   return (
-    <article className={`bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col gap-3 active:bg-slate-50 transition-all overflow-hidden ${isPast ? "opacity-50 hover:opacity-90" : "hover:shadow-md"}`}>
+    <article id={updateId} className={`bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col gap-3 active:bg-slate-50 transition-all overflow-hidden ${isPast ? "opacity-50 hover:opacity-90" : "hover:shadow-md"}`}>
       {/* Header */}
       <div className="flex justify-between items-start gap-2">
         <div className="flex items-center gap-3 min-w-0">

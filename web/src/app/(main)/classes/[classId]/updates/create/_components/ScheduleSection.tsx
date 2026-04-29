@@ -13,6 +13,8 @@ interface ScheduleSectionProps {
 }
 
 export function ScheduleSection({ form, setForm }: ScheduleSectionProps) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
   const dateValue = form.eventAt ? isoToLocalDate(form.eventAt) : "";
   const timeValue = form.eventAt ? isoToLocalTime(form.eventAt) : "10:00";
 
@@ -53,6 +55,30 @@ export function ScheduleSection({ form, setForm }: ScheduleSectionProps) {
           mode="single"
           selected={dateValue ? new Date(`${dateValue}T00:00:00`) : undefined}
           onSelect={handleDateChange}
+          disabled={(date) => date < today} // Disable past dates
+          modifiers={{
+            eventDate: (date) => {
+              if (!form.eventAt) return false;
+
+              return new Date(date).toDateString() ===
+                new Date(form.eventAt).toDateString();
+            },
+            past: (date) => date < today,
+            todayOnly: (date) => {
+              return date.toDateString() === new Date().toDateString();
+            }
+          }}
+          modifiersClassNames={{
+            eventDate:
+              "[&>button]:!bg-red-500 [&>button]:!text-white [&>button]:!border-0 [&>button]:!outline-none [&>button]:!ring-0 [&>button]:focus-visible:!outline-none [&>button]:active:!ring-0 [&>button]:!shadow-none",
+
+            past: "[&>button]:opacity-40 [&>button]:cursor-not-allowed [&>button]:line-through",
+            todayOnly:
+              "[&>button]:bg-primary [&>button]:text-white [&>button]:rounded-md [&>button]:border-none [&>button]:hover:bg-primary/90 [&>button]:hover:text-white",
+          }}
+          classNames={{
+            day: "w-full [&>button:hover]:!bg-red-400 [&>button:hover]:!text-white",
+          }}
           className="w-full md:w-90 bg-slate-50 border border-slate-200 rounded-xl p-4"
         />
 

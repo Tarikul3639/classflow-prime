@@ -31,6 +31,7 @@ export function UpdatePreview({ form }: UpdatePreviewProps) {
 
       <div className="space-y-4 mx-auto w-full">
         <UpdateCard
+          updateId="preview"
           icon={currentConfig.icon}
           iconBg={currentConfig.iconBg}
           iconColor={currentConfig.iconColor}

@@ -6,7 +6,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import mongoose, { Model, Types } from 'mongoose';
 import { Class, ClassDocument } from '../../../database/entities/class.entity';
 import { ClassStatus } from '../../../database/interface/class.interface';
 import {
@@ -98,7 +98,42 @@ export class UpdateClassUpdateService {
       throw new NotFoundException('Update not found');
     }
 
-    // Step 5: Update fields prepare করো
+    // Step 4: Determine what fields are being updated (for notification message)
+    const changes: string[] = []; // For logging purposes, track what fields are being changed
+
+    if (dto.title !== undefined && dto.title !== existingUpdate.title) {
+      changes.push(`Title updated: "${existingUpdate.title}" → "${dto.title}"`);
+    }
+
+    if (dto.description !== undefined && dto.description !== existingUpdate.description) {
+      changes.push(`Description updated: Previous → Updated`);
+    }
+
+    if (dto.category !== undefined && dto.category !== existingUpdate.category) {
+      changes.push(`Category updated: ${existingUpdate.category} → ${dto.category}`);
+    }
+
+    if (dto.eventAt !== undefined && dto.eventAt !== existingUpdate.eventAt?.toISOString()) {
+      const oldDate = existingUpdate.eventAt
+        ? new Date(existingUpdate.eventAt).toLocaleDateString('en-US', {
+          month: 'short', day: 'numeric', year: 'numeric',
+        })
+        : 'None';
+
+      const newDate = dto.eventAt
+        ? new Date(dto.eventAt).toLocaleDateString('en-US', {
+          month: 'short', day: 'numeric', year: 'numeric',
+        })
+        : 'None';
+
+      changes.push(`Event date updated: ${oldDate} → ${newDate}`);
+    }
+
+    if (dto.materials !== undefined) {
+      changes.push(`Materials updated: Previous → Updated`);
+    }
+
+    // Step 5: Update fields prepare
     const updateFields: Record<string, unknown> = {};
     if (dto.title !== undefined) updateFields.title = dto.title;
     if (dto.description !== undefined)
@@ -188,13 +223,18 @@ export class UpdateClassUpdateService {
       (id) => id !== userId,
     ); // remove whoever posted
 
+    // Make the notification message more informative based on what was changed
+    const message = changes.length > 0
+      ? changes.join(', ')
+      : `An update has been modified.`;
+
     // ── 4. Send notifications ───────────────────────────────
     if (allRecipients.length > 0) {
       await this.notificationService.createBulk({
         recipientIds: allRecipients,
-        senderId: userObjectId as any,
+        senderId: userObjectId.toString(),
         title: classData.name,
-        message: `An update has been modified please check the latest changes in the class.`,
+        message: message,
         type: NotificationType.UPDATE,
         metadata: {
           classId,

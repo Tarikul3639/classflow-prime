@@ -6,8 +6,8 @@ import { Model, Types } from 'mongoose';
 import {
     Notification,
     NotificationDocument,
-    NotificationType,
 } from '../../../database/entities/notification.entity';
+
 import {
     CreateNotificationDto,
     CreateBulkNotificationDto,
@@ -59,9 +59,20 @@ export class NotificationService {
 
         if (subscriptions.length > 0) {
             const payload = JSON.stringify({
-                title: dto.title,
-                body: dto.message,
-                data: dto.metadata ?? {},
+                notification: {
+                    title: dto.title,
+                    body: dto.message,
+                    icon: '/icon.png',
+                    badge: '/icon.png',
+                },
+                data: {
+                    classId: dto.metadata?.classId ?? null,
+                    updateId: dto.metadata?.updateId ?? null,
+                    // materialId: dto.metadata?.materialId ?? null,
+                    url: dto.metadata?.classId && dto.metadata?.updateId
+                        ? `/classes/${dto.metadata.classId}/updates?updateId=${dto.metadata.updateId}`
+                        : null,
+                },
             });
 
             const results = await Promise.allSettled(
@@ -113,36 +124,6 @@ export class NotificationService {
                 isRead: false,
             }),
         ]);
-
-        // If DB returns null/undefined, then return mock data instead (to avoid frontend errors)
-        // const fallbackData = [
-        //     {
-        //         _id: new Types.ObjectId(), // temporary ObjectId
-        //         recipientId: new Types.ObjectId(userId),
-        //         senderId: null,
-        //         title: "Welcome to ClassFlow!",
-        //         message: "You don't have any notifications yet.",
-        //         type: NotificationType.UPDATE,
-        //         isRead: true,
-        //         readAt: new Date(),
-        //         metadata: {},
-        //         createdAt: new Date(),
-        //         updatedAt: new Date(),
-        //     },
-        //     {
-        //         _id: new Types.ObjectId(), // temporary ObjectId
-        //         recipientId: new Types.ObjectId(userId),
-        //         senderId: null,
-        //         title: "No notifications",
-        //         message: "You're all caught up! Check back later for updates.",
-        //         type: NotificationType.MATERIAL,
-        //         isRead: false,
-        //         readAt: new Date(),
-        //         metadata: {},
-        //         createdAt: new Date('2026-03-25T12:00:00Z'),
-        //         updatedAt: new Date(),
-        //     }
-        // ];
 
         return {
             success: true,

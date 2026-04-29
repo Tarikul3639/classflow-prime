@@ -10,6 +10,7 @@ import {
   LayersPlus,
 } from "lucide-react";
 import Link from "next/link";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { fetchEnrolledClasses } from "@/store/features/classes/thunks/fetch-enrolled-classes.thunk";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -325,30 +326,18 @@ const Classes: React.FC = () => {
 
             {!loading && filteredClasses.length === 0 && (
               <div className="flex flex-col items-center justify-center py-24 gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center">
-                  <BookOpen className="text-slate-300" size={28} />
-                </div>
-                <div className="text-center">
-                  <p className="text-sm font-semibold text-slate-700">
-                    No classes found
-                  </p>
-                  <p className="text-xs text-slate-400 mt-1">
-                    {searchQuery
-                      ? `No results for "${searchQuery}"`
-                      : activeFilter !== "all"
-                        ? `You have no ${activeFilter} classes`
-                        : "Create or enroll in a class to get started"}
-                  </p>
-                </div>
-                {!searchQuery && activeFilter === "all" && (
-                  <Link
-                    href="/classes/create"
-                    className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors"
-                  >
-                    <Plus size={16} />
-                    Create a class
-                  </Link>
-                )}
+
+                <EmptyState
+                  icon={BookOpen}
+                  size="md"
+                  title={searchQuery ? `No results for "${searchQuery}"` : activeFilter !== "all" ? `You have no ${activeFilter} classes` : "No classes yet"}
+                  description={searchQuery ? "Try adjusting your search or filter to find what you're looking for." : "You haven't enrolled in or created any classes yet."}
+                  actionLabel="Enroll a class"
+                  onAction={() => {
+                    // Redirect to enroll page
+                    window.location.href = "/classes/enroll";
+                  }}
+                />
               </div>
             )}
           </div>

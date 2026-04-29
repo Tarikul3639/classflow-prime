@@ -1,6 +1,7 @@
 "use client";
 
-import { Search } from "lucide-react";
+import Link from "next/link";
+import { UserPlus, LayersPlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { ComingSoonDialog } from "@/components/ui/ComingSoonDialog";
 
@@ -72,10 +73,10 @@ function LiveClock() {
       </span>
 
       {/* Divider */}
-      <span className="w-px h-4 bg-slate-200 mx-2 self-center" />
+      <span className="hidden sm:block w-px h-4 bg-slate-200 mx-2 self-center" />
 
       {/* Date */}
-      <span className="text-[11px] font-medium text-slate-400 tracking-wide">
+      <span className="hidden sm:block text-[11px] font-medium text-slate-400 tracking-wide">
         {dateStr}
       </span>
     </div>
@@ -86,28 +87,46 @@ export default function DashboardHeader() {
   const [showDialog, setShowDialog] = useState(false);
   return (
     <>
-      <header className="sticky top-0 z-30 bg-white border-b border-slate-200 px-6 py-3 flex items-center gap-4">
-        {/* Search */}
-        <div className="flex-1 max-w-sm">
-          <div className="relative">
-            <Search
-              size={15}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
-            />
-            <input
-              onClick={() => setShowDialog(true)}
-              onFocus={(e) => e.target.blur()}
-              type="text"
-              placeholder="Search classes, updates..."
-              className="w-full pl-9 pr-4 py-2 bg-slate-100 rounded-xl text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-white border border-transparent focus:border-primary/30 transition-all"
-            />
-          </div>
-        </div>
-
-        <div className="flex-1" />
+      <header className="sticky top-0 z-30 bg-white border-b border-slate-200 px-6 py-3.5 flex items-center gap-4">
 
         {/* Live clock */}
         <LiveClock />
+        <div className="flex-1" />
+
+        {/* Enroll & Create button */}
+        {/* Desktop Buttons */}
+        <div className="hidden md:flex items-center gap-2">
+          <Link
+            href="/classes/enroll"
+            className="flex items-center gap-2 bg-white border border-slate-300 text-slate-600 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-100 transition-colors cursor-pointer"
+          >
+            <UserPlus size={16} />
+            <span>Enroll</span>
+          </Link>
+          <Link
+            href="/classes/create"
+            className="flex items-center gap-2 bg-primary text-white px-4 py-2 border border-primary rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors cursor-pointer"
+          >
+            <LayersPlus size={16} />
+            <span>Create</span>
+          </Link>
+        </div>
+
+        {/* Mobile Buttons */}
+        <div className="md:hidden flex items-center gap-2">
+          <Link
+            href="/classes/enroll"
+            className="flex items-center justify-center w-10 h-10 bg-white border border-slate-300 text-slate-600 rounded-lg hover:bg-slate-100 transition-colors shadow-sm"
+          >
+            <UserPlus size={16} />
+          </Link>
+          <Link
+            href="/classes/create"
+            className="flex items-center justify-center w-10 h-10 bg-primary border border-primary text-white rounded-lg hover:bg-primary/90 transition-colors shadow-sm"
+          >
+            <LayersPlus size={16} />
+          </Link>
+        </div>
       </header>
 
       {/* Coming soon dialog for search */}

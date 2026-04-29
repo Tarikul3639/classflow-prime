@@ -7,7 +7,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { TopLoader } from "@/components/ui/TopLoader";
@@ -18,13 +17,13 @@ import { deleteNotification } from "@/store/features/notifications/thunks/delete
 import { markAllNotificationsAsRead } from "@/store/features/notifications/thunks/mark-all-as-read.thunk";
 import {
   INotification,
-  INotificationMeta,
   NOTIFICATION_TYPE_CONFIG,
   NOTIFICATION_FILTER_LABELS,
 } from "@/store/features/notifications/notification.types";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { formatRelativeDate } from "@/utils/date.utils";
 import { toast } from "sonner";
+import Link from "next/link";
 
 interface Filter {
   id: string;
@@ -36,6 +35,8 @@ const Notifications: React.FC = () => {
   const { notifications, meta, unreadCount, isLoading, error } = useAppSelector(
     (state) => state.notification,
   );
+
+  console.log("Meta Data: ", notifications);
 
   useEffect(() => {
     dispatch(fetchNotifications({ page: 1, limit: 20 }))
@@ -147,11 +148,10 @@ const Notifications: React.FC = () => {
               <button
                 key={filter.id}
                 onClick={() => setActiveFilter(filter.id)}
-                className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all whitespace-nowrap ${
-                  activeFilter === filter.id
-                    ? "bg-primary text-white shadow-sm shadow-primary/20"
-                    : "bg-slate-200 text-slate-600 border border-transparent hover:border-slate-200"
-                }`}
+                className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all whitespace-nowrap ${activeFilter === filter.id
+                  ? "bg-primary text-white shadow-sm shadow-primary/20"
+                  : "bg-slate-200 text-slate-600 border border-transparent hover:border-slate-200"
+                  }`}
               >
                 {filter.label}
               </button>
@@ -165,7 +165,7 @@ const Notifications: React.FC = () => {
         <div className="flex-1 relative flex flex-col mx-auto w-full px-4 lg:px-8 py-6">
           {/* Loading state */}
           <TopLoader isLoading={isLoading} />
-          
+
           {/* Empty State when no notifications to show for the active filter */}
           {filteredNotifications.length === 0 && !isLoading ? (
             <div className="flex-1 flex items-center justify-center">
@@ -196,11 +196,10 @@ const Notifications: React.FC = () => {
                         return (
                           <div
                             key={notification._id}
-                            className={`relative group flex items-start gap-3 px-3 py-3 rounded-lg transition-colors ${
-                              !notification.isRead
-                                ? "bg-blue-50 border-primary"
-                                : "bg-white border-transparent"
-                            }`}
+                            className={`relative group flex items-start gap-3 px-3 py-3 rounded-lg transition-colors ${!notification.isRead
+                              ? "bg-blue-50 border-primary"
+                              : "bg-white border-transparent"
+                              }`}
                           >
                             {/* Unread Indicator Dot */}
                             {!notification.isRead && (
@@ -214,7 +213,11 @@ const Notifications: React.FC = () => {
                             </div>
 
                             {/* Content */}
-                            <div className="flex-1 min-w-0 mr-10">
+                            <Link
+                              href={`/classes/${notification.metadata?.classId}/updates?updateId=${notification.metadata?.updateId}`}
+                              onClick={() => { }}
+                              className="flex-1 min-w-0 mr-10"
+                            >
                               <div className="flex justify-between items-start gap-2">
                                 <h3 className="text-sm font-bold leading-tight">
                                   {notification.title}
@@ -226,12 +229,12 @@ const Notifications: React.FC = () => {
                               <span className="text-[11px] font-medium text-slate-400 mt-1 block capitalize">
                                 {notification.createdAt
                                   ? formatRelativeDate(notification.createdAt, {
-                                      showTime: true,
-                                      showYear: false,
-                                    })
+                                    showTime: true,
+                                    showYear: false,
+                                  })
                                   : ""}
                               </span>
-                            </div>
+                            </Link>
                             {/* Individual Dropdown Action */}
                             <div className="absolute top-1/2 right-3.5 -translate-y-1/2">
                               <DropdownMenu>

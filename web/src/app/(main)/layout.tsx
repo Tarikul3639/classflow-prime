@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Sidebar } from "@/components/layout/sidebar/Sidebar";
 import { BottomNavbar } from "@/components/layout/navbar/BottomNav";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -9,11 +9,15 @@ import { meThunk } from "@/store/features/profile/thunks/fetch-user.thunk";
 import { Loader } from "@/components/ui/Loader";
 import { toast } from "sonner";
 
+import { WhatsNewDialog } from "@/components/ui/WhatsNewDialog";
+
 export default function MainLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const [whatsNewOpen, setWhatsNewOpen] = useState(false);
+
   const dispatch = useAppDispatch();
   const { loading } = useAppSelector((state) => state.profile.fetchUser.status);
   const userId = useAppSelector((state) => state.profile.fetchUser.user?._id);
@@ -53,6 +57,12 @@ export default function MainLayout({
 
       {/* Mobile Bottom Navbar */}
       <BottomNavbar />
+
+      {/* Whats a new */}
+      <WhatsNewDialog
+        open={whatsNewOpen}
+        onClose={() => setWhatsNewOpen(false)}
+      />
     </div>
   );
 }

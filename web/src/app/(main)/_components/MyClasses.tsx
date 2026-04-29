@@ -117,10 +117,11 @@ export default function MyClasses({ classes }: MyClassesProps) {
                     icon={BookOpen}
                     size="sm"
                     title="No classes yet"
-                    description="Once you enroll in or create a class, it will show up here."
-                    actionLabel="Create a class"
+                    description="You haven't enrolled in or created any classes"
+                    actionLabel="Enroll a class"
+                    className="pt-10"
                     onAction={() => {
-                        router.push("/classes/create");
+                        router.push("/classes/enroll");
                     }}
                 />
             ) : (

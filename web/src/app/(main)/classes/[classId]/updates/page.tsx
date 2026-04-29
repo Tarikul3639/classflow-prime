@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { GraduationCap } from "lucide-react";
 import { toast } from "sonner";
 
@@ -40,6 +40,9 @@ export default function UpdatesPage() {
   const router = useRouter();
   const params = useParams();
 
+  const searchParams = useSearchParams();
+  const updateId = searchParams.get("updateId");
+
   const classId = params.classId as string;
 
   const [activeFilter, setActiveFilter] = useState("all");
@@ -66,6 +69,32 @@ export default function UpdatesPage() {
   const { classDetails } = useAppSelector(
     (state) => state.classes.fetchSingleClass
   );
+
+  // ──Notification to updateId ───────────────────────────────────────────────────────────────
+  useEffect(() => {
+    if (!updateId) return;
+
+    const timer = setTimeout(() => {
+      const el = document.getElementById(updateId);
+      if (!el) return;
+
+      el.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+
+      // optional highlight
+      el.classList.add("ring-2", "ring-primary/70");
+      el.classList.add("!bg-primary/2");
+
+      setTimeout(() => {
+        el.classList.remove("ring-2", "ring-primary/70");
+        el.classList.remove("!bg-primary/2");
+      }, 1500);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [updateId, grouped]);
 
   // ── Initialization ─────────────────────────────────────────────────────────
   useEffect(() => {
@@ -173,6 +202,7 @@ export default function UpdatesPage() {
                     return (
                       <UpdateCard
                         key={update._id}
+                        updateId={update._id}
                         isPast={!!isPast}
                         icon={config.icon}
                         iconBg={config.iconBg}

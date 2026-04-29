@@ -116,7 +116,14 @@ export class DashboardService {
         // ── Step 2: Parallel queries ──────────────────────────────────────────
         const [updates, faculty, groups, studentCounts] = await Promise.all([
             this.updateModel
-                .find({ classId: { $in: classIds } })
+                .find({
+                    classId: { $in: classIds },
+                    $or: [
+                        { eventAt: { $exists: false } }, // Include updates without eventAt (e.g., general announcements)
+                        { eventAt: { $gte: new Date() } }, // Upcoming events
+                    ]
+
+                })
                 .sort({ isPinned: -1, createdAt: -1 })
                 .limit(10)
                 .lean<IClassUpdate[]>(),
