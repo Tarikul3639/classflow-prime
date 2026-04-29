@@ -1,3 +1,10 @@
+# [web-v2.5.0](https://github.com/Tarikul3639/classflow-prime/compare/web-v2.4.0...web-v2.5.0) (2026-04-29)
+
+
+### Features
+
+* Improve notifications, push & add What's New dialog ([9381d7d](https://github.com/Tarikul3639/classflow-prime/commit/9381d7d80290056e82ebf840d670fdfff47b24aa))
+
 # [web-v2.4.0](https://github.com/Tarikul3639/classflow-prime/compare/web-v2.3.0...web-v2.4.0) (2026-04-26)
 
 
