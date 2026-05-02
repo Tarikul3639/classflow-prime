@@ -20,7 +20,7 @@ function UpdateCard({ update }: { update: DashboardUpdateItem }) {
     const CatIcon = cfg.icon;
 
     return (
-        <Link href={`classes/${update.classId}/updates`} className="p-4 bg-white rounded-2xl border border-slate-100 flex items-start gap-3 hover:border-slate-200 transition-colors">
+        <Link href={`classes/${update.classId}/updates?updateId=${update._id}`} className="p-4 bg-white rounded-2xl border border-slate-100 flex items-start gap-3 hover:border-slate-200 transition-colors">
             {/* Category icon */}
             <div
                 className={`size-9 rounded-xl ${cfg.iconBg} flex items-center justify-center shrink-0`}
