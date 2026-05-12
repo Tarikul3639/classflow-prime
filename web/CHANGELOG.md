@@ -1,3 +1,10 @@
+# [web-v2.7.0](https://github.com/Tarikul3639/classflow-prime/compare/web-v2.6.0...web-v2.7.0) (2026-05-12)
+
+
+### Features
+
+* **web:** Add class routine module and UI ([40d0d9f](https://github.com/Tarikul3639/classflow-prime/commit/40d0d9f221f7c80314002707039633ab8ec41623))
+
 # [web-v2.6.0](https://github.com/Tarikul3639/classflow-prime/compare/web-v2.5.0...web-v2.6.0) (2026-05-02)
 
 
