@@ -1,0 +1,353 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { CalendarDays } from "lucide-react";
+import { useParams } from "next/navigation";
+
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Header } from "./_components/Header";
+import { DesktopTable } from "./_components/DesktopView/DesktopTable";
+import { DayTabs } from "./_components/MobileView/DayTabs";
+import { PeriodSlotCard } from "./_components/MobileView/PeriodSlotCard";
+import { PeriodSlotDialog } from "./_components/PeriodSlotDialog";
+import { CreateRoutineDialog } from "./_components/CreateRoutineDialog";
+import type {
+    RoutineSlot,
+    RoutinePeriod,
+    DayOfWeek,
+} from "@/types/routine.types";
+
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { fetchRoutine } from "@/store/features/classes/thunks/routine/fetchRoutine.thunk";
+import { createRoutine } from "@/store/features/classes/thunks/routine/createRoutine.thunk";
+import { addSlot } from "@/store/features/classes/thunks/routine/addSlotThunk";
+import { editSlot } from "@/store/features/classes/thunks/routine/editSlotThunk";
+import { removeSlot } from "@/store/features/classes/thunks/routine/removeSlotThunk";
+import { deleteRoutine } from "@/store/features/classes/thunks/routine/deleteRoutine.thunk";
+
+export default function ClassRoutine() {
+    const dispatch = useAppDispatch();
+
+    const { classId } = useParams() as {
+        classId: string;
+    };
+
+    // ── Redux state ────────────────────────────────────────────────────────
+
+    const { loading: fetching, error: fetchError } = useAppSelector(
+        (state) => state.classes.routine.fetchRoutine,
+    );
+
+    const { loading: creating, error: createError } = useAppSelector(
+        (state) => state.classes.routine.createRoutine,
+    );
+
+    const { loading: addingSlot, error: addSlotError } = useAppSelector(
+        (state) => state.classes.routine.addSlot,
+    );
+
+    const { loading: editingSlot, error: editSlotError } = useAppSelector(
+        (state) => state.classes.routine.editSlot,
+    );
+
+    const { loading: removingSlot, error: removeSlotError } = useAppSelector(
+        (state) => state.classes.routine.removeSlot,
+    );
+
+    const { loading: deletingRoutine, error: deleteRoutineError } =
+        useAppSelector((state) => state.classes.routine.deleteRoutine);
+
+    // Class-level permissions
+    const { classDetails } = useAppSelector(
+        (state) => state.classes.fetchSingleClass,
+    );
+
+    const isAdmin = classDetails?.isInstructor || classDetails?.isAssistant;
+    const routine = useAppSelector(
+        (state) => state.classes.routine.routines[classId],
+    );
+
+    // Active day for mobile view
+    const [activeDay, setActiveDay] =
+        useState<DayOfWeek>(
+            (routine?.schedule?.[0]?.day as DayOfWeek) ??
+            ("Sunday" as DayOfWeek),
+        );
+
+    // ── Local state ────────────────────────────────────────────────────────
+
+    const [slotDialogOpen, setSlotDialogOpen] = useState(false);
+    const [createOpen, setCreateOpen] = useState(false);
+    const [selectedSlot, setSelectedSlot] = useState<RoutineSlot | undefined>();
+    const [selectedDay, setSelectedDay] = useState<string | undefined>();
+
+    // ── Fetch routine ──────────────────────────────────────────────────────
+
+    useEffect(() => {
+        if (classId) {
+            dispatch(fetchRoutine(classId));
+        }
+    }, [classId, dispatch]);
+
+    // ── Handlers ───────────────────────────────────────────────────────────
+
+    function onEdit(day: string, slot: RoutineSlot) {
+        setSelectedDay(day);
+
+        setSelectedSlot(slot);
+
+        setSlotDialogOpen(true);
+    }
+
+    async function onRemove(slot: RoutineSlot) {
+        if (!slot.slotId) return;
+
+        try {
+            await dispatch(
+                removeSlot({
+                    classId,
+
+                    slotId: slot.slotId,
+                }),
+            ).unwrap();
+        } catch (err) {
+            console.error("Failed to remove slot:", err);
+        }
+    }
+
+    function handleDialogClose() {
+        setSlotDialogOpen(false);
+
+        setSelectedSlot(undefined);
+
+        setSelectedDay(undefined);
+    }
+
+    // ── Add slot ───────────────────────────────────────────────────────────
+
+    async function handleAdd(day: string, slot: RoutineSlot) {
+        try {
+            await dispatch(
+                addSlot({
+                    classId,
+
+                    day,
+
+                    periodNo: slot.periodNo,
+
+                    subject: slot.subject,
+
+                    teacherName: slot.teacherName,
+
+                    room: slot.room,
+                }),
+            ).unwrap();
+
+            handleDialogClose();
+        } catch (err) {
+            console.error("Failed to add slot:", err);
+        }
+    }
+
+    // ── Edit slot ──────────────────────────────────────────────────────────
+
+    async function handleEdit(day: string, slot: RoutineSlot) {
+        if (!selectedSlot?.slotId) return;
+
+        try {
+            await dispatch(
+                editSlot({
+                    classId,
+
+                    slotId: selectedSlot.slotId,
+
+                    day,
+
+                    periodNo: slot.periodNo,
+
+                    subject: slot.subject,
+
+                    teacherName: slot.teacherName,
+
+                    room: slot.room,
+                }),
+            ).unwrap();
+
+            handleDialogClose();
+        } catch (err) {
+            console.error("Failed to edit slot:", err);
+        }
+    }
+
+    // ── Create routine ────────────────────────────────────────────────────
+
+    async function handleCreateRoutine(
+        periods: Omit<RoutinePeriod, "periodId">[],
+    ) {
+        try {
+            await dispatch(
+                createRoutine({
+                    classId,
+
+                    periods,
+                }),
+            ).unwrap();
+
+            setCreateOpen(false);
+        } catch (error) {
+            console.error("Failed to create routine:", error);
+        }
+    }
+
+    // ── Delete routine ────────────────────────────────────────────────────
+
+    async function onDeleteRoutine() {
+        try {
+            await dispatch(
+                deleteRoutine({
+                    classId,
+                }),
+            ).unwrap();
+        } catch (error) {
+            console.error("Failed to delete routine:", error);
+        }
+    }
+    // ── Loading ────────────────────────────────────────────────────────────
+
+    if (fetching) {
+        return (
+            <div className="min-h-screen bg-[#F5F4FE] flex items-center justify-center">
+                <p className="text-[13px] text-gray-400">Loading routine...</p>
+            </div>
+        );
+    }
+
+    // ── Error ──────────────────────────────────────────────────────────────
+
+    if (fetchError) {
+        return (
+            <div className="min-h-screen bg-[#F5F4FE] flex items-center justify-center">
+                <p className="text-[13px] text-red-400">{fetchError}</p>
+            </div>
+        );
+    }
+
+    // ── Render ─────────────────────────────────────────────────────────────
+
+    return (
+        <>
+            <div className="bg-[#F5F4FE]">
+                <div className="h-full overflow-hidden bg-gray-50 md:px-4">
+                    {routine ? (
+                        <>
+                            <Header
+                                isAdmin={isAdmin}
+                                open={slotDialogOpen}
+                                loading={deletingRoutine}
+                                error={deleteRoutineError}
+                                setOpen={setSlotDialogOpen}
+                                onDeleteRoutine={onDeleteRoutine}
+                            />
+
+                            {/* Desktop */}
+                            <div className="hidden px-4 py-6 md:block">
+                                <DesktopTable
+                                    periods={routine.periods}
+                                    schedule={routine.schedule}
+                                    loading={fetching}
+                                    error={fetchError}
+                                    onEdit={onEdit}
+                                    onRemove={onRemove}
+                                />
+                            </div>
+
+                            {/* Mobile */}
+                            <div className="md:hidden">
+                                <DayTabs
+                                    activeDay={activeDay}
+                                    days={routine.schedule.map((d) => d.day) as DayOfWeek[]}
+                                    onDayChange={setActiveDay}
+                                />
+
+                                <div className="px-4 pb-24 pt-2">
+                                    {(() => {
+                                        const daySchedule = routine.schedule.find(
+                                            (d) => d.day === activeDay,
+                                        );
+
+                                        const slots = daySchedule?.slots ?? [];
+
+                                        const periods = routine.periods.filter((p) => !p.isBreak);
+
+                                        return (
+                                            <div className="space-y-0">
+                                                {periods.map((period, index) => {
+                                                    const slot = slots.find(
+                                                        (s) => s.periodNo === period.periodNo,
+                                                    );
+
+                                                    if (!slot) return null;
+
+                                                    return (
+                                                        <PeriodSlotCard
+                                                            key={period.periodId}
+                                                            slot={slot}
+                                                            period={period}
+                                                            activeDay={activeDay}
+                                                            isLast={index === periods.length - 1}
+                                                            onEdit={(slot) => onEdit(activeDay, slot)}
+                                                            onRemove={(slot) => onRemove(slot)}
+                                                        />
+                                                    );
+                                                })}
+
+                                                {slots.length === 0 && (
+                                                    <EmptyState
+                                                        size="sm"
+                                                        title="No Classes"
+                                                        description="No routine slots scheduled for this day."
+                                                        className="h-65"
+                                                    />
+                                                )}
+                                            </div>
+                                        );
+                                    })()}
+                                </div>
+                            </div>
+                        </>
+                    ) : (
+                        <EmptyState
+                            icon={CalendarDays}
+                            size="lg"
+                            title="No Routine Created"
+                            description="Create a routine structure and start assigning class slots."
+                            actionLabel={isAdmin ? "Create Routine" : undefined}
+                            onAction={isAdmin ? () => setCreateOpen(true) : undefined}
+                        />
+                    )}
+                </div>
+            </div>
+
+            {/* Slot Dialog */}
+            <PeriodSlotDialog
+                loading={addingSlot || editingSlot}
+                error={addSlotError || editSlotError}
+                open={slotDialogOpen}
+                periods={routine?.periods ?? []}
+                defaultDay={selectedDay}
+                editData={selectedSlot}
+                onClose={handleDialogClose}
+                onSubmit={selectedSlot ? handleEdit : handleAdd}
+            />
+
+            {/* Create Routine */}
+            <CreateRoutineDialog
+                loading={creating}
+                error={createError}
+                open={createOpen}
+                onClose={() => setCreateOpen(false)}
+                onConfirm={handleCreateRoutine}
+            />
+        </>
+    );
+}

@@ -54,6 +54,11 @@ export default function ClassLayout({
       href: `/classes/${params.classId}/faculty`,
     },
     {
+      id: "routine",
+      label: "Routine",
+      href: `/classes/${params.classId}/routine`,
+    },
+    {
       id: "groups",
       label: "Groups",
       href: `/classes/${params.classId}/groups`,
@@ -194,11 +199,10 @@ export default function ClassLayout({
               <Link
                 key={tab.id}
                 href={tab.href}
-                className={`relative flex-none px-4 py-4 text-[12px] md:text-[13px] lg:text-[14px] font-semibold transition-colors overflow-hidden ${
-                  active
+                className={`relative flex-none px-4 py-4 text-[12px] md:text-[13px] lg:text-[14px] font-semibold transition-colors overflow-hidden ${active
                     ? "text-primary font-bold"
                     : "text-slate-800 hover:text-slate-900"
-                }`}
+                  }`}
               >
                 {tab.label}
 

@@ -9,6 +9,9 @@ import { MailModule } from './modules/mail/mail.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { ClassModule } from './modules/class/class.module';
+// Import the RoutineModule
+import { RoutineModule } from './modules/routine/routine.module';
+// Import the DashboardModule
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 import { CoreModule } from './core/core.module';
@@ -25,6 +28,7 @@ import { CoreModule } from './core/core.module';
     MailModule,
     NotificationModule,
     ClassModule,
+    RoutineModule,
     DashboardModule,
     CoreModule,
     CloudinaryModule,

@@ -21,7 +21,7 @@ function ClassCard({ cls }: { cls: DashboardClassItem }) {
     return (
         <Link
             href={`/classes/${cls._id}/updates`}
-            className={`relative rounded-2xl overflow-hidden bg-white border border-slate-100 cursor-pointer transition-all hover:border-slate-200 hover:shadow-sm ${isEnded ? "opacity-70" : ""
+            className={`relative rounded overflow-hidden bg-white border border-slate-100 cursor-pointer transition-all hover:border-slate-200 hover:shadow-sm ${isEnded ? "opacity-70" : ""
                 }`}
 
             style={
@@ -32,14 +32,14 @@ function ClassCard({ cls }: { cls: DashboardClassItem }) {
         >
             {/* Left accent bar */}
             <div
-                className="absolute left-0 top-0 bottom-0 w-1 rounded-l-2xl"
+                className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl"
                 style={{ backgroundColor: isEnded ? "#94a3b8" : cls.themeColor }}
             />
 
             {/* Content */}
             <div className="pl-5 pr-4 pt-4 pb-3">
                 <div className="flex items-start justify-between gap-2 mb-1">
-                    <h4 className="text-sm font-bold text-slate-900 leading-snug">
+                    <h4 className="text-sm sm:text-md font-bold text-slate-900 leading-snug">
                         {cls.name}
                     </h4>
                     {isEnded ? (

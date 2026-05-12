@@ -35,6 +35,9 @@ import classSettingsReducer from "./features/classes/slices/settings/class-setti
 // Class Updates slices
 import classUpdatesReducer from "./features/classes/slices/class-updates.slice";
 
+// Class routine slices
+import classRoutineSlice from "./features/classes/slices/routine/routine.slice";
+
 const classesReducer = combineReducers({
   createClass: createClassReducer,
   enrollClass: enrollClass,
@@ -49,6 +52,7 @@ const classesReducer = combineReducers({
   fetchEnrolledClasses: fetchEnrolledClassesReducer,
   classMembers: classMemberReducer,
   classSettings: classSettingsReducer,
+  routine: classRoutineSlice,
 });
 
 // Profile slices

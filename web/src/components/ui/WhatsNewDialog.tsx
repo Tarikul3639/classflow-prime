@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { APP_CONFIG } from "@/config/app-config";
 
 const STORAGE_KEY = "classflow_whats_new_seen";
-const PUBLISH_DATE = "Apr 30, 2026";
+const PUBLISH_DATE = "May 12, 2026";
 
 interface WhatsNewDialogProps {
     open?: boolean;
@@ -26,34 +26,94 @@ const BADGE_STYLES = {
 
 const updates: UpdateItem[] = [
     {
-        icon: <Check size={15} strokeWidth={2.5} className="text-green-500" />,
-        iconBg: 'bg-green-50',
-        title: 'Smart notifications',
-        description: 'Notifications now show exactly what changed — title, event date, category and more.',
-        badge: 'New',
+        icon: (
+            <Check
+                size={15}
+                strokeWidth={2.5}
+                className="text-primary"
+            />
+        ),
+        iconBg: "bg-primary/10",
+        title: "New routine management system",
+        description:
+            "Class routines are now fully redesigned with dynamic periods, slots, and weekly schedule support.",
+        badge: "New",
     },
+
     {
-        icon: <Check size={15} strokeWidth={2.5} className="text-yellow-500" />,
-        iconBg: 'bg-yellow-50',
-        title: 'Brave browser support',
-        description: 'You can now receive notifications on Brave browser. Just follow the guide to enable it.',
-        badge: 'New',
+        icon: (
+            <Check
+                size={15}
+                strokeWidth={2.5}
+                className="text-green-500"
+            />
+        ),
+        iconBg: "bg-green-50",
+        title: "Dynamic active day tabs",
+        description:
+            "Routine tabs now automatically show only active class days instead of all 7 weekdays.",
+        badge: "Improved",
     },
+
     {
-        icon: <Check size={15} strokeWidth={2.5} className="text-blue-500" />,
-        iconBg: 'bg-blue-50',
-        title: 'Improved calendar sync',
-        description: 'Calendar sync is now more reliable and faster than ever.',
-        badge: 'Improved',
+        icon: (
+            <Check
+                size={15}
+                strokeWidth={2.5}
+                className="text-blue-500"
+            />
+        ),
+        iconBg: "bg-blue-50",
+        title: "Mobile routine timeline UI",
+        description:
+            "Added a cleaner mobile timeline view for daily class routines with active period highlighting.",
+        badge: "New",
     },
+
     {
-        icon: <Check size={15} strokeWidth={2.5} className="text-red-500" />,
-        iconBg: 'bg-red-50',
-        title: 'Bug fixes and performance improvements',
-        description: 'We fixed several bugs and made performance improvements across the app for a smoother experience.',
-        badge: 'Fixed',
+        icon: (
+            <Check
+                size={15}
+                strokeWidth={2.5}
+                className="text-yellow-500"
+            />
+        ),
+        iconBg: "bg-yellow-50",
+        title: "Break period support",
+        description:
+            "You can now mark periods as breaks and display them separately in the routine layout.",
+        badge: "New",
     },
-    // Other items...
+
+    {
+        icon: (
+            <Check
+                size={15}
+                strokeWidth={2.5}
+                className="text-purple-500"
+            />
+        ),
+        iconBg: "bg-purple-50",
+        title: "Routine slot editing",
+        description:
+            "Teachers and admins can now edit subjects, teachers, rooms, and periods directly from the UI.",
+        badge: "Improved",
+    },
+
+    {
+        icon: (
+            <Check
+                size={15}
+                strokeWidth={2.5}
+                className="text-red-500"
+            />
+        ),
+        iconBg: "bg-red-50",
+        title: "Routine deletion confirmation",
+        description:
+            "Added secure confirmation dialog before deleting an entire class routine.",
+        badge: "Fixed",
+    },
 ];
 
 export function WhatsNewDialog({ open: externalOpen, onClose }: WhatsNewDialogProps) {
