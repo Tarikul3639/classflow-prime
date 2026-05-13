@@ -34,24 +34,29 @@ export default function FacultyPage() {
         selectClassFaculties(state, classId),
     );
 
-    const { loading: isFetching, error: fetchingError } = useAppSelector(
+    const facultyFetch = useAppSelector(
         (state) =>
-            state.classes.classFaculty.facultiesByClass[classId]?.fetch || {},
+            state.classes.classFaculty.facultiesByClass[classId]?.fetch ||
+            state.classes.fetchSingleClass.classesByClassId[classId]?.fetch,
     );
+
+    const isFetching = facultyFetch?.loading ?? false;
+    const fetchingError = facultyFetch?.error ?? null;
 
     const isFetched = useAppSelector((state) =>
         selectIsFacultyFetched(state, classId),
     );
 
-    const { classDetails } = useAppSelector(
-        (state) => state.classes.fetchSingleClass,
+    const classDetails = useAppSelector(
+        (state) =>
+            state.classes.fetchSingleClass.classesByClassId[classId]?.classDetails,
     );
 
     // ── Initialization ─────────────────────────────────────────────────────────
     useEffect(() => {
         if (!classId || isFetched) return;
         dispatch(fetchClassFaculties(classId));
-    }, [dispatch, classId]);
+    }, [dispatch, classId, isFetched]);
 
     // ── Derived State ──────────────────────────────────────────────────────────
     const isAdmin = classDetails?.isInstructor || classDetails?.isAssistant;

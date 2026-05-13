@@ -69,9 +69,11 @@ export default function UpdatesPage() {
   );
 
   // Class-level permissions
-  const { classDetails } = useAppSelector(
-    (state) => state.classes.fetchSingleClass
+  const classEntry = useAppSelector(
+    (state) => state.classes.fetchSingleClass.classesByClassId[classId],
   );
+  const classDetails = classEntry?.classDetails;
+  const classLoading = classEntry?.fetch.loading ?? false;
 
   // ──Notification to updateId ───────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -141,8 +143,9 @@ export default function UpdatesPage() {
   };
 
   // ── Derived UI State ───────────────────────────────────────────────────────
-  const isAdmin = classDetails?.isInstructor || classDetails?.isAssistant;
+  const isAdmin = !!(classDetails?.isInstructor || classDetails?.isAssistant);
   const isEmpty = sortedDateKeys.length === 0 && !isFetching && !fetchingError;
+  const isLoading = isFetching || classLoading;
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
@@ -160,14 +163,14 @@ export default function UpdatesPage() {
       <div className="flex-1 px-4 py-4 space-y-6 pb-24 lg:pb-8">
 
         {/* Create Card — Admin Only */}
-        {isAdmin && !isFetching && (
+        {isAdmin && !isLoading && (
           <div className="shrink-0">
             <CreateUpdateCard classId={classId} />
           </div>
         )}
 
         {/* Skeleton → Empty → List: mutually exclusive */}
-        {isFetching && updates.length === 0 ? (
+        {isLoading ? (
           <UpdatesSkeleton groups={2} cardsPerGroup={3} />
         ) : isEmpty ? (
           <div className="flex-1 flex items-center justify-center py-10">

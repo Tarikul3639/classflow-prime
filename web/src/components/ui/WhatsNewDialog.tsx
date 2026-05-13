@@ -106,7 +106,7 @@ export function WhatsNewDialog({ open: externalOpen, onClose }: WhatsNewDialogPr
                         </div>
                         <div>
                             <p className="text-sm font-medium text-slate-950">What's new</p>
-                            <p className="text-[11px] text-slate-500">ClassFlow v2.4.0</p>
+                            <p className="text-[11px] text-slate-500">ClassFlow v{APP_CONFIG.version}</p>
                         </div>
                     </div>
                     <span className="text-[11px] bg-primary/10 text-primary px-2.5 py-0.5 rounded-full border border-primary/20">

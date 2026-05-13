@@ -35,7 +35,7 @@ export const fetchRoutine = createAsyncThunk<
                 `/classes/${classId}/routine`
             );
 
-            console.log("Full Routine: ", data.data);
+            // console.log("Full Routine: ", data.data);
 
             return data.data;
         } catch (error: unknown) {

@@ -51,9 +51,8 @@ export const Sidebar: React.FC = () => {
   return (
     <aside
       ref={sidebarRef}
-      className={`hidden lg:flex border-r border-slate-200 bg-gray-50 h-screen sticky top-0 flex-col transition-all duration-300 overflow-hidden ${
-        isExpanded ? "w-72" : "w-20"
-      }`}
+      className={`hidden lg:flex border-r border-slate-200 bg-gray-50 h-screen sticky top-0 flex-col transition-all duration-300 overflow-hidden ${isExpanded ? "w-72" : "w-20"
+        }`}
       onMouseEnter={() => !isLocked && setIsExpanded(true)}
       onMouseLeave={() => !isLocked && setIsExpanded(false)}
       onClick={() => setIsLocked(!isLocked)}
@@ -92,11 +91,10 @@ export const Sidebar: React.FC = () => {
             <Link
               key={item.id}
               href={item.href}
-              className={`relative flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 ${
-                isActive
+              className={`relative flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 ${isActive
                   ? "text-primary cursor-default"
                   : "text-slate-500 hover:text-slate-800 hover:bg-slate-200/60"
-              }`}
+                }`}
               title={!isExpanded ? item.label : undefined}
             >
               {/* Active left bar */}
@@ -119,9 +117,8 @@ export const Sidebar: React.FC = () => {
                     initial={{ opacity: 0, width: 0 }}
                     animate={{ opacity: 1, width: "100%" }}
                     exit={{ opacity: 0, width: 0 }}
-                    className={`text-sm whitespace-nowrap ${
-                      isActive ? "font-semibold" : "font-medium"
-                    }`}
+                    className={`text-sm whitespace-nowrap ${isActive ? "font-semibold" : "font-medium"
+                      }`}
                   >
                     {item.label}
                   </motion.span>
@@ -133,7 +130,7 @@ export const Sidebar: React.FC = () => {
       </nav>
 
       {/* Bottom Section */}
-      <div className="border-t border-slate-200">
+      <Link href='/profile' className="border-t border-slate-200">
         <div className="px-4 py-4">
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10 bg-primary/50">
@@ -144,9 +141,9 @@ export const Sidebar: React.FC = () => {
               <AvatarFallback className="bg-primary text-white uppercase font-bold tracking-widest">
                 {user?.name
                   ? user.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")
                   : "NA"}
               </AvatarFallback>
             </Avatar>
@@ -169,7 +166,7 @@ export const Sidebar: React.FC = () => {
             </AnimatePresence>
           </div>
         </div>
-      </div>
+      </Link>
     </aside>
   );
 };

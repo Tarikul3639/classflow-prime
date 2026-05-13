@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { ArrowLeft, Share2, Users } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
-import { useParams } from "next/navigation";
+import { usePathname, useRouter, useParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
 import { ClassHeroSkeleton } from "./ClassHeroSkeleton";
@@ -24,9 +23,13 @@ export default function ClassLayout({
   const classId = params.classId as string;
 
   const dispatch = useAppDispatch();
-  const { classDetails, isLoading } = useAppSelector(
-    (state) => state.classes.fetchSingleClass,
+
+  const classState = useAppSelector(
+    (state) => state.classes.fetchSingleClass.classesByClassId[classId],
   );
+
+  const classDetails = classState?.classDetails;
+  const isLoading = classState?.fetch?.loading ?? false;
 
   useEffect(() => {
     if (classId && classId !== "undefined") {
@@ -52,7 +55,6 @@ export default function ClassLayout({
   ];
 
   const isActiveTab = (href: string) => pathname === href;
-
   const loading = isLoading || !classDetails?.classId;
 
   return (
@@ -177,10 +179,11 @@ export default function ClassLayout({
               <Link
                 key={tab.id}
                 href={tab.href}
-                className={`relative flex-none px-4 py-4 text-[12px] md:text-[13px] lg:text-[14px] font-semibold transition-colors overflow-hidden ${active
-                  ? "text-primary font-bold"
-                  : "text-slate-800 hover:text-slate-900"
-                  }`}
+                className={`relative flex-none px-4 py-4 text-[12px] md:text-[13px] lg:text-[14px] font-semibold transition-colors overflow-hidden ${
+                  active
+                    ? "text-primary font-bold"
+                    : "text-slate-800 hover:text-slate-900"
+                }`}
               >
                 {tab.label}
                 {active && (

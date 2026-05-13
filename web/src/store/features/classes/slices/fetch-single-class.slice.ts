@@ -1,62 +1,96 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { IClassDetails } from "../thunks/fetch-single-class.thunk";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { fetchSingleClass } from "../thunks/fetch-single-class.thunk";
+import { IClassDetails } from "../thunks/fetch-single-class.thunk";
 import { ClassStatus } from "@/store/features/profile/profile.types";
 
-interface FetchSingleClassState {
-    classDetails: IClassDetails;
-    isLoading: boolean;
-    error: string | null;
+// ─── Bucket Structure ───────────────────────────────────────────────
+interface SingleClassBucket {
+    classDetails: IClassDetails | null;
+
+    fetch: {
+        loading: boolean;
+        error: string | null;
+    };
 }
 
-const initialState: FetchSingleClassState = {
-    classDetails: {
-        classId: "",
-        department: "",
-        name: "",
-        members: 0,
-        instructor: "",
-        semester: "",
-        themeColor: "#3B82F6",
-        coverImage: "",
-        avatarUrl: null,
-        status: ClassStatus.ACTIVE,
-        isInstructor: false,
-        isAssistant: false,
+// ─── State ─────────────────────────────────────────────────────────
+interface FetchSingleClassState {
+    classesByClassId: {
+        [classId: string]: SingleClassBucket;
+    };
+}
+
+// ─── Factory ───────────────────────────────────────────────────────
+const createEmptyBucket = (): SingleClassBucket => ({
+    classDetails: null,
+
+    fetch: {
+        loading: false,
+        error: null,
     },
-    isLoading: false,
-    error: null,
+});
+
+const initialState: FetchSingleClassState = {
+    classesByClassId: {},
 };
+
+// ─── Slice ─────────────────────────────────────────────────────────
 const fetchSingleClassSlice = createSlice({
     name: "fetchSingleClass",
     initialState,
+
     reducers: {
-        // reset state when closing the Class Details Modal
-        resetClassDetailsState: (state) => {
-            state.classDetails = initialState.classDetails;
-            state.isLoading = false;
-            state.error = null;
-        }
+        resetClassDetailsState: (state, action: PayloadAction<string>) => {
+            delete state.classesByClassId[action.payload];
+        },
+
+        clearFetchError: (state, action: PayloadAction<string>) => {
+            const bucket = state.classesByClassId[action.payload];
+
+            if (bucket) {
+                bucket.fetch.error = null;
+            }
+        },
     },
+
     extraReducers: (builder) => {
         builder
-            .addCase(fetchSingleClass.pending, (state) => {
-                state.isLoading = true;
-                state.error = null;
-                state.classDetails = initialState.classDetails; // Clear previous class details when starting a new fetch
+            // ── Fetch Single Class ──────────────────────────
+
+            .addCase(fetchSingleClass.pending, (state, action) => {
+                const classId = action.meta.arg;
+
+                if (!state.classesByClassId[classId]) {
+                    state.classesByClassId[classId] = createEmptyBucket();
+                }
+
+                state.classesByClassId[classId].fetch.loading = true;
+                state.classesByClassId[classId].fetch.error = null;
             })
+
             .addCase(fetchSingleClass.fulfilled, (state, action) => {
-                state.isLoading = false;
-                state.classDetails = action.payload;
-                state.error = null;
+                const classId = action.meta.arg;
+                const bucket = state.classesByClassId[classId];
+
+                if (bucket) {
+                    bucket.fetch.loading = false;
+                    bucket.classDetails = action.payload;
+                }
             })
+
             .addCase(fetchSingleClass.rejected, (state, action) => {
-                state.isLoading = false;
-                state.error = action.payload?.message || "Failed to fetch class details";
-                state.classDetails = initialState.classDetails; // Clear class details on error
+                const classId = action.meta.arg;
+                const bucket = state.classesByClassId[classId];
+
+                if (bucket) {
+                    bucket.fetch.loading = false;
+                    bucket.fetch.error =
+                        action.payload?.message ?? "Failed to fetch class details.";
+                }
             });
     },
 });
 
-export const { resetClassDetailsState } = fetchSingleClassSlice.actions;
+export const { resetClassDetailsState, clearFetchError } =
+    fetchSingleClassSlice.actions;
 export default fetchSingleClassSlice.reducer;

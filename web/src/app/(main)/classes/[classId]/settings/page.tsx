@@ -9,165 +9,161 @@ import { ClassSettingsSkeleton } from "./_components/ClassSettingsSkeleton";
 import { toast } from "sonner";
 
 import {
-  leaveClass,
-  deleteClass,
-  regenerateClassCode,
-  fetchClassSettings,
-  markClassAsEnded,
-  toggleJoiningAllowed,
+    leaveClass,
+    deleteClass,
+    regenerateClassCode,
+    fetchClassSettings,
+    markClassAsEnded,
+    toggleJoiningAllowed,
 } from "@/store/features/classes/thunks/settings/class-setting.thunk";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 export default function ClassSettingsPage() {
-  const router = useRouter();
-  const { classId } = useParams();
-  const dispatch = useAppDispatch();
+    const router = useRouter();
+    const { classId } = useParams() as { classId: string };
+    const dispatch = useAppDispatch();
 
-  // ── Selectors ──────────────────────────────────────────────────────────
-  const { classDetails } = useAppSelector(
-    (state) => state.classes.fetchSingleClass,
-  );
+    // ── Selectors ──────────────────────────────────────────────────────────
 
-  const { classCode, isJoiningAllowed } = useAppSelector(
-    (state) => state.classes.classSettings,
-  );
+    const classEntry = useAppSelector(
+        (state) => state.classes.fetchSingleClass.classesByClassId[classId],
+    );
+    const classDetails = classEntry?.classDetails;
+    const classFetching = classEntry?.fetch.loading ?? false;
 
-  const loading = useAppSelector(
-    (state) =>
-      state.classes.classSettings.loading.fetchClassCode ||
-      state.classes.fetchSingleClass.isLoading,
-  );
+    const { classCode, isJoiningAllowed } = useAppSelector(
+        (state) => state.classes.classSettings,
+    );
 
-  // ── Initialization ──────────────────────────────────────────────────────
-  useEffect(() => {
-    if (classId) {
-      dispatch(fetchClassSettings({ classId: classId as string }));
-    }
-  }, [classId, dispatch]);
+    const settingsFetching = useAppSelector(
+        (state) => state.classes.classSettings.loading.fetchClassCode,
+    );
 
-  // ── Handlers ───────────────────────────────────────────────────────────
-  const handleLeaveClass = async () => {
-    const promise = dispatch(
-      leaveClass({ classId: classId as string }),
-    ).unwrap();
+    const isLoading = classFetching || settingsFetching;
 
-    toast.promise(promise, {
-      loading: "Leaving class...",
-      success: "You have left the class.",
-      error: "Failed to leave the class. Please try again.",
-    });
+    // ── Initialization ─────────────────────────────────────────────────────
 
-    try {
-      await promise;
-      router.push("/classes");
-    } catch (error) {
-      console.error("Error leaving class:", error);
-    }
-  };
+    useEffect(() => {
+        if (classId) {
+            dispatch(fetchClassSettings({ classId }));
+        }
+    }, [classId, dispatch]);
 
-  const handleDeleteClass = async () => {
-    const promise = dispatch(
-      deleteClass({ classId: classId as string }),
-    ).unwrap();
+    // ── Handlers ───────────────────────────────────────────────────────────
 
-    toast.promise(promise, {
-      loading: "Deleting class...",
-      success: "Class has been deleted.",
-      error: "Failed to delete the class. Please try again.",
-    });
+    const handleLeaveClass = async () => {
+        const promise = dispatch(leaveClass({ classId })).unwrap();
 
-    try {
-      await promise;
-      router.push("/classes");
-    } catch (error) {
-      console.error("Error deleting class:", error);
-    }
-  };
+        toast.promise(promise, {
+            loading: "Leaving class...",
+            success: "You have left the class.",
+            error: "Failed to leave the class. Please try again.",
+        });
 
-  const handleMarkAsEnded = async () => {
-    const promise = dispatch(
-      markClassAsEnded({ classId: classId as string }),
-    ).unwrap();
+        try {
+            await promise;
+            router.push("/classes");
+        } catch (error) {
+            console.error("Error leaving class:", error);
+        }
+    };
 
-    toast.promise(promise, {
-      loading: "Marking class as ended...",
-      success: "Class has been marked as ended.",
-      error: "Failed to mark the class as ended. Please try again.",
-    });
+    const handleDeleteClass = async () => {
+        const promise = dispatch(deleteClass({ classId })).unwrap();
 
-    try {
-      await promise;
-      router.back();
-    } catch (error) {
-      console.error("Error marking class as ended:", error);
-    }
-  };
+        toast.promise(promise, {
+            loading: "Deleting class...",
+            success: "Class has been deleted.",
+            error: "Failed to delete the class. Please try again.",
+        });
 
-  const handleGenerateClassCode = async () => {
-    const promise = dispatch(
-      regenerateClassCode({ classId: classId as string }),
-    ).unwrap();
+        try {
+            await promise;
+            router.push("/classes");
+        } catch (error) {
+            console.error("Error deleting class:", error);
+        }
+    };
 
-    toast.promise(promise, {
-      loading: "Fetching class code...",
-      success: "Class code fetched successfully.",
-      error: "Failed to fetch class code. Please try again.",
-    });
+    const handleMarkAsEnded = async () => {
+        const promise = dispatch(markClassAsEnded({ classId })).unwrap();
 
-    try {
-      await promise;
-    } catch (error) {
-      console.error("Error fetching class code:", error);
-    }
-  };
+        toast.promise(promise, {
+            loading: "Marking class as ended...",
+            success: "Class has been marked as ended.",
+            error: "Failed to mark the class as ended. Please try again.",
+        });
 
-  const onToggleJoining = async () => {
-    const promise = dispatch(
-      toggleJoiningAllowed({ classId: classId as string }),
-    ).unwrap();
+        try {
+            await promise;
+            router.back();
+        } catch (error) {
+            console.error("Error marking class as ended:", error);
+        }
+    };
 
-    toast.promise(promise, {
-      loading: "Toggling joining allowed status...",
-      success: "Joining allowed status toggled successfully.",
-      error: "Failed to toggle joining allowed status. Please try again.",
-    });
+    const handleGenerateClassCode = async () => {
+        const promise = dispatch(regenerateClassCode({ classId })).unwrap();
 
-    try {
-      await promise;
-    } catch (error) {
-      console.error("Error toggling joining allowed status:", error);
-    }
-  };
+        toast.promise(promise, {
+            loading: "Fetching class code...",
+            success: "Class code fetched successfully.",
+            error: "Failed to fetch class code. Please try again.",
+        });
 
-  // ── Render ─────────────────────────────────────────────────────────────
-  return (
-    <div className="relative h-full bg-slate-50">
-      {loading || !classDetails ? (
-        <ClassSettingsSkeleton />
-      ) : (
-        <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-          <ClassInfoCard
-            className={classDetails.name}
-            classCode={classCode}
-            instructor={classDetails.instructor}
-            isInstructor={classDetails.isInstructor}
-            totalStudents={classDetails.members}
-            semester={classDetails.semester}
-            handleGenerateClassCode={handleGenerateClassCode}
-          />
-          <NotificationSettings />
-          <DangerZone
-            className={classDetails.name}
-            isInstructor={classDetails.isInstructor}
-            isJoiningAllowed={isJoiningAllowed}
-            isClassEnded={classDetails.status === "ended"}
-            onLeaveClass={handleLeaveClass}
-            onDeleteClass={handleDeleteClass}
-            onMarkAsEnded={handleMarkAsEnded}
-            onToggleJoining={onToggleJoining}
-          />
+        try {
+            await promise;
+        } catch (error) {
+            console.error("Error fetching class code:", error);
+        }
+    };
+
+    const onToggleJoining = async () => {
+        const promise = dispatch(toggleJoiningAllowed({ classId })).unwrap();
+
+        toast.promise(promise, {
+            loading: "Toggling joining allowed status...",
+            success: "Joining allowed status toggled successfully.",
+            error: "Failed to toggle joining allowed status. Please try again.",
+        });
+
+        try {
+            await promise;
+        } catch (error) {
+            console.error("Error toggling joining allowed status:", error);
+        }
+    };
+
+    // ── Render ─────────────────────────────────────────────────────────────
+
+    return (
+        <div className="relative h-full bg-slate-50">
+            {isLoading || !classDetails ? (
+                <ClassSettingsSkeleton />
+            ) : (
+                <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+                    <ClassInfoCard
+                        className={classDetails.name}
+                        classCode={classCode}
+                        instructor={classDetails.instructor}
+                        isInstructor={classDetails.isInstructor}
+                        totalStudents={classDetails.members}
+                        semester={classDetails.semester}
+                        handleGenerateClassCode={handleGenerateClassCode}
+                    />
+                    <NotificationSettings />
+                    <DangerZone
+                        className={classDetails.name}
+                        isInstructor={classDetails.isInstructor}
+                        isJoiningAllowed={isJoiningAllowed}
+                        isClassEnded={classDetails.status === "ended"}
+                        onLeaveClass={handleLeaveClass}
+                        onDeleteClass={handleDeleteClass}
+                        onMarkAsEnded={handleMarkAsEnded}
+                        onToggleJoining={onToggleJoining}
+                    />
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 }

@@ -62,17 +62,20 @@ export default function ClassRoutine() {
         (state) => state.classes.routine.deleteRoutine,
     );
 
-    const { classDetails } = useAppSelector(
-        (state) => state.classes.fetchSingleClass,
+    // Class details for admin check and refetching on class change
+    const classEntry = useAppSelector(
+        (state) => state.classes.fetchSingleClass.classesByClassId[classId],
     );
+    const classDetails = classEntry?.classDetails;
+    const classFetching = classEntry?.fetch.loading ?? false;
 
-    const isAdmin = classDetails?.isInstructor || classDetails?.isAssistant;
+    const isAdmin = !!(classDetails?.isInstructor || classDetails?.isAssistant);
 
     const routine = useAppSelector(
         (state) => state.classes.routine.routines[classId],
     );
 
-    // ── Memoized subject wise color map ─────────────────────────────────────────────────
+    // ── Memoized subject wise color map ────────────────────────────────────
 
     const colorMap = useMemo(
         () => buildSubjectColorMap(routine?.schedule.map((d) => d.slots ?? []) ?? []),
@@ -81,7 +84,7 @@ export default function ClassRoutine() {
 
     // ── Local state ────────────────────────────────────────────────────────
 
-    const [activeDay, setActiveDay] = useState<DayOfWeek>("Sunday" as DayOfWeek);
+    const [activeDay, setActiveDay] = useState<DayOfWeek>("Sunday");
     const [slotDialogOpen, setSlotDialogOpen] = useState(false);
     const [createOpen, setCreateOpen] = useState(false);
     const [selectedSlot, setSelectedSlot] = useState<RoutineSlot | undefined>();
@@ -97,13 +100,11 @@ export default function ClassRoutine() {
 
     useEffect(() => {
         if (!routine?.schedule?.length) return;
+
         const todayName = DAYS[new Date().getDay()];
         const hasToday = routine.schedule.some((d) => d.day === todayName);
-        setActiveDay(
-            hasToday
-                ? todayName
-                : (routine.schedule[0].day as DayOfWeek),
-        );
+
+        setActiveDay(hasToday ? todayName : (routine.schedule[0].day as DayOfWeek));
     }, [routine?.routineId]);
 
     // ── Handlers ───────────────────────────────────────────────────────────
@@ -118,7 +119,7 @@ export default function ClassRoutine() {
         if (!slot.slotId) return;
 
         const promise = dispatch(
-            removeSlot({ classId, slotId: slot.slotId })
+            removeSlot({ classId, slotId: slot.slotId }),
         ).unwrap();
 
         toast.promise(promise, {
@@ -195,7 +196,7 @@ export default function ClassRoutine() {
         }
     }
 
-    // ── Routine Print ──────────────────────────────────────────────────────────────
+    // ── Print ──────────────────────────────────────────────────────────────
 
     function onPrint() {
         const printArea = printRef.current;
@@ -204,11 +205,10 @@ export default function ClassRoutine() {
         const clone = printArea.cloneNode(true) as HTMLElement;
         clone.id = "__print_clone__";
         document.body.appendChild(clone);
-
         window.print();
-
         document.body.removeChild(clone);
     }
+
     // ── Error ──────────────────────────────────────────────────────────────
 
     if (fetchError) {
@@ -219,11 +219,14 @@ export default function ClassRoutine() {
         );
     }
 
+    // ── Derived UI State ───────────────────────────────────────────────────────
+    const isLoading = fetching || classFetching;
+
     // ── Render ─────────────────────────────────────────────────────────────
 
     return (
         <>
-            {fetching && !routine?.routineId ? (
+            {isLoading ? (
                 <RoutineSkeleton />
             ) : (
                 <div className="bg-[#F5F4FE]">
@@ -237,10 +240,7 @@ export default function ClassRoutine() {
                                     error={deleteRoutineError}
                                     setOpen={setSlotDialogOpen}
                                     onDeleteRoutine={onDeleteRoutine}
-                                    onTodayClick={() => {
-                                        const todayName = DAYS[new Date().getDay()];
-                                        setActiveDay(todayName);
-                                    }}
+                                    onTodayClick={() => setActiveDay(DAYS[new Date().getDay()])}
                                     onPrint={onPrint}
                                 />
 

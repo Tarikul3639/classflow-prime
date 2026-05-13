@@ -28,11 +28,18 @@ export default function GroupsPage() {
 
   // ─── Selectors ─────────────────────────────────────────────────────────
   const groups = useAppSelector((state) => selectClassGroups(state, classId));
-  const isFetched = useAppSelector((state) => selectIsGroupsFetched(state, classId));
+  const isFetched = useAppSelector((state) =>
+    selectIsGroupsFetched(state, classId),
+  );
   const { loading: isFetching, error: fetchError } = useAppSelector(
     (state) => state.classes.classGroups.groupsByClass[classId]?.fetch || {},
   );
-  const { classDetails } = useAppSelector((state) => state.classes.fetchSingleClass);
+  const {
+    classDetails,
+    fetch: { loading: classFetching },
+  } = useAppSelector(
+    (state) => state.classes.fetchSingleClass.classesByClassId[classId] || {},
+  );
 
   // ─── Initialization ────────────────────────────────────────────────────
   useEffect(() => {
@@ -44,12 +51,11 @@ export default function GroupsPage() {
   // ─── Derived State ─────────────────────────────────────────────────────
   const isAdmin = classDetails?.isInstructor || classDetails?.isAssistant;
   const isEmpty = groups.length === 0 && !isFetching;
+  const isLoading = (isFetching && groups.length === 0) || (classFetching && !classDetails);
 
   // ─── Handlers ──────────────────────────────────────────────────────────
   const handleDelete = async (groupId: string) => {
-    const promise = dispatch(
-      deleteClassGroup({ classId, groupId }),
-    ).unwrap();
+    const promise = dispatch(deleteClassGroup({ classId, groupId })).unwrap();
 
     toast.promise(promise, {
       loading: "Deleting group...",
@@ -75,15 +81,16 @@ export default function GroupsPage() {
   // ─── Render ────────────────────────────────────────────────────────────
   return (
     <main className="relative bg-slate-50 p-4 space-y-4 pb-8 mx-auto flex flex-col">
-
       {/* Add New Group — Admin Only */}
-      {isAdmin && !isFetching && (
+      {isAdmin && !isLoading && (
         <div className="shrink-0 border-2 border-dashed border-slate-300 rounded-2xl bg-transparent p-6 flex flex-col items-center text-center gap-3">
           <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
             <Plus className="text-primary" size={24} />
           </div>
           <div>
-            <h4 className="font-bold text-slate-900 text-base">Add New Group</h4>
+            <h4 className="font-bold text-slate-900 text-base">
+              Add New Group
+            </h4>
             <p className="text-sm text-slate-600 mt-1">
               Help your classmates by sharing relevant group links
             </p>
@@ -105,7 +112,7 @@ export default function GroupsPage() {
       )}
 
       {/* Skeleton → Empty → List: mutually exclusive */}
-      {isFetching && groups.length === 0 ? (
+      {isLoading ? (
         <GroupsSkeleton count={6} />
       ) : isEmpty && !fetchError ? (
         <div className="flex-1 flex flex-col items-center justify-center py-10">
