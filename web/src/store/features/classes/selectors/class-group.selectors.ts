@@ -20,32 +20,6 @@ export const selectSingleGroup = createSelector(
     (bucket, groupId) => bucket?.groups.find((g) => g.groupId === groupId) ?? null
 );
 
-// ─── 3. Loading State ─────────────────────────────────────────────────────
-export const selectClassGroupLoading = createSelector(
-    [selectGroupBucket],
-    (bucket) =>
-        bucket?.loading ?? {
-            fetch: false,
-            fetchSingle: false,
-            create: false,
-            update: false,
-            delete: false,
-        }
-);
-
-// ─── 4. Error State ───────────────────────────────────────────────────────
-export const selectClassGroupError = createSelector(
-    [selectGroupBucket],
-    (bucket) =>
-        bucket?.error ?? {
-            fetch: null,
-            fetchSingle: null,
-            create: null,
-            update: null,
-            delete: null,
-        }
-);
-
 // ─── 5. Is Already Fetched Guard ─────────────────────────────────────────
 export const selectIsGroupsFetched = createSelector(
     [selectGroupBucket],

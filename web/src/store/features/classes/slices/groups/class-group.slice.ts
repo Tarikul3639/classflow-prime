@@ -6,25 +6,37 @@ import {
     fetchClassGroups,
     fetchSingleClassGroup,
 } from "../../thunks/groups/class-group.thunk";
+
 import { ClassGroup, GroupErrorFieldType } from "@/types/group.types";
 import type { ApiError } from "@/api/extract-error";
 
 // ─── Group Bucket Interface ────────────────────────────────────────────────
 interface ClassGroupBucket {
     groups: ClassGroup[];
-    loading: {
-        fetch: boolean;
-        fetchSingle: boolean;
-        create: boolean;
-        update: boolean;
-        delete: boolean;
+
+    fetch: {
+        loading: boolean;
+        error: string | null;
     };
-    error: {
-        fetch: string | null;
-        fetchSingle: string | null;
-        create: ApiError<GroupErrorFieldType> | null;
-        update: ApiError<GroupErrorFieldType> | null;
-        delete: string | null;
+
+    fetchSingle: {
+        loading: boolean;
+        error: string | null;
+    };
+
+    create: {
+        loading: boolean;
+        error: ApiError<GroupErrorFieldType> | null;
+    };
+
+    update: {
+        loading: boolean;
+        error: ApiError<GroupErrorFieldType> | null;
+    };
+
+    delete: {
+        loading: boolean;
+        error: string | null;
     };
 }
 
@@ -38,19 +50,30 @@ export interface ClassGroupState {
 // ─── Initial State ────────────────────────────────────────────────────────
 const createEmptyBucket = (): ClassGroupBucket => ({
     groups: [],
-    loading: {
-        fetch: false,
-        fetchSingle: false,
-        create: false,
-        update: false,
-        delete: false,
+
+    fetch: {
+        loading: false,
+        error: null,
     },
-    error: {
-        fetch: null,
-        fetchSingle: null,
-        create: null,
-        update: null,
-        delete: null,
+
+    fetchSingle: {
+        loading: false,
+        error: null,
+    },
+
+    create: {
+        loading: false,
+        error: null,
+    },
+
+    update: {
+        loading: false,
+        error: null,
+    },
+
+    delete: {
+        loading: false,
+        error: null,
     },
 });
 
@@ -62,73 +85,95 @@ const initialState: ClassGroupState = {
 const classGroupSlice = createSlice({
     name: "classGroup",
     initialState,
+
     reducers: {
         clearClassGroups: (state, action: PayloadAction<string>) => {
             const classId = action.payload;
+
             if (state.groupsByClass[classId]) {
                 delete state.groupsByClass[classId];
             }
         },
+
         clearGroupError: (
             state,
             action: PayloadAction<{
                 classId: string;
-                field: keyof ClassGroupBucket["error"];
+                field: keyof Omit<ClassGroupBucket, "groups">;
             }>
         ) => {
             const { classId, field } = action.payload;
-            if (state.groupsByClass[classId]) {
-                state.groupsByClass[classId].error[field] = null;
+            const bucket = state.groupsByClass[classId];
+
+            if (bucket) {
+                bucket[field].error = null;
             }
         },
     },
+
     extraReducers: (builder) => {
-        // ─── Fetch Class Groups ───────────────────────────────────────────────
         builder
+
+            // ─── Fetch Class Groups ───────────────────────────────────────────────
+
             .addCase(fetchClassGroups.pending, (state, action) => {
                 const classId = action.meta.arg;
+
                 if (!state.groupsByClass[classId]) {
                     state.groupsByClass[classId] = createEmptyBucket();
                 }
-                state.groupsByClass[classId].loading.fetch = true;
-                state.groupsByClass[classId].error.fetch = null;
+
+                state.groupsByClass[classId].fetch.loading = true;
+                state.groupsByClass[classId].fetch.error = null;
             })
+
             .addCase(fetchClassGroups.fulfilled, (state, action) => {
                 const classId = action.meta.arg;
                 const bucket = state.groupsByClass[classId];
+
                 if (bucket) {
-                    bucket.loading.fetch = false;
+                    bucket.fetch.loading = false;
                     bucket.groups = action.payload.groups || [];
                 }
             })
+
             .addCase(fetchClassGroups.rejected, (state, action) => {
                 const classId = action.meta.arg;
                 const bucket = state.groupsByClass[classId];
-                if (bucket) {
-                    bucket.loading.fetch = false;
-                    bucket.error.fetch = action.payload ?? "Failed to fetch groups.";
-                }
-            });
 
-        // ─── Fetch Single Class Group ──────────────────────────────────────────
-        builder
+                if (bucket) {
+                    bucket.fetch.loading = false;
+                    bucket.fetch.error =
+                        action.payload ?? "Failed to fetch groups.";
+                }
+            })
+
+            // ─── Fetch Single Class Group ─────────────────────────────────────────
+
             .addCase(fetchSingleClassGroup.pending, (state, action) => {
                 const classId = action.meta.arg.classId;
+
                 if (!state.groupsByClass[classId]) {
                     state.groupsByClass[classId] = createEmptyBucket();
                 }
-                state.groupsByClass[classId].loading.fetchSingle = true;
-                state.groupsByClass[classId].error.fetchSingle = null;
+
+                state.groupsByClass[classId].fetchSingle.loading = true;
+                state.groupsByClass[classId].fetchSingle.error = null;
             })
+
             .addCase(fetchSingleClassGroup.fulfilled, (state, action) => {
                 const classId = action.meta.arg.classId;
                 const bucket = state.groupsByClass[classId];
+
                 if (bucket) {
-                    bucket.loading.fetchSingle = false;
+                    bucket.fetchSingle.loading = false;
+
                     const group = action.payload;
+
                     const index = bucket.groups.findIndex(
                         (g) => g.groupId === group.groupId
                     );
+
                     if (index !== -1) {
                         bucket.groups[index] = group;
                     } else {
@@ -136,108 +181,139 @@ const classGroupSlice = createSlice({
                     }
                 }
             })
+
             .addCase(fetchSingleClassGroup.rejected, (state, action) => {
                 const classId = action.meta.arg.classId;
                 const bucket = state.groupsByClass[classId];
-                if (bucket) {
-                    bucket.loading.fetchSingle = false;
-                    bucket.error.fetchSingle = action.payload ?? "Failed to fetch group details.";
-                }
-            });
 
-        // ─── Create Class Group ───────────────────────────────────────────────
-        builder
+                if (bucket) {
+                    bucket.fetchSingle.loading = false;
+                    bucket.fetchSingle.error =
+                        action.payload ?? "Failed to fetch group details.";
+                }
+            })
+
+            // ─── Create Class Group ───────────────────────────────────────────────
+
             .addCase(createClassGroup.pending, (state, action) => {
                 const classId = action.meta.arg.classId;
+
                 if (!state.groupsByClass[classId]) {
                     state.groupsByClass[classId] = createEmptyBucket();
                 }
-                state.groupsByClass[classId].loading.create = true;
-                state.groupsByClass[classId].error.create = null;
+
+                state.groupsByClass[classId].create.loading = true;
+                state.groupsByClass[classId].create.error = null;
             })
+
             .addCase(createClassGroup.fulfilled, (state, action) => {
                 const newGroup: ClassGroup = action.payload;
                 const classId = action.meta.arg.classId;
                 const bucket = state.groupsByClass[classId];
+
                 if (bucket) {
-                    bucket.loading.create = false;
+                    bucket.create.loading = false;
                     bucket.groups.unshift(newGroup);
                 }
             })
+
             .addCase(createClassGroup.rejected, (state, action) => {
                 const classId = action.meta.arg.classId;
                 const bucket = state.groupsByClass[classId];
-                if (bucket) {
-                    bucket.loading.create = false;
-                    bucket.error.create =
-                        action.payload ?? { message: "Failed to create group." };
-                }
-            });
 
-        // ─── Update Class Group ───────────────────────────────────────────────
-        builder
+                if (bucket) {
+                    bucket.create.loading = false;
+                    bucket.create.error =
+                        action.payload ?? {
+                            message: "Failed to create group.",
+                        };
+                }
+            })
+
+            // ─── Update Class Group ───────────────────────────────────────────────
+
             .addCase(updateClassGroup.pending, (state, action) => {
                 const classId = action.meta.arg.classId;
                 const bucket = state.groupsByClass[classId];
+
                 if (bucket) {
-                    bucket.loading.update = true;
-                    bucket.error.update = null;
+                    bucket.update.loading = true;
+                    bucket.update.error = null;
                 }
             })
+
             .addCase(updateClassGroup.fulfilled, (state, action) => {
                 const updatedGroup = action.payload;
                 const classId = action.meta.arg.classId;
                 const bucket = state.groupsByClass[classId];
+
                 if (bucket) {
-                    bucket.loading.update = false;
+                    bucket.update.loading = false;
+
                     const index = bucket.groups.findIndex(
                         (g) => g.groupId === updatedGroup.groupId
                     );
+
                     if (index !== -1) {
                         bucket.groups[index] = updatedGroup;
                     }
                 }
             })
+
             .addCase(updateClassGroup.rejected, (state, action) => {
                 const classId = action.meta.arg.classId;
                 const bucket = state.groupsByClass[classId];
-                if (bucket) {
-                    bucket.loading.update = false;
-                    bucket.error.update =
-                        action.payload ?? { message: "Failed to update group." };
-                }
-            });
 
-        // ─── Delete Class Group ───────────────────────────────────────────────
-        builder
+                if (bucket) {
+                    bucket.update.loading = false;
+                    bucket.update.error =
+                        action.payload ?? {
+                            message: "Failed to update group.",
+                        };
+                }
+            })
+
+            // ─── Delete Class Group ───────────────────────────────────────────────
+
             .addCase(deleteClassGroup.pending, (state, action) => {
                 const classId = action.meta.arg.classId;
                 const bucket = state.groupsByClass[classId];
+
                 if (bucket) {
-                    bucket.loading.delete = true;
-                    bucket.error.delete = null;
+                    bucket.delete.loading = true;
+                    bucket.delete.error = null;
                 }
             })
+
             .addCase(deleteClassGroup.fulfilled, (state, action) => {
                 const classId = action.meta.arg.classId;
                 const bucket = state.groupsByClass[classId];
+
                 if (bucket) {
-                    bucket.loading.delete = false;
+                    bucket.delete.loading = false;
+
                     bucket.groups = bucket.groups.filter(
                         (g) => g.groupId !== action.payload.groupId
                     );
                 }
             })
+
             .addCase(deleteClassGroup.rejected, (state, action) => {
                 const classId = action.meta.arg.classId;
                 const bucket = state.groupsByClass[classId];
+
                 if (bucket) {
-                    bucket.loading.delete = false;
-                    bucket.error.delete = action.payload ?? "Failed to delete group.";
+                    bucket.delete.loading = false;
+                    bucket.delete.error =
+                        action.payload ?? "Failed to delete group.";
                 }
             });
     },
 });
 
-export const { clearClassGroups, clearGroupError } = classGroupSlice.actions;
+export const {
+    clearClassGroups,
+    clearGroupError,
+} = classGroupSlice.actions;
+
 export default classGroupSlice.reducer;

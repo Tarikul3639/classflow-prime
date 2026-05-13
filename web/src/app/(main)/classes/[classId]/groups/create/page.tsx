@@ -15,10 +15,6 @@ import {
 
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { createClassGroup } from "@/store/features/classes/thunks/groups/class-group.thunk";
-import {
-  selectClassGroupLoading,
-  selectClassGroupError
-} from "@/store/features/classes/selectors/class-group.selectors";
 
 export default function AddGroupPage() {
   const router = useRouter();
@@ -26,16 +22,9 @@ export default function AddGroupPage() {
   const params = useParams();
   const classId = params.classId as string;
 
-  // ─── Data Selection (Using Normalized Selectors) ──────────────────────────
-  const loadingState = useAppSelector((state) =>
-    selectClassGroupLoading(state, classId)
+  const { loading: isCreating, error: createError } = useAppSelector(
+    (state) => state.classes.classGroups.groupsByClass[classId]?.create || {},
   );
-  const apiError = useAppSelector((state) =>
-    selectClassGroupError(state, classId)
-  );
-
-  const isCreating = loadingState.create;
-  const createError = apiError.create;
 
   const [formData, setFormData] = useState<
     Omit<ClassGroup, "groupId" | "createdAt" | "updatedAt" | "createdBy">

@@ -51,7 +51,7 @@ export default function DashboardPage() {
       <DashboardHeader />
 
       <main className="flex-1 overflow-y-auto pb-24">
-        {isLoading ? (
+        {isLoading && classes.length ===0 ? (
           <DashboardSkeleton />
         ) : error ? (
           <ErrorState

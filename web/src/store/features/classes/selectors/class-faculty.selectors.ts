@@ -18,31 +18,6 @@ export const selectSingleFaculty = createSelector(
         bucket?.faculties.find((f) => f.facultyId === facultyId) ?? null
 );
 
-// ─── 4. Loading State ─────────────────────────────────────────────────────────
-export const selectClassFacultyLoading = createSelector(
-    [selectFacultyBucket],
-    (bucket) =>
-        bucket?.loading ?? {
-            fetch: false,
-            create: false,
-            update: false,
-            delete: false,
-        }
-);
-
-// ─── 5. Error State ───────────────────────────────────────────────────────────
-export const selectClassFacultyError = createSelector(
-    [selectFacultyBucket],
-    (bucket) =>
-        bucket?.error ?? {
-            fetch: null,
-            fetchSingle: null,
-            create: null,
-            update: null,
-            delete: null,
-        }
-);
-
 // ─── 6. Is Already Fetched Guard ─────────────────────────────────────────────
 export const selectIsFacultyFetched = createSelector(
     [selectFacultyBucket],

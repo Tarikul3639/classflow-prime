@@ -1,61 +1,70 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchClassMembers, assignAssistant, revokeAssistant, revokeMember, type ClassMember, EnrollmentRole } from "../../thunks/members/class-member.thunk";
+import {
+    fetchClassMembers,
+    assignAssistant,
+    revokeAssistant,
+    revokeMember,
+    type ClassMember,
+    EnrollmentRole,
+} from "../../thunks/members/class-member.thunk";
 
-// Define the shape of the state for class members
+// ─── Bucket Interface ───────────────────────────────────────────────
 interface ClassBucket {
     members: ClassMember[];
-    lastFetched: number; // Timestamp of the last fetch in milliseconds
-    loading: {
-        fetchMembers: boolean;
-    };
-    error: {
-        fetchMembers: string | null;
+    lastFetched: number;
+
+    fetchMembers: {
+        loading: boolean;
+        error: string | null;
     };
 }
-// The overall state for class members, keyed by classId
+
+// ─── State Interface ────────────────────────────────────────────────
 export interface ClassMembersState {
     membersByClass: {
         [classId: string]: ClassBucket;
     };
 }
 
-// Helper function to create an initial ClassBucket
+// ─── Factory ────────────────────────────────────────────────────────
 const createInitialClassBucket = (): ClassBucket => ({
     members: [],
     lastFetched: 0,
-    loading: {
-        fetchMembers: false,
-    },
-    error: {
-        fetchMembers: null,
+
+    fetchMembers: {
+        loading: false,
+        error: null,
     },
 });
 
-// Initial state for the class members slice
+// ─── Initial State ──────────────────────────────────────────────────
 const initialState: ClassMembersState = {
     membersByClass: {},
 };
 
-// Create the slice
+// ─── Slice ──────────────────────────────────────────────────────────
 const classMemberSlice = createSlice({
     name: "classMembers",
     initialState,
-    reducers: {
-        // You can add synchronous reducers here if needed
-    },
+
+    reducers: {},
+
     extraReducers: (builder) => {
         builder
+
+            // ─── Fetch Members ───────────────────────────────────────────
+
             .addCase(fetchClassMembers.pending, (state, action) => {
-                const classId = action.meta.arg; // Assuming the classId is passed as an argument to the thunk
+                const classId = action.meta.arg;
 
                 if (!state.membersByClass[classId]) {
                     state.membersByClass[classId] = createInitialClassBucket();
                 }
 
-                state.membersByClass[classId].loading.fetchMembers = true;
-                state.membersByClass[classId].error.fetchMembers = null;
-
+                state.membersByClass[classId].fetchMembers.loading = true;
+                state.membersByClass[classId].fetchMembers.error = null;
             })
+
             .addCase(fetchClassMembers.fulfilled, (state, action) => {
                 const { classId, members } = action.payload;
 
@@ -65,41 +74,62 @@ const classMemberSlice = createSlice({
 
                 state.membersByClass[classId].members = members;
                 state.membersByClass[classId].lastFetched = Date.now();
-                state.membersByClass[classId].loading.fetchMembers = false;
-                state.membersByClass[classId].error.fetchMembers = null;
+
+                state.membersByClass[classId].fetchMembers.loading = false;
+                state.membersByClass[classId].fetchMembers.error = null;
             })
+
             .addCase(fetchClassMembers.rejected, (state, action) => {
                 const classId = action.meta.arg;
 
                 if (!state.membersByClass[classId]) {
                     state.membersByClass[classId] = createInitialClassBucket();
                 }
-                state.membersByClass[classId].loading.fetchMembers = false;
-                state.membersByClass[classId].error.fetchMembers =
-                    action.payload?.message || "Failed to fetch class members";
-            });
 
-        // You can handle assignAssistant, revokeAssistant, and revokeMember thunks here as well
-        builder
+                state.membersByClass[classId].fetchMembers.loading = false;
+                state.membersByClass[classId].fetchMembers.error =
+                    action.payload?.message || "Failed to fetch class members";
+            })
+
+            // ─── Assign Assistant ────────────────────────────────────────
+
             .addCase(assignAssistant.fulfilled, (state, action) => {
                 const { userId, classId } = action.payload;
-                const member = state.membersByClass[classId]?.members.find((m) => m.userId === userId);
+
+                const member = state.membersByClass[classId]?.members.find(
+                    (m) => m.userId === userId
+                );
+
                 if (member) {
                     member.role = EnrollmentRole.ASSISTANT;
                 }
             })
+
+            // ─── Revoke Assistant ────────────────────────────────────────
+
             .addCase(revokeAssistant.fulfilled, (state, action) => {
                 const { userId, classId } = action.payload;
-                const member = state.membersByClass[classId]?.members.find((m) => m.userId === userId);
+
+                const member = state.membersByClass[classId]?.members.find(
+                    (m) => m.userId === userId
+                );
+
                 if (member) {
                     member.role = EnrollmentRole.LEARNER;
                 }
             })
+
+            // ─── Revoke Member ───────────────────────────────────────────
+
             .addCase(revokeMember.fulfilled, (state, action) => {
                 const { userId, classId } = action.payload;
+
                 const members = state.membersByClass[classId]?.members;
+
                 if (members) {
-                    state.membersByClass[classId].members = members.filter((m) => m.userId !== userId);
+                    state.membersByClass[classId].members = members.filter(
+                        (m) => m.userId !== userId
+                    );
                 }
             });
     },

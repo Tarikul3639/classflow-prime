@@ -5,11 +5,12 @@ import { Users } from "lucide-react";
 import MemberSearch from "./_components/MemberSearch";
 import { Filters as RoleFilters } from "@/components/ui/Filters";
 import MemberCard from "./_components/MemberCard";
+import { MembersSkeleton } from "./_components/MembersSkeleton";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { TopLoader } from "@/components/ui/TopLoader";
+
 // ─── Thunks ────────────────────────────────────────────────
 import {
   fetchClassMembers,
@@ -17,10 +18,10 @@ import {
   revokeAssistant,
   revokeMember,
 } from "@/store/features/classes/thunks/members/class-member.thunk";
-// ─── Selectors ────────────────────────────────────────────────
+
+// ─── Selectors ─────────────────────────────────────────────
 import {
   makeSelectClassMembers,
-  makeSelectClassMembersLoading,
   selectIsMembersStale,
 } from "@/store/features/classes/selectors/class-members.selectors";
 
@@ -29,14 +30,17 @@ export default function MembersPage() {
   const dispatch = useAppDispatch();
   const classId = params.classId?.toString() || "";
 
-  // ─── Selectors (one instance per component) ──────────────────
+  // ─── Selectors ───────────────────────────────────────────
   const selectMembers = useMemo(() => makeSelectClassMembers(), [classId]);
-  const selectLoading = useMemo(() => makeSelectClassMembersLoading(), [classId]);
   const selectIsStale = useMemo(() => selectIsMembersStale(classId), [classId]);
 
   const members = useAppSelector((state) => selectMembers(state, classId));
-  const isLoading = useAppSelector((state) => selectLoading(state, classId));
   const isStale = useAppSelector((state) => selectIsStale(state, classId));
+
+  const { loading: isFetching, error: fetchError } = useAppSelector(
+    (state) =>
+      state.classes.classMembers.membersByClass[classId]?.fetchMembers || {}
+  );
 
   const myId = useAppSelector((state) => state.profile.fetchUser.user?._id);
 
@@ -49,24 +53,24 @@ export default function MembersPage() {
     { id: "students", label: "Students" },
   ];
 
-  // ─── Fetch (only if stale) ────────────────────────────────────
+  // ─── Fetch (only if stale) ────────────────────────────────
   useEffect(() => {
     if (classId && isStale) {
       dispatch(fetchClassMembers(classId));
     }
   }, [dispatch, classId, isStale]);
 
-  // ─── Current user role ────────────────────────────────────────
+  // ─── Current user role ────────────────────────────────────
   const currentUserRole = useMemo(
     () => members.find((m) => m.userId === myId)?.role ?? "learner",
     [members, myId]
   );
 
-  // ─── Member Actions ───────────────────────────────────────────
+  // ─── Member Actions ───────────────────────────────────────
   const onAssignAssistant = (userId: string) => {
     if (!classId) return;
     toast.promise(
-      dispatch(assignAssistant({ classId: classId, userId })).unwrap(),
+      dispatch(assignAssistant({ classId, userId })).unwrap(),
       {
         loading: "Assigning assistant role...",
         success: "Assistant assigned successfully",
@@ -99,36 +103,42 @@ export default function MembersPage() {
     );
   };
 
-  // ─── Filter Logic ─────────────────────────────────────────────
-  const filteredMembers = useMemo(() =>
-    members.filter((member) => {
-      const matchesSearch =
-        member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        member.email.toLowerCase().includes(searchQuery.toLowerCase());
+  // ─── Filter Logic ─────────────────────────────────────────
+  const filteredMembers = useMemo(
+    () =>
+      members.filter((member) => {
+        const matchesSearch =
+          member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          member.email.toLowerCase().includes(searchQuery.toLowerCase());
 
-      const matchesFilter =
-        activeFilter === "all" ||
-        (activeFilter === "admins" &&
-          (member.role === "instructor" || member.role === "assistant")) ||
-        (activeFilter === "students" && member.role === "learner");
+        const matchesFilter =
+          activeFilter === "all" ||
+          (activeFilter === "admins" &&
+            (member.role === "instructor" || member.role === "assistant")) ||
+          (activeFilter === "students" && member.role === "learner");
 
-      return matchesSearch && matchesFilter;
-    }),
+        return matchesSearch && matchesFilter;
+      }),
     [members, searchQuery, activeFilter]
   );
 
-  const groupedMembers = useMemo(() => ({
-    Administrator: filteredMembers.filter(
-      (m) => m.role === "instructor" || m.role === "assistant"
-    ),
-    Students: filteredMembers.filter((m) => m.role === "learner"),
-  }), [filteredMembers]);
+  const groupedMembers = useMemo(
+    () => ({
+      Administrator: filteredMembers.filter(
+        (m) => m.role === "instructor" || m.role === "assistant"
+      ),
+      Students: filteredMembers.filter((m) => m.role === "learner"),
+    }),
+    [filteredMembers]
+  );
 
-  const isEmpty = filteredMembers.length === 0;
+  // ─── Derived State ─────────────────────────────────────────
+  const isEmpty = filteredMembers.length === 0 && !isFetching;
 
+  // ─── Render ───────────────────────────────────────────────
   return (
     <main className="relative bg-slate-50 flex flex-col">
-      {/* Header */}
+      {/* Sticky Header */}
       <div className="shrink-0 p-4 flex flex-col gap-3 bg-white border-b border-slate-200">
         <MemberSearch value={searchQuery} onChange={setSearchQuery} />
         <RoleFilters
@@ -140,9 +150,11 @@ export default function MembersPage() {
 
       {/* Content */}
       <div className="flex-1 relative flex flex-col px-4 py-6 space-y-6 pb-24 lg:pb-8">
-        <TopLoader isLoading={isLoading} />
 
-        {isEmpty ? (
+        {/* Skeleton → Empty → List: mutually exclusive */}
+        {isFetching && members.length === 0 ? (
+          <MembersSkeleton adminCount={2} studentCount={6} />
+        ) : isEmpty ? (
           <div className="flex-1 flex items-center justify-center py-10">
             <EmptyState
               title={searchQuery ? "No matches found" : "No members found"}

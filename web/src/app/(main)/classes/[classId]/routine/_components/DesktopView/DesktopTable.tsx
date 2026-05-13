@@ -2,8 +2,13 @@
 
 import type { RoutinePeriod, DaySchedule, RoutineSlot } from "@/types/routine.types";
 import { SubjectCard } from "./SubjectCard";
+import { formatTo12Hour } from "@/utils/date.utils";
+import { buildSubjectColorMap } from "../SubjectColors";
+import { useMemo } from "react";
 
-const TODAY_INDEX = new Date().getDay();
+const todayName = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+});
 
 interface DesktopTableProps {
     periods: RoutinePeriod[];
@@ -33,6 +38,11 @@ export function DesktopTable({
     onEdit,
     onRemove,
 }: DesktopTableProps) {
+    const colorMap = useMemo(
+        () => buildSubjectColorMap(schedule.map((d) => d.slots ?? [])),
+        [schedule],
+    );
+
     if (loading) {
         return (
             <div className="rounded-2xl border border-[#ECEAF8] bg-white p-12 flex flex-col items-center justify-center">
@@ -57,9 +67,9 @@ export function DesktopTable({
                 style={{ tableLayout: "fixed", minWidth: 720 }}
             >
                 <thead>
-                    <tr>
+                    <tr className="bg-slate-100">
                         <th
-                            className="sticky top-0 text-left pl-5 py-3 text-[10px] font-bold uppercase tracking-widest text-gray-400 border-b-2 border-[#ECEAF8] bg-white"
+                            className="text-left pl-5 py-3.5 text-[11px] font-bold uppercase tracking-widest text-slate-400 border-b border-slate-200"
                             style={{ width: 70 }}
                         >
                             Day
@@ -68,15 +78,15 @@ export function DesktopTable({
                         {periods.map((p) => (
                             <th
                                 key={p.periodId}
-                                className="py-3 px-4.5 text-center border-b-2 border-[#ECEAF8] bg-white border-l border-l-[#ECEAF8]"
+                                className="py-3.5 px-4.5 text-center border-b border-slate-200 border-l border-l-slate-200"
                             >
-                                <p className="text-[11px] font-bold text-gray-600">
-                                    {p.startTime}
+                                <p className="text-[12px] font-bold text-slate-700">
+                                    {formatTo12Hour(p.startTime)}
                                 </p>
-                                <p className="text-[9.5px] text-gray-400 mt-0.5">
-                                    {p.endTime}
+                                <p className="text-[10px] text-slate-600 mt-0.5">
+                                    {formatTo12Hour(p.endTime)}
                                 </p>
-                                <p className="text-[9.5px] text-gray-300 mt-1 font-semibold tracking-wide">
+                                <p className="text-[9.5px] text-slate-500 mt-1 font-semibold tracking-wide">
                                     {p.label}
                                 </p>
                             </th>
@@ -86,27 +96,28 @@ export function DesktopTable({
 
                 <tbody>
                     {schedule.map((dayData, i) => {
-                        const isToday = i === TODAY_INDEX;
+                        const isToday = dayData.day === todayName;
                         const daySlots = dayData.slots ?? [];
 
                         return (
                             <tr
                                 key={dayData.day}
-                                className={`border-b border-[#ECEAF8] last:border-0 ${
-                                    isToday ? "bg-primary/5" : ""
-                                }`}
+                                className={`border-b border-slate-100 last:border-0 ${isToday ? "bg-red-50/50" : ""
+                                    }`}
                             >
-                                <td className="pr-2 py-2 align-middle">
-                                    <div className="flex items-center justify-center gap-1.5">
+                                <td
+                                    className={`pr-2 py-2 align-middle border-r border-b border-slate-200 ${isToday ? "bg-red-50" : "bg-slate-100"
+                                        }`}
+                                >
+                                    <div className="flex flex-col items-center justify-center gap-1">
                                         <span
-                                            className={`text-[11px] font-bold uppercase tracking-widest ${
-                                                isToday ? "text-primary" : "text-gray-400"
-                                            }`}
+                                            className={`text-[11px] font-bold uppercase tracking-widest ${isToday ? "text-red-500" : "text-slate-400"
+                                                }`}
                                         >
                                             {dayData.day.slice(0, 3)}
                                         </span>
                                         {isToday && (
-                                            <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                                            <span className="w-1 h-1 rounded-full bg-red-400 shrink-0" />
                                         )}
                                     </div>
                                 </td>
@@ -116,7 +127,6 @@ export function DesktopTable({
                                         (s) => s.periodNo === p.periodNo,
                                     );
 
-                                    // COLUMN MERGE (Vertical Span) Logic:
                                     if (p.isBreak) {
                                         if (i !== 0) return null;
 
@@ -124,7 +134,7 @@ export function DesktopTable({
                                             <td
                                                 key={p.periodId}
                                                 rowSpan={schedule.length}
-                                                className="px-1.5 py-2 align-stretch border-l border-[#ECEAF8] bg-white h-1"
+                                                className="px-1.5 py-2 align-stretch border-l border-slate-100 bg-white h-1"
                                             >
                                                 <BreakCell label={p.label} />
                                             </td>
@@ -134,11 +144,12 @@ export function DesktopTable({
                                     return (
                                         <td
                                             key={p.periodId}
-                                            className="px-1.5 py-2 align-top border-l border-[#ECEAF8]"
+                                            className="px-1.5 py-2 align-top border-l border-slate-100"
                                         >
                                             <SubjectCard
                                                 day={dayData.day}
                                                 slot={slot}
+                                                color={colorMap.get(slot?.subject ?? "")}
                                                 onEdit={onEdit}
                                                 onRemove={onRemove}
                                             />

@@ -8,7 +8,7 @@ import { toast } from "sonner";
 // UI Components
 import { Filters as FilterChips } from "@/components/ui/Filters";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { TopLoader } from "@/components/ui/TopLoader";
+import { UpdatesSkeleton } from "./_components/UpdatesSkeleton";
 import CreateUpdateCard from "./_components/CreateUpdateCard";
 import DateHeader from "./_components/DateHeader";
 import UpdateCard from "./_components/UpdateCard";
@@ -23,7 +23,6 @@ import { deleteSingleClassUpdate } from "@/store/features/classes/thunks/delete-
 // Memoized Selectors
 import {
   selectGroupedUpdates,
-  selectClassUpdatesLoading,
   selectClassUpdateItems,
 } from "@/store/features/classes/selectors/class-updates.selectors";
 
@@ -60,9 +59,13 @@ export default function UpdatesPage() {
     selectGroupedUpdates(state, classId, searchQuery, activeFilter)
   );
 
-  // Per-operation loading flags
-  const loading = useAppSelector((state) =>
-    selectClassUpdatesLoading(state, classId)
+  // Fetch status flags for conditional UI states
+  const {
+    loading: isFetching,
+    error: fetchingError,
+  } = useAppSelector(
+    (state) =>
+      state.classes.classUpdates.updatesByClass[classId]?.fetch || {}
   );
 
   // Class-level permissions
@@ -139,7 +142,7 @@ export default function UpdatesPage() {
 
   // ── Derived UI State ───────────────────────────────────────────────────────
   const isAdmin = classDetails?.isInstructor || classDetails?.isAssistant;
-  const isEmpty = sortedDateKeys.length === 0 && !loading.fetch;
+  const isEmpty = sortedDateKeys.length === 0 && !isFetching && !fetchingError;
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
@@ -155,28 +158,22 @@ export default function UpdatesPage() {
       </div>
 
       <div className="flex-1 px-4 py-4 space-y-6 pb-24 lg:pb-8">
-        {/* Network Activity Indicator */}
-        <TopLoader
-          isLoading={
-            loading.fetch || loading.delete || loading.togglePin
-          }
-        />
 
         {/* Create Card — Admin Only */}
-        {isAdmin && (
+        {isAdmin && !isFetching && (
           <div className="shrink-0">
             <CreateUpdateCard classId={classId} />
           </div>
         )}
 
-        {/* Empty State vs Update List */}
-        {isEmpty ? (
+        {/* Skeleton → Empty → List: mutually exclusive */}
+        {isFetching && updates.length === 0 ? (
+          <UpdatesSkeleton groups={2} cardsPerGroup={3} />
+        ) : isEmpty ? (
           <div className="flex-1 flex items-center justify-center py-10">
             <EmptyState
               icon={GraduationCap}
-              title={
-                searchQuery ? "No matches found" : "No updates yet"
-              }
+              title={searchQuery ? "No matches found" : "No updates yet"}
               description={
                 searchQuery
                   ? `Couldn't find anything for "${searchQuery}"`
@@ -189,13 +186,10 @@ export default function UpdatesPage() {
             {sortedDateKeys.map((dateKey) => (
               <section key={dateKey} className="space-y-3">
                 <DateHeader label={dateKey} />
-
                 <div className="space-y-3">
                   {grouped[dateKey].map((update) => {
                     const config =
-                      UPDATE_TYPE_CONFIG[
-                      update.category as UpdateCategory
-                      ];
+                      UPDATE_TYPE_CONFIG[update.category as UpdateCategory];
                     const isPast =
                       update.eventAt &&
                       new Date(update.eventAt).getTime() < Date.now();
@@ -216,19 +210,12 @@ export default function UpdatesPage() {
                         postedBy={update.postedBy}
                         isPinned={update.isPinned}
                         onTogglePin={() =>
-                          handleTogglePin(
-                            update._id,
-                            update.isPinned
-                          )
+                          handleTogglePin(update._id, update.isPinned)
                         }
                         onEdit={() =>
-                          router.push(
-                            `/classes/${classId}/updates/${update._id}`
-                          )
+                          router.push(`/classes/${classId}/updates/${update._id}`)
                         }
-                        onDelete={() =>
-                          handleDelete(update._id)
-                        }
+                        onDelete={() => handleDelete(update._id)}
                         showActions={isAdmin}
                       />
                     );

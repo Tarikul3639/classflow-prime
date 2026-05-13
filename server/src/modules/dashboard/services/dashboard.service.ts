@@ -5,6 +5,7 @@ import { Model, Types } from 'mongoose';
 import { Enrollment, EnrollmentDocument } from '../../../database/entities/enrollment.entity';
 import { EnrollmentRole } from '../../../database/interface/enrollment.interface';
 import { Class, ClassDocument } from '../../../database/entities/class.entity';
+import { ClassStatus } from '../../../database/interface/class.interface';
 import { ClassUpdate, ClassUpdateDocument } from '../../../database/entities/update.entity';
 import { Material, MaterialDocument } from '../../../database/entities/material.entity';
 import { Faculty, FacultyDocument } from '../../../database/entities/faculty.entity';
@@ -91,7 +92,7 @@ export class DashboardService {
 
             // Classes where user is the instructor
             this.classModel
-                .find({ instructorId: userObjectId })
+                .find({ instructorId: userObjectId, status: { $ne: ClassStatus.ENDED } })
                 .populate<{ instructorId: PopulatedInstructor }>('instructorId', 'name')
                 .lean<PopulatedClass[]>(),
         ]);

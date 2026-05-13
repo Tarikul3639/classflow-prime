@@ -127,3 +127,14 @@ export function isoToLocalTime(iso: string): string {
   const d = new Date(iso);
   return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
+
+
+/// 24-hour "HH:mm" → 12-hour "h:mm AM/PM"
+export const formatTo12Hour = (time: string) => {
+    const [hour, minute] = time.split(":").map(Number);
+
+    const period = hour >= 12 ? "PM" : "AM";
+    const formattedHour = hour % 12 || 12; // 0 → 12, 13 → 1
+
+    return `${formattedHour}:${minute.toString().padStart(2, "0")} ${period}`;
+};

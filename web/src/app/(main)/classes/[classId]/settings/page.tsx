@@ -5,7 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import ClassInfoCard from "./_components/ClassInfoCard";
 import NotificationSettings from "./_components/NotificationSettings";
 import DangerZone from "./_components/DangerZone";
-import { TopLoader } from "@/components/ui/TopLoader";
+import { ClassSettingsSkeleton } from "./_components/ClassSettingsSkeleton";
 import { toast } from "sonner";
 
 import {
@@ -23,6 +23,7 @@ export default function ClassSettingsPage() {
   const { classId } = useParams();
   const dispatch = useAppDispatch();
 
+  // ── Selectors ──────────────────────────────────────────────────────────
   const { classDetails } = useAppSelector(
     (state) => state.classes.fetchSingleClass,
   );
@@ -31,12 +32,20 @@ export default function ClassSettingsPage() {
     (state) => state.classes.classSettings,
   );
 
+  const loading = useAppSelector(
+    (state) =>
+      state.classes.classSettings.loading.fetchClassCode ||
+      state.classes.fetchSingleClass.isLoading,
+  );
+
+  // ── Initialization ──────────────────────────────────────────────────────
   useEffect(() => {
     if (classId) {
       dispatch(fetchClassSettings({ classId: classId as string }));
     }
   }, [classId, dispatch]);
 
+  // ── Handlers ───────────────────────────────────────────────────────────
   const handleLeaveClass = async () => {
     const promise = dispatch(
       leaveClass({ classId: classId as string }),
@@ -130,16 +139,11 @@ export default function ClassSettingsPage() {
     }
   };
 
-  const loading = useAppSelector(
-    (state) =>
-      state.classes.classSettings.loading.fetchClassCode ||
-      state.classes.fetchSingleClass.isLoading,
-  );
-
+  // ── Render ─────────────────────────────────────────────────────────────
   return (
     <div className="relative h-full bg-slate-50">
-      {loading ? (
-        <TopLoader isLoading={loading} />
+      {loading || !classDetails ? (
+        <ClassSettingsSkeleton />
       ) : (
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
           <ClassInfoCard
@@ -152,7 +156,6 @@ export default function ClassSettingsPage() {
             handleGenerateClassCode={handleGenerateClassCode}
           />
           <NotificationSettings />
-
           <DangerZone
             className={classDetails.name}
             isInstructor={classDetails.isInstructor}

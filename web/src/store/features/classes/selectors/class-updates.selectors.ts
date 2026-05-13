@@ -14,32 +14,6 @@ export const selectClassUpdateItems = createSelector(
     (bucket) => bucket?.items ?? []
 );
 
-// ─── 3. Loading Selector ─────────────────────────────────────────────────────
-export const selectClassUpdatesLoading = createSelector(
-    [selectClassBucket],
-    (bucket) =>
-        bucket?.loading ?? {
-            fetch: false,
-            create: false,
-            update: false,
-            togglePin: false,
-            delete: false,
-        }
-);
-
-// ─── 4. Error Selector ───────────────────────────────────────────────────────
-export const selectClassUpdatesError = createSelector(
-    [selectClassBucket],
-    (bucket) =>
-        bucket?.error ?? {
-            fetch: null,
-            create: null,
-            update: null,
-            togglePin: null,
-            delete: null,
-        }
-);
-
 // ─── 5. Filtered + Sorted Selector ───────────────────────────────────────────
 export const selectFilteredAndSortedUpdates = createSelector(
     [
@@ -127,38 +101,21 @@ export const selectGroupedUpdates = createSelector(
     }
 );
 
-/**
- * Some selectors are designed for specific UI states (e.g. loading, error) and are accessed via the same bucket to ensure consistency and avoid mismatches between different parts of the state.
- */
-
-// Example: Create Update Form State Selector
-export const selectCreateUpdateState = createSelector(
-    [
-        (state: RootState, classId: string) =>
-            state.classes.classUpdates.updatesByClass[classId],
-    ],
-    (bucket) => ({
-        loading: bucket?.loading.create ?? false,
-        error: bucket?.error.create ?? null,
-    })
-);
-
-// Example: Single Update Fetch State Selector
+// ─── 7. Single Update Selector for Edit Page ───────────────────────────────
 export const selectSingleUpdateState = createSelector(
     [
-        (state: RootState, classId: string) =>
-            state.classes.classUpdates.updatesByClass[classId],
+        selectClassBucket,
         (_: RootState, __: string, updateId: string) => updateId,
     ],
     (bucket, updateId) => {
-        const update =
-            bucket?.items.find((u) => u._id === updateId) ?? null;
+        const item =
+            bucket?.items?.find((u) => u._id === updateId) ?? null;
 
         return {
-            data: update,
-            loading: bucket?.loading.fetch ?? false,
-            updating: bucket?.loading.update ?? false,
-            error: bucket?.error.update ?? null,
+            data: item,
+            loading: false, // or separate update loading slice use
+            updating: false,
+            error: null,
         };
     }
 );

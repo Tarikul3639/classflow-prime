@@ -8,7 +8,6 @@ import { UpdatePreview } from "./_components/UpdatePreview";
 import { ProTip } from "./_components/ProTip";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { createClassUpdate } from "@/store/features/classes/thunks/create-class-update.thunk";
-import { selectCreateUpdateState } from "@/store/features/classes/selectors/class-updates.selectors";
 import type { CreateUpdateFormData } from "@/types/update.types";
 import { toast } from "sonner";
 
@@ -18,8 +17,8 @@ export default function CreateUpdatePage() {
   const params = useParams();
   const classId = params?.classId as string;
 
-  const { loading, error } = useAppSelector((state) =>
-    selectCreateUpdateState(state, classId)
+  const { loading: isCreating, error: createError } = useAppSelector(
+    (state) => state.classes.classUpdates.updatesByClass[classId]?.create || {}
   );
 
   const [form, setForm] = useState<CreateUpdateFormData>({
@@ -32,12 +31,12 @@ export default function CreateUpdatePage() {
 
   // Scroll to form on error
   useEffect(() => {
-    if (error?.field) {
+    if (createError?.field) {
       document
         .getElementById("update-form")
         ?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
-  }, [error]);
+  }, [createError]);
 
   const handleSubmit = async () => {
     try {
@@ -69,8 +68,8 @@ export default function CreateUpdatePage() {
       <UpdateEditorHeader
         classId={classId}
         isNew={true}
-        isLoading={loading}
-        error={error?.message}
+        isLoading={isCreating}
+        error={createError?.message}
         onSubmit={handleSubmit}
       />
 
@@ -78,7 +77,7 @@ export default function CreateUpdatePage() {
         <div className="mx-auto grid grid-cols-1 xl:grid-cols-12 gap-8">
           <div className="xl:col-span-7">
             {/* Removed stray semicolon after component */}
-            <UpdateForm form={form} setForm={setForm} error={error ?? null} />
+            <UpdateForm form={form} setForm={setForm} error={createError ?? null} />
           </div>
 
           <div className="xl:col-span-5">

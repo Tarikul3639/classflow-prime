@@ -19,8 +19,7 @@ import { useFileUpload } from "@/hooks/useCloudinary";
 
 // Selectors
 import {
-  selectSingleFaculty,
-  selectClassFacultyLoading,
+  selectSingleFaculty
 } from "@/store/features/classes/selectors/class-faculty.selectors";
 
 export default function EditFacultyPage() {
@@ -50,8 +49,13 @@ export default function EditFacultyPage() {
     selectSingleFaculty(state, classId, facultyId)
   );
 
-  const loading = useAppSelector((state) =>
-    selectClassFacultyLoading(state, classId)
+  const { loading: isFetching, error: fetchError } = useAppSelector(
+    (state) =>
+      state.classes.classFaculty.facultiesByClass[classId].fetchSingle || {},
+  );
+  const { loading: isUpdating, error: updateError } = useAppSelector(
+    (state) =>
+      state.classes.classFaculty.facultiesByClass[classId].update || {},
   );
 
   const { upload, loading: uploadLoading } = useFileUpload();
@@ -159,7 +163,7 @@ export default function EditFacultyPage() {
   };
 
   // ── Loading State ──────────────────────────────────────────────────────────
-  if (loading.fetchSingle && !cachedFaculty) {
+  if (isFetching && !cachedFaculty) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-slate-50">
         <p className="text-sm text-slate-500">Loading faculty details...</p>
@@ -173,9 +177,18 @@ export default function EditFacultyPage() {
       <EditorHeader
         classId={classId}
         isNew={false}
-        isLoading={loading.update}
+        isLoading={isFetching || isUpdating}
         onSubmit={handleSubmit}
       />
+
+      {/* Error Alert */}
+      {/* {(fetchError || updateError) && ( */}
+        <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mx-4 mt-4">
+          <p className="text-sm">
+            {fetchError || updateError || "An error occurred. Please try again."}
+          </p>
+        </div>
+      {/* )} */}
 
       <main className="p-4 pb-24">
         <form className="grid gap-6 md:grid-cols-2">

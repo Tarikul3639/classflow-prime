@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
 // Thunks
 import { fetchClassUpdate } from "../thunks/fetch-class-update.thunk";
 import { createClassUpdate } from "../thunks/create-class-update.thunk";
@@ -6,6 +7,7 @@ import { fetchSingleClassUpdate } from "../thunks/fetch-single-class-update.thun
 import { updateClassUpdate } from "../thunks/update-class-update.thunk";
 import { togglePinClassUpdate } from "../thunks/toggle-pin-class-update.thunk";
 import { deleteSingleClassUpdate } from "../thunks/delete-single-class-update.thunk";
+
 // Types
 import type { ClassUpdateItem } from "@/types/update.types";
 import type { ApiError } from "@/api/extract-error";
@@ -14,23 +16,33 @@ import type { UpdateErrorFieldType } from "../class.types";
 // State Structure
 interface ClassBucket {
     items: ClassUpdateItem[];
-    loading: {
-        fetch: boolean;
-        create: boolean;
-        update: boolean;
-        togglePin: boolean;
-        delete: boolean;
+
+    fetch: {
+        loading: boolean;
+        error: ApiError | null;
     };
-    error: {
-        fetch: ApiError | null;
-        create: ApiError<UpdateErrorFieldType> | null;
-        update: ApiError<UpdateErrorFieldType> | null;
-        togglePin: ApiError | null;
-        delete: ApiError | null;
+
+    create: {
+        loading: boolean;
+        error: ApiError<UpdateErrorFieldType> | null;
+    };
+
+    update: {
+        loading: boolean;
+        error: ApiError<UpdateErrorFieldType> | null;
+    };
+
+    togglePin: {
+        loading: boolean;
+        error: ApiError | null;
+    };
+
+    delete: {
+        loading: boolean;
+        error: ApiError | null;
     };
 }
 
-// We can also consider normalizing the state if we expect a large number of updates, but for simplicity, we'll keep it as an array within each class bucket for now.
 export interface ClassUpdatesState {
     updatesByClass: {
         [classId: string]: ClassBucket;
@@ -39,8 +51,31 @@ export interface ClassUpdatesState {
 
 const createEmptyBucket = (): ClassBucket => ({
     items: [],
-    loading: { fetch: false, create: false, update: false, togglePin: false, delete: false },
-    error: { fetch: null, create: null, update: null, togglePin: null, delete: null },
+
+    fetch: {
+        loading: false,
+        error: null,
+    },
+
+    create: {
+        loading: false,
+        error: null,
+    },
+
+    update: {
+        loading: false,
+        error: null,
+    },
+
+    togglePin: {
+        loading: false,
+        error: null,
+    },
+
+    delete: {
+        loading: false,
+        error: null,
+    },
 });
 
 const initialState: ClassUpdatesState = {
@@ -50,144 +85,183 @@ const initialState: ClassUpdatesState = {
 const classUpdatesSlice = createSlice({
     name: "classUpdates",
     initialState,
+
     reducers: {
         clearClassUpdates: (state, action: PayloadAction<string>) => {
             delete state.updatesByClass[action.payload];
         },
+
         clearUpdateError: (state, action) => {
             const { classId } = action.payload;
 
             const bucket = state.updatesByClass[classId];
 
             if (bucket) {
-                bucket.error.update = null;
+                bucket.update.error = null;
             }
-        }
+        },
     },
+
     extraReducers: (builder) => {
         builder
-            // ── Fetch ────────────────────────────────────────────────────────
+
+            // ── Fetch ─────────────────────────────────────────
+
             .addCase(fetchClassUpdate.pending, (state, action) => {
                 const classId = action.meta.arg;
+
                 if (!state.updatesByClass[classId]) {
                     state.updatesByClass[classId] = createEmptyBucket();
                 }
-                state.updatesByClass[classId].loading.fetch = true;
-                state.updatesByClass[classId].error.fetch = null;
+
+                state.updatesByClass[classId].fetch.loading = true;
+                state.updatesByClass[classId].fetch.error = null;
             })
+
             .addCase(fetchClassUpdate.fulfilled, (state, action) => {
                 const classId = action.meta.arg;
                 const bucket = state.updatesByClass[classId];
+
                 if (bucket) {
-                    bucket.loading.fetch = false;
+                    bucket.fetch.loading = false;
                     bucket.items = action.payload;
                 }
             })
+
             .addCase(fetchClassUpdate.rejected, (state, action) => {
                 const classId = action.meta.arg;
                 const bucket = state.updatesByClass[classId];
 
                 if (bucket) {
-                    bucket.loading.fetch = false;
-                    bucket.error.fetch =
+                    bucket.fetch.loading = false;
+                    bucket.fetch.error =
                         action.payload ?? {
                             message: "Failed to fetch class updates.",
                         };
                 }
             })
 
-            // ── Create ───────────────────────────────────────────────────────
+            // ── Create ────────────────────────────────────────
+
             .addCase(createClassUpdate.pending, (state, action) => {
                 const { classId } = action.meta.arg;
+
                 if (!state.updatesByClass[classId]) {
                     state.updatesByClass[classId] = createEmptyBucket();
                 }
-                state.updatesByClass[classId].loading.create = true;
-                state.updatesByClass[classId].error.create = null;
+
+                state.updatesByClass[classId].create.loading = true;
+                state.updatesByClass[classId].create.error = null;
             })
+
             .addCase(createClassUpdate.fulfilled, (state, action) => {
                 const newItem: ClassUpdateItem = action.payload;
                 const classId = newItem.classId;
-                const bucket = classId ? state.updatesByClass[classId] : undefined;
+                const bucket = classId
+                    ? state.updatesByClass[classId]
+                    : undefined;
+
                 if (bucket) {
-                    bucket.loading.create = false;
-                    bucket.items.unshift(newItem); // newest first
+                    bucket.create.loading = false;
+                    bucket.items.unshift(newItem);
                 }
             })
+
             .addCase(createClassUpdate.rejected, (state, action) => {
                 const { classId } = action.meta.arg;
                 const bucket = state.updatesByClass[classId];
+
                 if (bucket) {
-                    bucket.loading.create = false;
-                    bucket.error.create =
+                    bucket.create.loading = false;
+                    bucket.create.error =
                         action.payload ?? {
                             message: "Failed to create update.",
                         };
                 }
             })
 
-            // ── Toggle Pin ───────────────────────────────────────────────────
+            // ── Toggle Pin ────────────────────────────────────
+
             .addCase(togglePinClassUpdate.pending, (state, action) => {
                 const { classId } = action.meta.arg;
                 const bucket = state.updatesByClass[classId];
+
                 if (bucket) {
-                    bucket.loading.togglePin = true;
-                    bucket.error.togglePin = null;
+                    bucket.togglePin.loading = true;
+                    bucket.togglePin.error = null;
                 }
             })
+
             .addCase(togglePinClassUpdate.fulfilled, (state, action) => {
                 const { classId } = action.meta.arg;
                 const bucket = state.updatesByClass[classId];
+
                 if (bucket) {
-                    bucket.loading.togglePin = false;
-                    const index = bucket.items.findIndex(u => u._id === action.payload.updateId);
+                    bucket.togglePin.loading = false;
+
+                    const index = bucket.items.findIndex(
+                        (u) => u._id === action.payload.updateId
+                    );
+
                     if (index !== -1) {
                         bucket.items[index].isPinned = action.payload.isPinned;
                     }
                 }
             })
+
             .addCase(togglePinClassUpdate.rejected, (state, action) => {
                 const { classId } = action.meta.arg;
                 const bucket = state.updatesByClass[classId];
+
                 if (bucket) {
-                    bucket.loading.togglePin = false;
-                    bucket.error.togglePin =
+                    bucket.togglePin.loading = false;
+                    bucket.togglePin.error =
                         action.payload ?? {
                             message: "Failed to toggle pin status.",
                         };
                 }
             })
 
-            // ── Delete ───────────────────────────────────────────────────────
+            // ── Delete ────────────────────────────────────────
+
             .addCase(deleteSingleClassUpdate.pending, (state, action) => {
                 const { classId } = action.meta.arg;
                 const bucket = state.updatesByClass[classId];
+
                 if (bucket) {
-                    bucket.loading.delete = true;
-                    bucket.error.delete = null;
+                    bucket.delete.loading = true;
+                    bucket.delete.error = null;
                 }
             })
+
             .addCase(deleteSingleClassUpdate.fulfilled, (state, action) => {
                 const { classId } = action.meta.arg;
                 const bucket = state.updatesByClass[classId];
+
                 if (bucket) {
-                    bucket.loading.delete = false;
-                    bucket.items = bucket.items.filter(u => u._id !== action.payload.updateId);
+                    bucket.delete.loading = false;
+
+                    bucket.items = bucket.items.filter(
+                        (u) => u._id !== action.payload.updateId
+                    );
                 }
             })
+
             .addCase(deleteSingleClassUpdate.rejected, (state, action) => {
                 const { classId } = action.meta.arg;
                 const bucket = state.updatesByClass[classId];
+
                 if (bucket) {
-                    bucket.loading.delete = false;
-                    bucket.error.delete =
+                    bucket.delete.loading = false;
+                    bucket.delete.error =
                         action.payload ?? {
                             message: "Failed to delete the update.",
                         };
                 }
             })
 
-            // ── Fetch Single Update (for Edit Page) ───────────────────────────────
+            // ── Fetch Single Update ───────────────────────────
+
             .addCase(fetchSingleClassUpdate.pending, (state, action) => {
                 const { classId } = action.meta.arg;
 
@@ -195,77 +269,93 @@ const classUpdatesSlice = createSlice({
                     state.updatesByClass[classId] = createEmptyBucket();
                 }
 
-                state.updatesByClass[classId].loading.fetch = true;
-                state.updatesByClass[classId].error.fetch = null;
+                state.updatesByClass[classId].fetch.loading = true;
+                state.updatesByClass[classId].fetch.error = null;
             })
 
             .addCase(fetchSingleClassUpdate.fulfilled, (state, action) => {
                 const { classId, update } = action.payload;
-
                 const bucket = state.updatesByClass[classId];
 
                 if (bucket) {
-                    bucket.loading.fetch = false;
+                    bucket.fetch.loading = false;
 
                     const index = bucket.items.findIndex(
                         (u) => u._id === update._id
                     );
 
                     if (index !== -1) {
-                        bucket.items[index] = update; // update existing
+                        bucket.items[index] = update;
                     } else {
-                        bucket.items.unshift(update); // insert new
+                        bucket.items.unshift(update);
                     }
                 }
             })
 
             .addCase(fetchSingleClassUpdate.rejected, (state, action) => {
                 const { classId } = action.meta.arg;
-
                 const bucket = state.updatesByClass[classId];
 
                 if (bucket) {
-                    bucket.loading.fetch = false;
-                    bucket.error.fetch =
+                    bucket.fetch.loading = false;
+                    bucket.fetch.error =
                         action.payload ?? {
                             message: "Failed to fetch update.",
                         };
                 }
             })
 
-            // ── Edit/Update ──────────────────────────────────────────────────
+            // ── Update ────────────────────────────────────────
+
             .addCase(updateClassUpdate.pending, (state, action) => {
                 const { classId } = action.meta.arg;
                 const bucket = state.updatesByClass[classId];
+
                 if (bucket) {
-                    bucket.loading.update = true;
-                    bucket.error.update = null;
+                    bucket.update.loading = true;
+                    bucket.update.error = null;
                 }
             })
+
             .addCase(updateClassUpdate.fulfilled, (state, action) => {
                 const updatedItem = action.payload;
                 const classId = updatedItem.classId;
-                const bucket = classId ? state.updatesByClass[classId] : undefined;
+
+                const bucket = classId
+                    ? state.updatesByClass[classId]
+                    : undefined;
+
                 if (bucket) {
-                    bucket.loading.update = false;
-                    const index = bucket.items.findIndex(i => i._id === updatedItem._id);
-                    if (index !== -1) bucket.items[index] = updatedItem;
+                    bucket.update.loading = false;
+
+                    const index = bucket.items.findIndex(
+                        (i) => i._id === updatedItem._id
+                    );
+
+                    if (index !== -1) {
+                        bucket.items[index] = updatedItem;
+                    }
                 }
             })
+
             .addCase(updateClassUpdate.rejected, (state, action) => {
                 const { classId } = action.meta.arg;
                 const bucket = state.updatesByClass[classId];
+
                 if (bucket) {
-                    bucket.loading.update = false;
-                    bucket.error.update =
+                    bucket.update.loading = false;
+                    bucket.update.error =
                         action.payload ?? {
                             message: "Failed to update.",
                         };
                 }
-
             });
     },
 });
 
-export const { clearClassUpdates, clearUpdateError } = classUpdatesSlice.actions;
+export const {
+    clearClassUpdates,
+    clearUpdateError,
+} = classUpdatesSlice.actions;
+
 export default classUpdatesSlice.reducer;

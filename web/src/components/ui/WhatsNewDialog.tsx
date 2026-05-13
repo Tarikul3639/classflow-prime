@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { APP_CONFIG } from "@/config/app-config";
 
 const STORAGE_KEY = "classflow_whats_new_seen";
-const PUBLISH_DATE = "May 12, 2026";
+const PUBLISH_DATE = "May 13, 2026";
 
 interface WhatsNewDialogProps {
     open?: boolean;
@@ -112,6 +112,66 @@ const updates: UpdateItem[] = [
         title: "Routine deletion confirmation",
         description:
             "Added secure confirmation dialog before deleting an entire class routine.",
+        badge: "Fixed",
+    },
+
+    {
+        icon: (
+            <Check
+                size={15}
+                strokeWidth={2.5}
+                className="text-primary"
+            />
+        ),
+        iconBg: "bg-primary/10",
+        title: "Skeleton loading for all class pages",
+        description:
+            "Added pixel-accurate skeleton screens for Updates, Faculty, Groups, Members, and Settings pages — matching the exact layout of each card and section.",
+        badge: "New",
+    },
+
+    {
+        icon: (
+            <Check
+                size={15}
+                strokeWidth={2.5}
+                className="text-blue-500"
+            />
+        ),
+        iconBg: "bg-blue-50",
+        title: "Routine page skeleton UI",
+        description:
+            "Added full skeleton support for the class routine page — including the header, desktop table, mobile day tabs, and timeline slot cards.",
+        badge: "New",
+    },
+
+    {
+        icon: (
+            <Check
+                size={15}
+                strokeWidth={2.5}
+                className="text-green-500"
+            />
+        ),
+        iconBg: "bg-green-50",
+        title: "Proper skeleton → empty → list pattern",
+        description:
+            "All pages now use a consistent mutually exclusive render pattern: skeleton on initial load, empty state when no data, and list when data is available.",
+        badge: "Improved",
+    },
+
+    {
+        icon: (
+            <Check
+                size={15}
+                strokeWidth={2.5}
+                className="text-yellow-500"
+            />
+        ),
+        iconBg: "bg-yellow-50",
+        title: "Fixed class hero flash on refresh",
+        description:
+            "Class layout now shows the hero skeleton immediately on refresh using a combined isLoading || !classDetails?.classId guard, preventing blank background flicker.",
         badge: "Fixed",
     },
 ];

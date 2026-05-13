@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import {
   Search,
   Users,
-  Plus,
   UserPlus,
   BookOpen,
   LayersPlus,
@@ -18,7 +17,7 @@ import { ClassesSkeleton } from "./ClassesSkeleton";
 import { toast } from "sonner";
 
 const Classes: React.FC = () => {
-  const [activeFilter, setActiveFilter] = useState("all");
+  const [activeFilter, setActiveFilter] = useState('active'); // Default to first filter
   const [searchQuery, setSearchQuery] = useState("");
   const dispatch = useAppDispatch();
   const { classes, loading } = useAppSelector(
@@ -26,9 +25,9 @@ const Classes: React.FC = () => {
   );
 
   const filters = [
-    { id: "all", label: "All" },
     { id: "active", label: "Active" },
     { id: "archived", label: "Archived" },
+    { id: "all", label: "All" },
   ];
 
   useEffect(() => {
@@ -154,7 +153,7 @@ const Classes: React.FC = () => {
       </header>
 
       {/* Scrollable Content */}
-      {loading ? (
+      {loading && classes.length ===0 ? (
         <ClassesSkeleton />
       ) : (
         <div className="flex-1 overflow-y-auto">

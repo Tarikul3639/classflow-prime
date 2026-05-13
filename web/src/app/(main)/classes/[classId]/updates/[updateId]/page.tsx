@@ -136,7 +136,7 @@ export default function EditUpdatePage() {
                 classId={classId}
                 isNew={false}
                 isLoading={updating}
-                error={error?.message}
+                error={error}
                 onSubmit={handleSubmit}
                 isDirty={
                     originalFormRef.current

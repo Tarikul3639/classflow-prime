@@ -13,7 +13,6 @@ import { useFileUpload } from "@/hooks/useCloudinary";
 
 import type { ClassFaculty } from "@/store/features/classes/class.types";
 import { createClassFaculty } from "@/store/features/classes/thunks/class-faculty.thunk";
-import { selectClassFacultyLoading } from "@/store/features/classes/selectors/class-faculty.selectors";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 export default function AddFacultyPage() {
@@ -33,10 +32,10 @@ export default function AddFacultyPage() {
   });
 
   // ── Selectors ──────────────────────────────────────────────────────────────
-  const classLoading = useAppSelector((state) =>
-    selectClassFacultyLoading(state, classId),
+  const { loading: isCreating, error: createError } = useAppSelector(
+    (state) =>
+      state.classes.classFaculty.facultiesByClass[classId]?.create || {},
   );
-  const isCreating = classLoading.create;
 
   const { upload, loading: uploadLoading } = useFileUpload();
 

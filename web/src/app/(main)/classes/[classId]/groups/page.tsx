@@ -1,22 +1,19 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { Plus, Users } from "lucide-react"; // Users icon for EmptyState
+import { Plus, Users } from "lucide-react";
 import Link from "next/link";
 import { GroupCard } from "./_components/GroupCard";
+import { GroupsSkeleton } from "./_components/GroupsSkeleton";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
-import { TopLoader } from "@/components/ui/TopLoader";
-import { EmptyState } from "@/components/ui/EmptyState"; // Import EmptyState
+import { EmptyState } from "@/components/ui/EmptyState";
 import {
   fetchClassGroups,
   deleteClassGroup,
 } from "@/store/features/classes/thunks/groups/class-group.thunk";
-
 import {
   selectClassGroups,
-  selectClassGroupLoading,
-  selectClassGroupError,
   selectIsGroupsFetched,
 } from "@/store/features/classes/selectors/class-group.selectors";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -29,12 +26,12 @@ export default function GroupsPage() {
   // ─── Context ───────────────────────────────────────────────────────────
   const classId = params.classId as string;
 
-  // ─── Data Selection (Using New Selectors) ──────────────────────────────
+  // ─── Selectors ─────────────────────────────────────────────────────────
   const groups = useAppSelector((state) => selectClassGroups(state, classId));
-  const loading = useAppSelector((state) => selectClassGroupLoading(state, classId));
-  const error = useAppSelector((state) => selectClassGroupError(state, classId));
   const isFetched = useAppSelector((state) => selectIsGroupsFetched(state, classId));
-
+  const { loading: isFetching, error: fetchError } = useAppSelector(
+    (state) => state.classes.classGroups.groupsByClass[classId]?.fetch || {},
+  );
   const { classDetails } = useAppSelector((state) => state.classes.fetchSingleClass);
 
   // ─── Initialization ────────────────────────────────────────────────────
@@ -44,13 +41,14 @@ export default function GroupsPage() {
     }
   }, [classId, dispatch, isFetched]);
 
-  // ─── Logic ─────────────────────────────────────────────────────────────
+  // ─── Derived State ─────────────────────────────────────────────────────
   const isAdmin = classDetails?.isInstructor || classDetails?.isAssistant;
-  const fetchErrorMessage = error.fetch;
+  const isEmpty = groups.length === 0 && !isFetching;
 
+  // ─── Handlers ──────────────────────────────────────────────────────────
   const handleDelete = async (groupId: string) => {
     const promise = dispatch(
-      deleteClassGroup({ classId: classId as string, groupId }),
+      deleteClassGroup({ classId, groupId }),
     ).unwrap();
 
     toast.promise(promise, {
@@ -74,21 +72,18 @@ export default function GroupsPage() {
     console.log("Toggle pin for group with ID:", groupId);
   };
 
-  const isEmpty = groups.length === 0;
-
+  // ─── Render ────────────────────────────────────────────────────────────
   return (
     <main className="relative bg-slate-50 p-4 space-y-4 pb-8 mx-auto flex flex-col">
-      <TopLoader isLoading={loading.fetch} />
-      {/* Add New Group - Dashed Border */}
-      {isAdmin && (
+
+      {/* Add New Group — Admin Only */}
+      {isAdmin && !isFetching && (
         <div className="shrink-0 border-2 border-dashed border-slate-300 rounded-2xl bg-transparent p-6 flex flex-col items-center text-center gap-3">
           <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
             <Plus className="text-primary" size={24} />
           </div>
           <div>
-            <h4 className="font-bold text-slate-900 text-base">
-              Add New Group
-            </h4>
+            <h4 className="font-bold text-slate-900 text-base">Add New Group</h4>
             <p className="text-sm text-slate-600 mt-1">
               Help your classmates by sharing relevant group links
             </p>
@@ -102,14 +97,17 @@ export default function GroupsPage() {
         </div>
       )}
 
-      {fetchErrorMessage && (
-        <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mt-4">
-          <p className="text-sm">{fetchErrorMessage}</p>
+      {/* Error */}
+      {fetchError && (
+        <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+          <p className="text-sm">{fetchError}</p>
         </div>
       )}
 
-      {/* Content Section */}
-      {isEmpty && !fetchErrorMessage ? (
+      {/* Skeleton → Empty → List: mutually exclusive */}
+      {isFetching && groups.length === 0 ? (
+        <GroupsSkeleton count={6} />
+      ) : isEmpty && !fetchError ? (
         <div className="flex-1 flex flex-col items-center justify-center py-10">
           <EmptyState
             title="No Groups Found"
@@ -120,14 +118,12 @@ export default function GroupsPage() {
         </div>
       ) : (
         <div className="flex-1">
-          {/* Section Title */}
           <div className="mt-6 mb-3 px-1">
             <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 px-1">
               Active Communication Channels
             </h3>
           </div>
 
-          {/* Groups Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {groups.map((group) => (
               <GroupCard

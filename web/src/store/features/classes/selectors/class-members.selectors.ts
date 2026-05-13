@@ -11,20 +11,6 @@ export const selectClassBucket = (state: RootState, classId: string) =>
         error: { fetchMembers: null },
     };
 
-// ─── Loading & Error ───────────────────────────────────────────
-
-export const makeSelectClassMembersLoading = () =>
-    createSelector(
-        [selectClassBucket],
-        (bucket) => bucket.loading.fetchMembers
-    );
-
-export const makeSelectClassMembersError = () =>
-    createSelector(
-        [selectClassBucket],
-        (bucket) => bucket.error.fetchMembers
-    );
-
 // ─── Stale Check (5 minutes) ───────────────────────────────────
 
 export const selectIsMembersStale = (classId: string, staleTime = 5 * 60 * 1000) =>

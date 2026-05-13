@@ -43,39 +43,17 @@ export default function ClassLayout({
   }, [classId, dispatch, router]);
 
   const tabs = [
-    {
-      id: "updates",
-      label: "Updates",
-      href: `/classes/${params.classId}/updates`,
-    },
-    {
-      id: "faculty",
-      label: "Faculty",
-      href: `/classes/${params.classId}/faculty`,
-    },
-    {
-      id: "routine",
-      label: "Routine",
-      href: `/classes/${params.classId}/routine`,
-    },
-    {
-      id: "groups",
-      label: "Groups",
-      href: `/classes/${params.classId}/groups`,
-    },
-    {
-      id: "members",
-      label: "Members",
-      href: `/classes/${params.classId}/members`,
-    },
-    {
-      id: "settings",
-      label: "Settings",
-      href: `/classes/${params.classId}/settings`,
-    },
+    { id: "updates", label: "Updates", href: `/classes/${params.classId}/updates` },
+    { id: "faculty", label: "Faculty", href: `/classes/${params.classId}/faculty` },
+    { id: "routine", label: "Routine", href: `/classes/${params.classId}/routine` },
+    { id: "groups", label: "Groups", href: `/classes/${params.classId}/groups` },
+    { id: "members", label: "Members", href: `/classes/${params.classId}/members` },
+    { id: "settings", label: "Settings", href: `/classes/${params.classId}/settings` },
   ];
 
   const isActiveTab = (href: string) => pathname === href;
+
+  const loading = isLoading || !classDetails?.classId;
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
@@ -102,7 +80,7 @@ export default function ClassLayout({
 
       {/* Class Info Card - Hero Style */}
       <div className="p-2 md:p-3 lg:p-4 mx-auto w-full">
-        {isLoading ? (
+        {loading ? (
           <ClassHeroSkeleton />
         ) : (
           <div className="relative h-64 w-full rounded-2xl overflow-hidden shadow-lg">
@@ -126,6 +104,9 @@ export default function ClassLayout({
                   .join("")}
               </AvatarFallback>
             </Avatar>
+
+            {/* Gradient overlay — always on top of image */}
+            <div className="absolute inset-0 bg-linear-to-t from-black/75 via-black/20 to-black/30" />
 
             {/* Concentric rings effect */}
             <svg
@@ -152,22 +133,20 @@ export default function ClassLayout({
               </div>
 
               <div>
-                <p className="text-blue-100 text-xs font-bold uppercase tracking-widest mb-1">
+                <p className="text-gray-100 text-xs font-bold uppercase tracking-widest mb-1">
                   {classDetails?.department}.{classDetails?.semester}
                 </p>
                 <h2 className="text-2xl font-extrabold mb-4 leading-tight">
                   {classDetails?.name}
                 </h2>
                 <div className="flex items-center gap-3 pt-4 border-t border-white/20">
-                  <Avatar
-                    className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm text-white flex items-center justify-center font-bold text-sm shadow-sm"
-                    style={{ boxShadow: classDetails?.themeColor }}
-                  >
+                  <Avatar className="w-10 h-10 rounded-full ring-2 ring-white/30">
                     <AvatarImage
                       src={classDetails?.avatarUrl || undefined}
                       alt={classDetails?.instructor || "Instructor Avatar"}
+                      className="object-cover"
                     />
-                    <AvatarFallback className="w-full h-full text-sm font-semibold bg-white/20 text-white text-center p-1">
+                    <AvatarFallback className="w-full h-full text-sm font-semibold bg-white/20 backdrop-blur-sm text-white">
                       {classDetails?.instructor
                         ?.split(" ")
                         .map((n) => n[0])
@@ -175,7 +154,7 @@ export default function ClassLayout({
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="text-xs text-blue-100 font-medium">
+                    <p className="text-xs text-gray-50 font-medium">
                       Instructor
                     </p>
                     <p className="text-sm font-bold">
@@ -194,37 +173,27 @@ export default function ClassLayout({
         <div className="flex overflow-x-auto no-scrollbar px-4 relative">
           {tabs.map((tab) => {
             const active = isActiveTab(tab.href);
-
             return (
               <Link
                 key={tab.id}
                 href={tab.href}
                 className={`relative flex-none px-4 py-4 text-[12px] md:text-[13px] lg:text-[14px] font-semibold transition-colors overflow-hidden ${active
-                    ? "text-primary font-bold"
-                    : "text-slate-800 hover:text-slate-900"
+                  ? "text-primary font-bold"
+                  : "text-slate-800 hover:text-slate-900"
                   }`}
               >
                 {tab.label}
-
                 {active && (
                   <>
                     <motion.span
                       layoutId="activeGlow"
                       className="absolute -bottom-1 left-2 right-2 h-3 bg-primary/40 blur-md rounded-full"
-                      transition={{
-                        type: "spring",
-                        stiffness: 500,
-                        damping: 30,
-                      }}
+                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
                     />
                     <motion.span
                       layoutId="activeTab"
                       className="absolute bottom-0 left-0 right-0 h-1 rounded-t-full bg-primary"
-                      transition={{
-                        type: "spring",
-                        stiffness: 500,
-                        damping: 30,
-                      }}
+                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
                     />
                   </>
                 )}

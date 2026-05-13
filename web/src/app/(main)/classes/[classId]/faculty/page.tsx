@@ -5,7 +5,7 @@ import { Plus, GraduationCap } from "lucide-react";
 import Link from "next/link";
 import { FacultyCard } from "./_components/FacultyCard";
 import { useParams, useRouter } from "next/navigation";
-import { TopLoader } from "@/components/ui/TopLoader";
+import { FacultySkeleton } from "./_components/FacultySkeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { toast } from "sonner";
@@ -19,7 +19,6 @@ import {
 // Selectors
 import {
     selectClassFaculties,
-    selectClassFacultyLoading,
     selectIsFacultyFetched,
 } from "@/store/features/classes/selectors/class-faculty.selectors";
 
@@ -32,35 +31,36 @@ export default function FacultyPage() {
 
     // ── Selectors ──────────────────────────────────────────────────────────────
     const faculties = useAppSelector((state) =>
-        selectClassFaculties(state, classId)
+        selectClassFaculties(state, classId),
     );
 
-    const loading = useAppSelector((state) =>
-        selectClassFacultyLoading(state, classId)
+    const { loading: isFetching, error: fetchingError } = useAppSelector(
+        (state) =>
+            state.classes.classFaculty.facultiesByClass[classId]?.fetch || {},
     );
 
     const isFetched = useAppSelector((state) =>
-        selectIsFacultyFetched(state, classId)
+        selectIsFacultyFetched(state, classId),
     );
 
     const { classDetails } = useAppSelector(
-        (state) => state.classes.fetchSingleClass
+        (state) => state.classes.fetchSingleClass,
     );
 
     // ── Initialization ─────────────────────────────────────────────────────────
     useEffect(() => {
-        if (!classId || isFetched) return; // Skip if already fetched
+        if (!classId || isFetched) return;
         dispatch(fetchClassFaculties(classId));
     }, [dispatch, classId]);
 
     // ── Derived State ──────────────────────────────────────────────────────────
     const isAdmin = classDetails?.isInstructor || classDetails?.isAssistant;
-    const isEmpty = faculties.length === 0 && !loading.fetch;
+    const isEmpty = faculties.length === 0 && !isFetching && !fetchingError;
 
     // ── Event Handlers ─────────────────────────────────────────────────────────
     const handleDelete = (facultyId: string) => {
         const promise = dispatch(
-            deleteClassFaculty({ classId, facultyId })
+            deleteClassFaculty({ classId, facultyId }),
         ).unwrap();
 
         toast.promise(promise, {
@@ -73,10 +73,8 @@ export default function FacultyPage() {
     // ── Render ─────────────────────────────────────────────────────────────────
     return (
         <main className="relative bg-slate-50 p-4 space-y-4 pb-8 mx-auto flex flex-col">
-            <TopLoader isLoading={loading.fetch || loading.delete} />
-
             {/* Add Faculty Card — Admin Only */}
-            {isAdmin && (
+            {isAdmin && !isFetching && (
                 <div className="shrink-0 border-2 border-dashed border-slate-300 rounded-2xl bg-transparent p-6 flex flex-col items-center text-center gap-3">
                     <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
                         <Plus className="text-primary" size={24} />
@@ -100,8 +98,19 @@ export default function FacultyPage() {
                 </div>
             )}
 
-            {/* Empty State vs Faculty List */}
-            {isEmpty ? (
+            {/* Skeleton → Empty → List: mutually exclusive */}
+            {isFetching && faculties.length === 0 ? (
+                <FacultySkeleton count={6} />
+            ) : fetchingError ? (
+                <div className="flex-1 flex flex-col items-center justify-center py-10">
+                    <EmptyState
+                        title="Failed to load faculty"
+                        description={fetchingError}
+                        icon={GraduationCap}
+                        size="md"
+                    />
+                </div>
+            ) : isEmpty ? (
                 <div className="flex-1 flex flex-col items-center justify-center py-10">
                     <EmptyState
                         title="No Faculty Assigned"
@@ -126,7 +135,7 @@ export default function FacultyPage() {
                                 onDelete={() => handleDelete(faculty.facultyId)}
                                 onEdit={() =>
                                     router.push(
-                                        `/classes/${classId}/faculty/${faculty.facultyId}`
+                                        `/classes/${classId}/faculty/${faculty.facultyId}`,
                                     )
                                 }
                                 onTogglePin={() => {
