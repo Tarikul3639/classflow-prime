@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { CalendarDays } from "lucide-react";
 import { useParams } from "next/navigation";
 
@@ -12,6 +12,8 @@ import { PeriodSlotCard } from "./_components/MobileView/PeriodSlotCard";
 import { PeriodSlotDialog } from "./_components/PeriodSlotDialog";
 import { CreateRoutineDialog } from "./_components/CreateRoutineDialog";
 import { RoutineSkeleton } from "./_components/RoutineSkeleton";
+import { buildSubjectColorMap } from "./_components/SubjectColors";
+import { toast } from "sonner";
 
 import type {
     RoutineSlot,
@@ -27,6 +29,11 @@ import { addSlot } from "@/store/features/classes/thunks/routine/addSlotThunk";
 import { editSlot } from "@/store/features/classes/thunks/routine/editSlotThunk";
 import { removeSlot } from "@/store/features/classes/thunks/routine/removeSlotThunk";
 import { deleteRoutine } from "@/store/features/classes/thunks/routine/deleteRoutine.thunk";
+
+const DAYS: DayOfWeek[] = [
+    "Sunday", "Monday", "Tuesday", "Wednesday",
+    "Thursday", "Friday", "Saturday",
+];
 
 export default function ClassRoutine() {
     const dispatch = useAppDispatch();
@@ -51,10 +58,6 @@ export default function ClassRoutine() {
         (state) => state.classes.routine.editSlot,
     );
 
-    const { loading: removingSlot, error: removeSlotError } = useAppSelector(
-        (state) => state.classes.routine.removeSlot,
-    );
-
     const { loading: deletingRoutine, error: deleteRoutineError } = useAppSelector(
         (state) => state.classes.routine.deleteRoutine,
     );
@@ -69,12 +72,16 @@ export default function ClassRoutine() {
         (state) => state.classes.routine.routines[classId],
     );
 
-    // ── Local state ────────────────────────────────────────────────────────
+    // ── Memoized subject wise color map ─────────────────────────────────────────────────
 
-    const [activeDay, setActiveDay] = useState<DayOfWeek>(
-        (routine?.schedule?.[0]?.day as DayOfWeek) ?? ("Sunday" as DayOfWeek),
+    const colorMap = useMemo(
+        () => buildSubjectColorMap(routine?.schedule.map((d) => d.slots ?? []) ?? []),
+        [routine?.schedule],
     );
 
+    // ── Local state ────────────────────────────────────────────────────────
+
+    const [activeDay, setActiveDay] = useState<DayOfWeek>("Sunday" as DayOfWeek);
     const [slotDialogOpen, setSlotDialogOpen] = useState(false);
     const [createOpen, setCreateOpen] = useState(false);
     const [selectedSlot, setSelectedSlot] = useState<RoutineSlot | undefined>();
@@ -86,6 +93,19 @@ export default function ClassRoutine() {
         if (classId) dispatch(fetchRoutine(classId));
     }, [classId, dispatch]);
 
+    // ── Auto-select today's day once routine loads ─────────────────────────
+
+    useEffect(() => {
+        if (!routine?.schedule?.length) return;
+        const todayName = DAYS[new Date().getDay()];
+        const hasToday = routine.schedule.some((d) => d.day === todayName);
+        setActiveDay(
+            hasToday
+                ? todayName
+                : (routine.schedule[0].day as DayOfWeek),
+        );
+    }, [routine?.routineId]);
+
     // ── Handlers ───────────────────────────────────────────────────────────
 
     function onEdit(day: string, slot: RoutineSlot) {
@@ -96,8 +116,19 @@ export default function ClassRoutine() {
 
     async function onRemove(slot: RoutineSlot) {
         if (!slot.slotId) return;
+
+        const promise = dispatch(
+            removeSlot({ classId, slotId: slot.slotId })
+        ).unwrap();
+
+        toast.promise(promise, {
+            loading: "Removing slot...",
+            success: "Slot removed successfully",
+            error: "Failed to remove slot",
+        });
+
         try {
-            await dispatch(removeSlot({ classId, slotId: slot.slotId })).unwrap();
+            await promise;
         } catch (err) {
             console.error("Failed to remove slot:", err);
         }
@@ -192,6 +223,10 @@ export default function ClassRoutine() {
                                     error={deleteRoutineError}
                                     setOpen={setSlotDialogOpen}
                                     onDeleteRoutine={onDeleteRoutine}
+                                    onTodayClick={() => {
+                                        const todayName = DAYS[new Date().getDay()];
+                                        setActiveDay(todayName);
+                                    }}
                                 />
 
                                 {/* Desktop */}
@@ -201,6 +236,7 @@ export default function ClassRoutine() {
                                         schedule={routine.schedule}
                                         loading={fetching}
                                         error={fetchError}
+                                        colorMap={colorMap}
                                         onEdit={onEdit}
                                         onRemove={onRemove}
                                     />
@@ -214,7 +250,7 @@ export default function ClassRoutine() {
                                         onDayChange={setActiveDay}
                                     />
 
-                                    <div className="px-4 pb-24 pt-2">
+                                    <div className="px-4 pb-24 pt-3">
                                         {(() => {
                                             const daySchedule = routine.schedule.find(
                                                 (d) => d.day === activeDay,
@@ -233,10 +269,12 @@ export default function ClassRoutine() {
                                                         return (
                                                             <PeriodSlotCard
                                                                 key={period.periodId}
+                                                                isAdmin={isAdmin}
                                                                 slot={slot}
                                                                 period={period}
                                                                 activeDay={activeDay}
                                                                 isLast={index === periods.length - 1}
+                                                                color={colorMap.get(slot.subject)}
                                                                 onEdit={(slot) => onEdit(activeDay, slot)}
                                                                 onRemove={(slot) => onRemove(slot)}
                                                             />

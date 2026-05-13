@@ -14,16 +14,12 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 interface HeaderProps {
   isAdmin: boolean;
-
   open: boolean;
-
   setOpen: (open: boolean) => void;
-
   loading?: boolean;
-
   error?: string | null;
-
   onDeleteRoutine?: () => void;
+  onTodayClick?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -33,6 +29,7 @@ export const Header: React.FC<HeaderProps> = ({
   loading,
   error,
   onDeleteRoutine,
+  onTodayClick,
 }) => {
   // ── State ────────────────────────────────────────────────────────
 
@@ -70,7 +67,10 @@ export const Header: React.FC<HeaderProps> = ({
         className="w-full flex gap-4 flex-row items-center justify-between px-4 pt-6 pb-2.5"
       >
         {/* ── Left ───────────────────────────────────── */}
-        <div className="flex flex-col min-w-24">
+        <div
+          className="flex flex-col min-w-24 cursor-pointer select-none"
+          onClick={onTodayClick}
+        >
           <p className="text-sm text-gray-400 font-medium tracking-wide">
             {formattedDate}
           </p>

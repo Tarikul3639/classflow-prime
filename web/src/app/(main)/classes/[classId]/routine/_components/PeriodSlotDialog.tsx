@@ -10,11 +10,10 @@ import {
     DialogFooter,
     DialogDescription,
 } from "@/components/ui/dialog";
+import { formatTo12Hour } from "@/utils/date.utils";
 
 import { Button } from "@/components/ui/button";
-
 import { Input } from "@/components/ui/Input";
-
 import { Select } from "@/components/ui/Select";
 
 import type {
@@ -49,19 +48,12 @@ const EMPTY: Omit<RoutineSlot, "periodNo" | "slotId"> = {
 
 interface PeriodSlotDialogProps {
     loading?: boolean;
-
     error?: string | null;
-
     open: boolean;
-
     periods: RoutinePeriod[];
-
     defaultDay?: string;
-
     editData?: RoutineSlot;
-
     onClose: () => void;
-
     onSubmit: (
         day: string,
         dto: RoutineSlot,
@@ -88,7 +80,7 @@ export function PeriodSlotDialog({
         .map((p) => ({
             value: String(p.periodNo),
 
-            label: `${p.label} • ${p.startTime} - ${p.endTime}`,
+            label: `P${p.periodNo} • ${formatTo12Hour(p.startTime)} - ${formatTo12Hour(p.endTime)}`,
         }));
 
     // ── State ────────────────────────────────────────────────────────────────
@@ -121,14 +113,10 @@ export function PeriodSlotDialog({
                 slotId,
                 ...rest
             } = editData;
-
             setPeriodNo(selectedPeriodNo);
-
             setForm({
                 subject: rest.subject ?? "",
-
                 teacherName: rest.teacherName ?? "",
-
                 room: rest.room ?? "",
             });
         } else {
@@ -138,9 +126,7 @@ export function PeriodSlotDialog({
 
             setForm(EMPTY);
         }
-
         setDay(defaultDay ?? DAYS[0]);
-
         setErrors({});
     }, [open, editData, defaultDay, periods]);
 
@@ -322,7 +308,7 @@ export function PeriodSlotDialog({
                     )}
                 </div>
 
-                <DialogFooter className="gap-2">
+                <DialogFooter className="flex flex-row justify-end gap-2">
                     <Button
                         variant="outline"
                         className="cursor-pointer rounded-sm"

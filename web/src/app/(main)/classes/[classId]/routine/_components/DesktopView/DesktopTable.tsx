@@ -3,8 +3,7 @@
 import type { RoutinePeriod, DaySchedule, RoutineSlot } from "@/types/routine.types";
 import { SubjectCard } from "./SubjectCard";
 import { formatTo12Hour } from "@/utils/date.utils";
-import { buildSubjectColorMap } from "../SubjectColors";
-import { useMemo } from "react";
+import type { SubjectColor } from "../SubjectColors";
 
 const todayName = new Date().toLocaleDateString("en-US", {
     weekday: "long",
@@ -15,6 +14,7 @@ interface DesktopTableProps {
     schedule: DaySchedule[];
     loading: boolean;
     error: string | null;
+    colorMap: Map<string, SubjectColor>;
     onEdit: (day: string, slot: RoutineSlot) => void;
     onRemove: (slot: RoutineSlot) => void;
 }
@@ -35,13 +35,10 @@ export function DesktopTable({
     schedule,
     loading,
     error,
+    colorMap,
     onEdit,
     onRemove,
 }: DesktopTableProps) {
-    const colorMap = useMemo(
-        () => buildSubjectColorMap(schedule.map((d) => d.slots ?? [])),
-        [schedule],
-    );
 
     if (loading) {
         return (
