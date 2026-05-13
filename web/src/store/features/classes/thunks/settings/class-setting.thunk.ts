@@ -7,11 +7,11 @@ import { extractAxiosError } from "@/api/extract-error";
 
 export const leaveClass = createAsyncThunk<
     { message: string },
-    { classId: string },
+    string,
     { rejectValue: string }
 >(
     "classes/leaveClass",
-    async ({ classId }, { rejectWithValue }) => {
+    async (classId, { rejectWithValue }) => {
         try {
             const { data } = await apiClient.post(`classes/${classId}/leave`);
             return { message: data.message };
@@ -25,11 +25,11 @@ export const leaveClass = createAsyncThunk<
 
 export const deleteClass = createAsyncThunk<
     { classId: string; message: string },
-    { classId: string },
+    string,
     { rejectValue: string }
 >(
     "classes/deleteClass",
-    async ({ classId }, { rejectWithValue }) => {
+    async (classId, { rejectWithValue }) => {
         try {
             const { data } = await apiClient.delete(`classes/${classId}`);
             return { classId, message: data.message };
@@ -43,11 +43,11 @@ export const deleteClass = createAsyncThunk<
 
 export const markClassAsEnded = createAsyncThunk<
     { classId: string; message: string },
-    { classId: string },
+    string,
     { rejectValue: string }
 >(
     "classes/markAsEnded",
-    async ({ classId }, { rejectWithValue }) => {
+    async (classId, { rejectWithValue }) => {
         try {
             const { data } = await apiClient.patch(`classes/${classId}/end`);
             return { classId, message: data.message };
@@ -57,19 +57,20 @@ export const markClassAsEnded = createAsyncThunk<
     }
 );
 
-// ─── Fetch Class Code ──────────────────────────────────────────
+// ─── Fetch Class Settings ──────────────────────────────────────
 
 export const fetchClassSettings = createAsyncThunk<
-    { classId: string; code: string, isJoiningAllowed: boolean },
-    { classId: string },
+    { classId: string; code: string; isJoiningAllowed: boolean },
+    string,
     { rejectValue: string }
 >(
     "classes/fetchClassSettings",
-    async ({ classId }, { rejectWithValue }) => {
+    async (classId, { rejectWithValue }) => {
         try {
             const { data } = await apiClient.get(`classes/${classId}/settings`);
             return {
-                classId, code: data.data.code,
+                classId,
+                code: data.data.code,
                 isJoiningAllowed: data.data.isJoiningAllowed,
             };
         } catch (error) {
@@ -82,11 +83,11 @@ export const fetchClassSettings = createAsyncThunk<
 
 export const regenerateClassCode = createAsyncThunk<
     { classId: string; code: string },
-    { classId: string },
+    string,
     { rejectValue: string }
 >(
     "classes/regenerateClassCode",
-    async ({ classId }, { rejectWithValue }) => {
+    async (classId, { rejectWithValue }) => {
         try {
             const { data } = await apiClient.patch(`classes/${classId}/code/regenerate`);
             return { classId, code: data.data.code };
@@ -100,11 +101,11 @@ export const regenerateClassCode = createAsyncThunk<
 
 export const toggleJoiningAllowed = createAsyncThunk<
     { classId: string; isJoiningAllowed: boolean },
-    { classId: string },
+    string,
     { rejectValue: string }
 >(
     "classes/toggleJoiningAllowed",
-    async ({ classId }, { rejectWithValue }) => {
+    async (classId, { rejectWithValue }) => {
         try {
             const { data } = await apiClient.patch(`classes/${classId}/joining`);
             return { classId, isJoiningAllowed: data.data.isJoiningAllowed };

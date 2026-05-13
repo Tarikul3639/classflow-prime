@@ -9,141 +9,200 @@ import {
     toggleJoiningAllowed,
 } from "../../thunks/settings/class-setting.thunk";
 
-interface ClassActionsState {
+// ─── Bucket Interface ───────────────────────────────────────────────
+interface ClassActionsBucket {
     classCode: string | null;
     isJoiningAllowed: boolean;
-    loading: {
-        leaveClass: boolean;
-        deleteClass: boolean;
-        markAsEnded: boolean;
-        fetchClassCode: boolean;
-        regenerateClassCode: boolean;
-        toggleJoiningAllowed: boolean;
-    };
-    error: {
-        leaveClass: string | null;
-        deleteClass: string | null;
-        markAsEnded: string | null;
-        fetchClassCode: string | null;
-        regenerateClassCode: string | null;
-        toggleJoiningAllowed: string | null;
+
+    leaveClass: { loading: boolean; error: string | null };
+    deleteClass: { loading: boolean; error: string | null };
+    markAsEnded: { loading: boolean; error: string | null };
+    fetchClassSettings: { loading: boolean; error: string | null };
+    regenerateClassCode: { loading: boolean; error: string | null };
+    toggleJoiningAllowed: { loading: boolean; error: string | null };
+}
+
+// ─── State Interface ────────────────────────────────────────────────
+export interface ClassActionsState {
+    actionsByClass: {
+        [classId: string]: ClassActionsBucket;
     };
 }
 
-const initialState: ClassActionsState = {
+// ─── Factory ────────────────────────────────────────────────────────
+const createInitialClassActionsBucket = (): ClassActionsBucket => ({
     classCode: null,
     isJoiningAllowed: true,
-    loading: {
-        leaveClass: false,
-        deleteClass: false,
-        markAsEnded: false,
-        fetchClassCode: false,
-        regenerateClassCode: false,
-        toggleJoiningAllowed: false,
-    },
-    error: {
-        leaveClass: null,
-        deleteClass: null,
-        markAsEnded: null,
-        fetchClassCode: null,
-        regenerateClassCode: null,
-        toggleJoiningAllowed: null,
-    },
+
+    leaveClass: { loading: false, error: null },
+    deleteClass: { loading: false, error: null },
+    markAsEnded: { loading: false, error: null },
+    fetchClassSettings: { loading: false, error: null },
+    regenerateClassCode: { loading: false, error: null },
+    toggleJoiningAllowed: { loading: false, error: null },
+});
+
+// ─── Initial State ──────────────────────────────────────────────────
+const initialState: ClassActionsState = {
+    actionsByClass: {},
 };
 
+// ─── Helper ─────────────────────────────────────────────────────────
+const ensureBucket = (state: ClassActionsState, classId: string) => {
+    if (!state.actionsByClass[classId]) {
+        state.actionsByClass[classId] = createInitialClassActionsBucket();
+    }
+};
+
+// ─── Slice ──────────────────────────────────────────────────────────
 const classActionsSlice = createSlice({
     name: "classActions",
     initialState,
+
     reducers: {
-        clearClassCode: (state) => {
-            state.classCode = null;
+        clearClassCode: (state, action: { payload: string }) => {
+            const bucket = state.actionsByClass[action.payload];
+            if (bucket) bucket.classCode = null;
         },
-        clearErrors: (state) => {
-            state.error = initialState.error;
+        clearErrors: (state, action: { payload: string }) => {
+            const bucket = state.actionsByClass[action.payload];
+            if (bucket) {
+                bucket.leaveClass.error = null;
+                bucket.deleteClass.error = null;
+                bucket.markAsEnded.error = null;
+                bucket.fetchClassSettings.error = null;
+                bucket.regenerateClassCode.error = null;
+                bucket.toggleJoiningAllowed.error = null;
+            }
         },
     },
+
     extraReducers: (builder) => {
-        // ─── Leave Class ───────────────────────────────────────────────
-        builder.addCase(leaveClass.pending, (state) => {
-            state.loading.leaveClass = true;
-            state.error.leaveClass = null;
-        });
-        builder.addCase(leaveClass.fulfilled, (state) => {
-            state.loading.leaveClass = false;
-        });
-        builder.addCase(leaveClass.rejected, (state, action) => {
-            state.loading.leaveClass = false;
-            state.error.leaveClass = action.payload || "Failed to leave class.";
-        });
+        builder
 
-        // ─── Delete Class ──────────────────────────────────────────────
-        builder.addCase(deleteClass.pending, (state) => {
-            state.loading.deleteClass = true;
-            state.error.deleteClass = null;
-        });
-        builder.addCase(deleteClass.fulfilled, (state) => {
-            state.loading.deleteClass = false;
-        });
-        builder.addCase(deleteClass.rejected, (state, action) => {
-            state.loading.deleteClass = false;
-            state.error.deleteClass = action.payload || "Failed to delete class.";
-        });
+            // ─── Leave Class ─────────────────────────────────────────────
+            .addCase(leaveClass.pending, (state, action) => {
+                const classId = action.meta.arg;
+                ensureBucket(state, classId);
+                state.actionsByClass[classId].leaveClass.loading = true;
+                state.actionsByClass[classId].leaveClass.error = null;
+            })
+            .addCase(leaveClass.fulfilled, (state, action) => {
+                const classId = action.meta.arg;
+                ensureBucket(state, classId);
+                state.actionsByClass[classId].leaveClass.loading = false;
+            })
+            .addCase(leaveClass.rejected, (state, action) => {
+                const classId = action.meta.arg;
+                ensureBucket(state, classId);
+                state.actionsByClass[classId].leaveClass.loading = false;
+                state.actionsByClass[classId].leaveClass.error =
+                    action.payload || "Failed to leave class.";
+            })
 
-        // ─── Mark As Ended ─────────────────────────────────────────────
-        builder.addCase(markClassAsEnded.pending, (state) => {
-            state.loading.markAsEnded = true;
-            state.error.markAsEnded = null;
-        });
-        builder.addCase(markClassAsEnded.fulfilled, (state) => {
-            state.loading.markAsEnded = false;
-        });
-        builder.addCase(markClassAsEnded.rejected, (state, action) => {
-            state.loading.markAsEnded = false;
-            state.error.markAsEnded = action.payload || "Failed to mark class as ended.";
-        });
+            // ─── Delete Class ────────────────────────────────────────────
+            .addCase(deleteClass.pending, (state, action) => {
+                const classId = action.meta.arg;
+                ensureBucket(state, classId);
+                state.actionsByClass[classId].deleteClass.loading = true;
+                state.actionsByClass[classId].deleteClass.error = null;
+            })
+            .addCase(deleteClass.fulfilled, (state, action) => {
+                const classId = action.meta.arg;
+                ensureBucket(state, classId);
+                state.actionsByClass[classId].deleteClass.loading = false;
+            })
+            .addCase(deleteClass.rejected, (state, action) => {
+                const classId = action.meta.arg;
+                ensureBucket(state, classId);
+                state.actionsByClass[classId].deleteClass.loading = false;
+                state.actionsByClass[classId].deleteClass.error =
+                    action.payload || "Failed to delete class.";
+            })
 
-        // ─── Fetch Class Code ──────────────────────────────────────────
-        builder.addCase(fetchClassSettings.pending, (state) => {
-            state.loading.fetchClassCode = true;
-            state.error.fetchClassCode = null;
-            state.classCode = null; // Clear old code while fetching new one
-            state.isJoiningAllowed = true; // Reset to default while fetching
-        });
-        builder.addCase(fetchClassSettings.fulfilled, (state, action) => {
-            state.loading.fetchClassCode = false;
-            state.classCode = action.payload.code;
-            state.isJoiningAllowed = action.payload.isJoiningAllowed;
-        });
-        builder.addCase(fetchClassSettings.rejected, (state, action) => {
-            state.loading.fetchClassCode = false;
-            state.error.fetchClassCode = action.payload || "Failed to fetch class code.";
-        });
+            // ─── Mark As Ended ───────────────────────────────────────────
+            .addCase(markClassAsEnded.pending, (state, action) => {
+                const classId = action.meta.arg;
+                ensureBucket(state, classId);
+                state.actionsByClass[classId].markAsEnded.loading = true;
+                state.actionsByClass[classId].markAsEnded.error = null;
+            })
+            .addCase(markClassAsEnded.fulfilled, (state, action) => {
+                const classId = action.meta.arg;
+                ensureBucket(state, classId);
+                state.actionsByClass[classId].markAsEnded.loading = false;
+            })
+            .addCase(markClassAsEnded.rejected, (state, action) => {
+                const classId = action.meta.arg;
+                ensureBucket(state, classId);
+                state.actionsByClass[classId].markAsEnded.loading = false;
+                state.actionsByClass[classId].markAsEnded.error =
+                    action.payload || "Failed to mark class as ended.";
+            })
 
-        // ─── Regenerate Class Code ─────────────────────────────────────
-        builder.addCase(regenerateClassCode.pending, (state) => {
-            state.loading.regenerateClassCode = true;
-            state.error.regenerateClassCode = null;
-        });
-        builder.addCase(regenerateClassCode.fulfilled, (state, action) => {
-            state.loading.regenerateClassCode = false;
-            state.classCode = action.payload.code; // replaces old code
-        });
-        builder.addCase(regenerateClassCode.rejected, (state, action) => {
-            state.loading.regenerateClassCode = false;
-            state.error.regenerateClassCode = action.payload || "Failed to regenerate class code.";
-        });
+            // ─── Fetch Class Settings ────────────────────────────────────
+            .addCase(fetchClassSettings.pending, (state, action) => {
+                const classId = action.meta.arg;
+                ensureBucket(state, classId);
+                state.actionsByClass[classId].fetchClassSettings.loading = true;
+                state.actionsByClass[classId].fetchClassSettings.error = null;
+                state.actionsByClass[classId].classCode = null;
+                state.actionsByClass[classId].isJoiningAllowed = true;
+            })
+            .addCase(fetchClassSettings.fulfilled, (state, action) => {
+                const classId = action.meta.arg;
+                ensureBucket(state, classId);
+                state.actionsByClass[classId].fetchClassSettings.loading = false;
+                state.actionsByClass[classId].classCode = action.payload.code;
+                state.actionsByClass[classId].isJoiningAllowed = action.payload.isJoiningAllowed;
+            })
+            .addCase(fetchClassSettings.rejected, (state, action) => {
+                const classId = action.meta.arg;
+                ensureBucket(state, classId);
+                state.actionsByClass[classId].fetchClassSettings.loading = false;
+                state.actionsByClass[classId].fetchClassSettings.error =
+                    action.payload || "Failed to fetch class settings.";
+            })
 
-        // ─── Toggle Joining Allowed ─────────────────────────────────────
-        builder.addCase(toggleJoiningAllowed.pending, (state) => {
-            // No loading state for toggle, but could add if desired
-            state.error.toggleJoiningAllowed = null;
-        });
-        builder.addCase(toggleJoiningAllowed.fulfilled, (state, action) => {
-            state.isJoiningAllowed = !state.isJoiningAllowed; // toggle the state
-        });
-        builder.addCase(toggleJoiningAllowed.rejected, (state, action) => {
-            state.error.toggleJoiningAllowed = action.payload || "Failed to toggle joining allowed.";
-        });
+            // ─── Regenerate Class Code ───────────────────────────────────
+            .addCase(regenerateClassCode.pending, (state, action) => {
+                const classId = action.meta.arg;
+                ensureBucket(state, classId);
+                state.actionsByClass[classId].regenerateClassCode.loading = true;
+                state.actionsByClass[classId].regenerateClassCode.error = null;
+            })
+            .addCase(regenerateClassCode.fulfilled, (state, action) => {
+                const classId = action.meta.arg;
+                ensureBucket(state, classId);
+                state.actionsByClass[classId].regenerateClassCode.loading = false;
+                state.actionsByClass[classId].classCode = action.payload.code;
+            })
+            .addCase(regenerateClassCode.rejected, (state, action) => {
+                const classId = action.meta.arg;
+                ensureBucket(state, classId);
+                state.actionsByClass[classId].regenerateClassCode.loading = false;
+                state.actionsByClass[classId].regenerateClassCode.error =
+                    action.payload || "Failed to regenerate class code.";
+            })
+
+            // ─── Toggle Joining Allowed ──────────────────────────────────
+            .addCase(toggleJoiningAllowed.pending, (state, action) => {
+                const classId = action.meta.arg;
+                ensureBucket(state, classId);
+                state.actionsByClass[classId].toggleJoiningAllowed.error = null;
+            })
+            .addCase(toggleJoiningAllowed.fulfilled, (state, action) => {
+                const classId = action.meta.arg;
+                ensureBucket(state, classId);
+                state.actionsByClass[classId].isJoiningAllowed =
+                    !state.actionsByClass[classId].isJoiningAllowed;
+            })
+            .addCase(toggleJoiningAllowed.rejected, (state, action) => {
+                const classId = action.meta.arg;
+                ensureBucket(state, classId);
+                state.actionsByClass[classId].toggleJoiningAllowed.error =
+                    action.payload || "Failed to toggle joining allowed.";
+            });
     },
 });
 

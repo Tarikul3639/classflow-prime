@@ -31,13 +31,15 @@ export default function ClassSettingsPage() {
     const classDetails = classEntry?.classDetails;
     const classFetching = classEntry?.fetch.loading ?? false;
 
-    const { classCode, isJoiningAllowed } = useAppSelector(
-        (state) => state.classes.classSettings,
+    // ── New classId-wise selector ──────────────────────────────────────────
+
+    const settingsBucket = useAppSelector(
+        (state) => state.classes.classSettings.actionsByClass[classId],
     );
 
-    const settingsFetching = useAppSelector(
-        (state) => state.classes.classSettings.loading.fetchClassCode,
-    );
+    const classCode = settingsBucket?.classCode ?? null;
+    const isJoiningAllowed = settingsBucket?.isJoiningAllowed ?? true;
+    const settingsFetching = settingsBucket?.fetchClassSettings.loading ?? false;
 
     const isLoading = classFetching || settingsFetching;
 
@@ -45,14 +47,14 @@ export default function ClassSettingsPage() {
 
     useEffect(() => {
         if (classId) {
-            dispatch(fetchClassSettings({ classId }));
+            dispatch(fetchClassSettings(classId));
         }
     }, [classId, dispatch]);
 
     // ── Handlers ───────────────────────────────────────────────────────────
 
     const handleLeaveClass = async () => {
-        const promise = dispatch(leaveClass({ classId })).unwrap();
+        const promise = dispatch(leaveClass(classId)).unwrap();
 
         toast.promise(promise, {
             loading: "Leaving class...",
@@ -69,7 +71,7 @@ export default function ClassSettingsPage() {
     };
 
     const handleDeleteClass = async () => {
-        const promise = dispatch(deleteClass({ classId })).unwrap();
+        const promise = dispatch(deleteClass(classId)).unwrap();
 
         toast.promise(promise, {
             loading: "Deleting class...",
@@ -86,7 +88,7 @@ export default function ClassSettingsPage() {
     };
 
     const handleMarkAsEnded = async () => {
-        const promise = dispatch(markClassAsEnded({ classId })).unwrap();
+        const promise = dispatch(markClassAsEnded(classId)).unwrap();
 
         toast.promise(promise, {
             loading: "Marking class as ended...",
@@ -103,7 +105,7 @@ export default function ClassSettingsPage() {
     };
 
     const handleGenerateClassCode = async () => {
-        const promise = dispatch(regenerateClassCode({ classId })).unwrap();
+        const promise = dispatch(regenerateClassCode(classId)).unwrap();
 
         toast.promise(promise, {
             loading: "Fetching class code...",
@@ -119,7 +121,7 @@ export default function ClassSettingsPage() {
     };
 
     const onToggleJoining = async () => {
-        const promise = dispatch(toggleJoiningAllowed({ classId })).unwrap();
+        const promise = dispatch(toggleJoiningAllowed(classId)).unwrap();
 
         toast.promise(promise, {
             loading: "Toggling joining allowed status...",
