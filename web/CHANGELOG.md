@@ -1,3 +1,10 @@
+# [web-v2.8.0](https://github.com/Tarikul3639/classflow-prime/compare/web-v2.7.0...web-v2.8.0) (2026-05-13)
+
+
+### Features
+
+* **web:** Improve class UIs: skeletons, loading & filtering ([a23c7db](https://github.com/Tarikul3639/classflow-prime/commit/a23c7dbe4e622306b7408921068922dab186d916))
+
 # [web-v2.7.0](https://github.com/Tarikul3639/classflow-prime/compare/web-v2.6.0...web-v2.7.0) (2026-05-12)
 
 
