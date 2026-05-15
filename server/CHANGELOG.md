@@ -1,0 +1,14 @@
+# server-v1.0.0 (2026-05-15)
+
+
+### Bug Fixes
+
+* **web:** Add notification route/query and tighten DTOs ([1e29772](https://github.com/Tarikul3639/classflow-prime/commit/1e297721e46304d2dfb1cab0f41f19f7da5f21c7))
+
+
+### Features
+
+* Improve notifications, push & add What's New dialog ([9381d7d](https://github.com/Tarikul3639/classflow-prime/commit/9381d7d80290056e82ebf840d670fdfff47b24aa))
+* update email masking logic ([21fbef9](https://github.com/Tarikul3639/classflow-prime/commit/21fbef92041af4928e655f182e0e9339cab1eae5))
+* **web:** Add class routine module and UI ([40d0d9f](https://github.com/Tarikul3639/classflow-prime/commit/40d0d9f221f7c80314002707039633ab8ec41623))
+* **web:** Improve class UIs: skeletons, loading & filtering ([a23c7db](https://github.com/Tarikul3639/classflow-prime/commit/a23c7dbe4e622306b7408921068922dab186d916))
