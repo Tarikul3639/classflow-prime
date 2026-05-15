@@ -301,9 +301,10 @@ export default function ClassRoutine() {
 
                                                     {slots.length === 0 && (
                                                         <EmptyState
-                                                            size="sm"
+                                                            icon={CalendarDays}
+                                                            size="md"
                                                             title="No Classes"
-                                                            description="No routine slots scheduled for this day."
+                                                            description="No routine slots scheduled for this day. Enjoy your free time!"
                                                             className="h-65"
                                                         />
                                                     )}
