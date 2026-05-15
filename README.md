@@ -20,10 +20,32 @@
 - Deployment: Vercel (frontend, backend), MongoDB Atlas (database)
 
 ## Getting Started
-1. Clone repo: git clone https://github.com/yourusername/classflow-prime.git
-2. Install dependencies: npm install
-3. Set environment variables in .env
-4. Run dev server: npm run dev
+1. Clone repo: `git clone https://github.com/Tarikul3639/classflow-prime.git`
+2. Install dependencies: `npm install`
+3. Set environment variables: copy `.env.example` to `.env` and fill in the values
+4. Run dev server: `npm run dev`
+
+## Commit Convention
+This project uses [Conventional Commits](https://www.conventionalcommits.org/) for automated versioning and changelog generation.
+
+| Type | Description | Release |
+|------|-------------|---------|
+| `feat(web): ...` | New feature in frontend | `web-v` minor bump |
+| `feat(server): ...` | New feature in backend | `server-v` minor bump |
+| `fix(web): ...` | Bug fix in frontend | `web-v` patch bump |
+| `fix(server): ...` | Bug fix in backend | `server-v` patch bump |
+| `feat(web)!: ...` | Breaking change in frontend | `web-v` major bump |
+| `feat(server)!: ...` | Breaking change in backend | `server-v` major bump |
+| `chore: ...` | Maintenance, no release | — |
+| `docs: ...` | Documentation only | — |
+
+### Examples
+```bash
+git commit -m "feat(server): add email verification endpoint"
+git commit -m "fix(web): fix notification bell not updating"
+git commit -m "feat(web)!: redesign dashboard layout"
+git commit -m "chore: update dependencies"
+```
 
 ## License
 MIT License
