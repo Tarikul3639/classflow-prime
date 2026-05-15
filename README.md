@@ -28,16 +28,16 @@
 ## Commit Convention
 This project uses [Conventional Commits](https://www.conventionalcommits.org/) for automated versioning and changelog generation.
 
-| Type | Description | Release |
-|------|-------------|---------|
-| `feat(web): ...` | New feature in frontend | `web-v` minor bump |
-| `feat(server): ...` | New feature in backend | `server-v` minor bump |
-| `fix(web): ...` | Bug fix in frontend | `web-v` patch bump |
-| `fix(server): ...` | Bug fix in backend | `server-v` patch bump |
-| `feat(web)!: ...` | Breaking change in frontend | `web-v` major bump |
-| `feat(server)!: ...` | Breaking change in backend | `server-v` major bump |
-| `chore: ...` | Maintenance, no release | — |
-| `docs: ...` | Documentation only | — |
+| Type | Description | Release | Version Change |
+|------|-------------|---------|----------------|
+| `feat(web): ...` | New feature in frontend | `web-v` minor bump | `1.0.0 → 1.1.0` |
+| `feat(server): ...` | New feature in backend | `server-v` minor bump | `1.0.0 → 1.1.0` |
+| `fix(web): ...` | Bug fix in frontend | `web-v` patch bump | `1.0.0 → 1.0.1` |
+| `fix(server): ...` | Bug fix in backend | `server-v` patch bump | `1.0.0 → 1.0.1` |
+| `feat(web)!: ...` | Breaking change in frontend | `web-v` major bump | `1.0.0 → 2.0.0` |
+| `feat(server)!: ...` | Breaking change in backend | `server-v` major bump | `1.0.0 → 2.0.0` |
+| `chore: ...` | Maintenance, no release | — | no change |
+| `docs: ...` | Documentation only | — | no change |
 
 ### Examples
 ```bash
