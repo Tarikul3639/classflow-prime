@@ -1,3 +1,10 @@
+# [web-v2.9.0](https://github.com/Tarikul3639/classflow-prime/compare/web-v2.8.1...web-v2.9.0) (2026-05-17)
+
+
+### Features
+
+* **web:** add faculty contact export, clipboard copy, and routine Google Calendar integration ([075248a](https://github.com/Tarikul3639/classflow-prime/commit/075248a6bdec11b334418bc6277c76b4672c5d82))
+
 # [web-v2.8.1](https://github.com/Tarikul3639/classflow-prime/compare/web-v2.8.0...web-v2.8.1) (2026-05-15)
 
 
