@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────
 // INSTALL & ACTIVATE
 // ─────────────────────────────────────────────
-self.addEventListener("install", (event) => {
+self.addEventListener("install", () => {
   self.skipWaiting();
 });
 
@@ -13,14 +13,14 @@ self.addEventListener("activate", (event) => {
 // PUSH EVENT
 // ─────────────────────────────────────────────
 self.addEventListener("push", (event) => {
-  console.log("[sw] raw data:", event.data?.text());
-  let payload = {
+  const defaultPayload = {
     notification: { title: "New Notification", body: "" },
     data: {},
   };
 
+  let payload = defaultPayload;
   try {
-    payload = event.data ? event.data.json() : payload;
+    payload = event.data ? event.data.json() : defaultPayload;
   } catch (err) {
     console.error("[sw] Invalid push data:", err);
   }
@@ -30,46 +30,50 @@ self.addEventListener("push", (event) => {
   event.waitUntil(
     self.registration.showNotification(title, {
       body,
-      icon: icon ?? "/icon.png",
-      badge: badge ?? "/icon.png",
-      data: payload.data, // classId, updateId, materialId, url etc. for routing on click
+      icon: icon || "/icon.png",
+      badge: badge || "/icon.png",
+      data: payload.data,
     }),
   );
 });
 
+// ─────────────────────────────────────────────
+// NOTIFICATION CLICK
+// ─────────────────────────────────────────────
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
   const { classId, updateId, materialId, url } = event.notification.data || {};
 
-  // ── Field presence route build ──
-  let targetUrl = url || "/notifications"; // url already built
-
+  // URL Resolution Logic
+  let targetUrl = url || "/notifications";
   if (!url) {
-    if (classId && updateId) {
+    if (classId && updateId)
       targetUrl = `/classes/${classId}/updates?updateId=${updateId}`;
-    } else if (classId && materialId) {
+    else if (classId && materialId)
       targetUrl = `/classes/${classId}/materials?materialId=${materialId}`;
-    } else if (classId) {
-      targetUrl = `/classes/${classId}`;
-    }
+    else if (classId) targetUrl = `/classes/${classId}`;
   }
+
+  const absoluteUrl = `${self.location.origin}${targetUrl}`;
 
   event.waitUntil(
     (async () => {
-      const allClients = await clients.matchAll({
+      const clientList = await clients.matchAll({
         type: "window",
         includeUncontrolled: true,
       });
 
-      for (const client of allClients) {
+      // Try to focus existing window
+      for (const client of clientList) {
         if ("focus" in client) {
-          await client.navigate(targetUrl);
+          client.postMessage({ type: "NOTIFICATION_CLICK", url: targetUrl });
           return client.focus();
         }
       }
 
-      return clients.openWindow(targetUrl);
+      // If no window found, open new one
+      return clients.openWindow(absoluteUrl);
     })(),
   );
 });
