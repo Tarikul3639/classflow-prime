@@ -7,7 +7,7 @@ import {
   RefreshTokenDecodeDto,
   PasswordDecodeDto,
 } from '../dto/debug/debug.dto';
-import { Public } from '../../../shared/decorators/public.decorator';
+import { Public } from '../decorators/public.decorator';
 import * as bcrypt from 'bcrypt';
 
 @ApiTags('Debug')

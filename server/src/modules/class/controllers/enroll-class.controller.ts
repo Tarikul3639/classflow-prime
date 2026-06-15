@@ -4,7 +4,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { EnrollClassRequestDto } from '../dto/enroll-class.dto';
 import { EnrollClassService } from '../services/enroll-class.service';
 
-import { CurrentUser } from '../../../shared/decorators/current-user.decorator';
+import { CurrentUser } from '../../auth/decorators/current-user.decorator';
 import type { IJwtPayload } from '../../../modules/auth/interfaces/jwt-payload.interface';
 
 @ApiTags('Class')

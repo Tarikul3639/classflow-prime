@@ -14,7 +14,7 @@ import {
   VerificationDocument,
 } from '../../../../database/entities/verification.entity';
 import { MailService } from '../../../../modules/mail/services/mail.service';
-import { EmailValidator } from '../../../../shared/utils/email-validator.util';
+import { EmailValidator } from '../../utils/email-validator.util';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()

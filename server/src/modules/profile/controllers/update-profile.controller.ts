@@ -6,7 +6,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { CurrentUser } from '../../../shared/decorators/current-user.decorator';
+import { CurrentUser } from '../../auth/decorators/current-user.decorator';
 import type { IJwtPayload } from '../../../modules/auth/interfaces/jwt-payload.interface';
 
 import { UpdateProfileDto } from '../dto/update-profile.dto';

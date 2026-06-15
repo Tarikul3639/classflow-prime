@@ -22,7 +22,7 @@ import { IUser } from '../../../../database/interface/user.interface';
 import { IVerification } from '../../../../database/interface/verification.interface';
 
 import { MailService } from '../../../../modules/mail/services/mail.service';
-import { EmailValidator } from '../../../../shared/utils/email-validator.util';
+import { EmailValidator } from '../../utils/email-validator.util';
 
 @Injectable()
 export class SignUpService {

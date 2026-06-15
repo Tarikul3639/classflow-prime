@@ -24,7 +24,7 @@ import { ITokens } from '../token/token.types';
 
 import { MailService } from '../../../../modules/mail/services/mail.service';
 import { TokenService } from '../token/token.service';
-import { EmailValidator } from '../../../../shared/utils/email-validator.util';
+import { EmailValidator } from '../../utils/email-validator.util';
 
 export class SignUpResponseDto {
   success!: boolean;

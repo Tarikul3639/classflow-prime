@@ -6,6 +6,7 @@ import {
   GraduationCap,
   Bell,
   User,
+  Bot,
   BookOpen,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -45,6 +46,7 @@ export const Sidebar: React.FC = () => {
       icon: Bell,
       href: "/notifications",
     },
+    { id: "agents", label: "AI Agents", icon: Bot, href: "/agents" },
     { id: "profile", label: "Profile", icon: User, href: "/profile" },
   ];
 

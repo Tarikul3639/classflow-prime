@@ -80,8 +80,15 @@ import { FetchClassSettingsService } from './services/fetch-class-settings.servi
 import { RegenerateClassCodeService } from './services/regenerate-class-code.service';
 import { ClassJoinAllowedToggleService } from './services/class-join-allowed-toggle.service';
 
+import { ClassAccessService } from './services/class-access.service';
+import { AuthModule } from '../auth/auth.module';
+import { AgentModule } from '../agent/agent.module';
+
+
 @Module({
   imports: [
+    AuthModule,
+    AgentModule,
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     MongooseModule.forFeature([{ name: Class.name, schema: ClassSchema }]),
     MongooseModule.forFeature([
@@ -153,6 +160,8 @@ import { ClassJoinAllowedToggleService } from './services/class-join-allowed-tog
     FetchClassSettingsService,
     RegenerateClassCodeService,
     ClassJoinAllowedToggleService,
+    // Access Service
+    ClassAccessService,
   ],
 })
 export class ClassModule { }

@@ -3,7 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 
 import { LoggerMiddleware } from './middleware/logger.middleware';
 
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../modules/auth/guards/jwt-auth.guard';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { TransformInterceptor } from './interceptors/transform.interceptor';
 import { AuthModule } from '../modules/auth/auth.module';

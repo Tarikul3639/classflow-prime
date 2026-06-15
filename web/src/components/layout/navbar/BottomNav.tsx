@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { LayoutDashboard, Plus, Bell, User, BookOpen } from "lucide-react";
+import { LayoutDashboard, Bot, Bell, User, BookOpen } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 
@@ -10,26 +10,34 @@ export const BottomNavbar: React.FC = () => {
     <nav className="fixed lg:hidden bottom-0 w-full bg-white border-t border-gray-200 pt-1 z-50">
       <div className="flex justify-evenly items-center ">
         <Link
-          className={`flex flex-col items-center justify-center gap-1 transition-colors py-2 ${
-            pathname === "/"
+          className={`flex flex-col items-center justify-center gap-1 transition-colors py-2 ${pathname === "/"
               ? "text-primary"
               : "text-gray-400 hover:text-primary"
-          }`}
+            }`}
           href="/"
         >
           <LayoutDashboard size={24} />
           <span className="text-[10px] font-medium">Dashboard</span>
         </Link>
         <Link
-          className={`flex flex-col items-center justify-center gap-1 transition-colors py-2 ${
-            pathname === "/classes"
+          className={`flex flex-col items-center justify-center gap-1 transition-colors py-2 ${pathname === "/classes"
               ? "text-primary"
               : "text-gray-400 hover:text-primary"
-          }`}
+            }`}
           href="/classes"
         >
           <BookOpen size={24} />
           <span className="text-[10px] font-medium">Classes</span>
+        </Link>
+        <Link
+          className={`flex flex-col items-center justify-center gap-1 transition-colors py-2 ${pathname === "/agents"
+              ? "text-primary"
+              : "text-gray-400 hover:text-primary"
+            }`}
+          href="/agents"
+        >
+          <Bot size={24} />
+          <span className="text-[10px] font-medium">AI Agents</span>
         </Link>
         {/* <Link
           className="flex flex-col items-center justify-center"
@@ -40,22 +48,20 @@ export const BottomNavbar: React.FC = () => {
           </div>
         </Link> */}
         <Link
-          className={`flex flex-col items-center justify-center gap-1 transition-colors py-2 ${
-            pathname === "/notifications"
+          className={`flex flex-col items-center justify-center gap-1 transition-colors py-2 ${pathname === "/notifications"
               ? "text-primary"
               : "text-gray-400 hover:text-primary"
-          }`}
+            }`}
           href="/notifications"
         >
           <Bell size={24} />
           <span className="text-[10px] font-medium">Notifications</span>
         </Link>
         <Link
-          className={`flex flex-col items-center justify-center gap-1 transition-colors py-2 ${
-            pathname === "/profile"
+          className={`flex flex-col items-center justify-center gap-1 transition-colors py-2 ${pathname === "/profile"
               ? "text-primary"
               : "text-gray-400 hover:text-primary"
-          }`}
+            }`}
           href="/profile"
         >
           <User
