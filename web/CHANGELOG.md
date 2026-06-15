@@ -1,3 +1,10 @@
+# [web-v2.10.1](https://github.com/Tarikul3639/Classflow-Prime/compare/web-v2.10.0...web-v2.10.1) (2026-06-15)
+
+
+### Bug Fixes
+
+* handle notification navigation on mobile using service worker messages ([1811cae](https://github.com/Tarikul3639/Classflow-Prime/commit/1811cae973932f30ccbd746cbc638aa84d5ae6dc))
+
 # [web-v2.10.0](https://github.com/Tarikul3639/Classflow-Prime/compare/web-v2.9.0...web-v2.10.0) (2026-06-15)
 
 
