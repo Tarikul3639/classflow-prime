@@ -21,12 +21,12 @@ import {
     ToggleJoiningAllowedResponseDto,
 } from '../dto/class-settings.dto';
 
-import { LeaveClassService } from '../services/leave-class.service';
-import { DeleteClassService } from '../services/delete-class.service';
-import { MarkClassAsEndedService } from '../services/mark-class-as-ended.service';
-import { FetchClassSettingsService } from '../services/fetch-class-settings.service';
-import { RegenerateClassCodeService } from '../services/regenerate-class-code.service';
-import { ClassJoinAllowedToggleService } from '../services/class-join-allowed-toggle.service';
+import { LeaveClassService } from '../services/settings/leave-class.service';
+import { DeleteClassService } from '../services/settings/delete-class.service';
+import { MarkClassAsEndedService } from '../services/settings/mark-class-as-ended.service';
+import { FetchClassSettingsService } from '../services/settings/fetch-class-settings.service';
+import { RegenerateClassCodeService } from '../services/settings/regenerate-class-code.service';
+import { ClassJoinAllowedToggleService } from '../services/settings/class-join-allowed-toggle.service';
 
 @ApiTags('Class Actions')
 @Controller('classes/:classId')

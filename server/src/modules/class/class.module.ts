@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Class, ClassSchema } from '../../infrastructure/database/entities/class.entity';
+import {
+  Class,
+  ClassSchema,
+} from '../../infrastructure/database/entities/class.entity';
 import {
   Enrollment,
   EnrollmentSchema,
@@ -18,9 +21,15 @@ import {
   ClassGroupSchema,
 } from '../../infrastructure/database/entities/group.entity';
 
-import { User, UserSchema } from '../../infrastructure/database/entities/user.entity';
+import {
+  User,
+  UserSchema,
+} from '../../infrastructure/database/entities/user.entity';
 
-import { Faculty, FacultySchema } from '../../infrastructure/database/entities/faculty.entity';
+import {
+  Faculty,
+  FacultySchema,
+} from '../../infrastructure/database/entities/faculty.entity';
 
 import { CreateClassController } from './controllers/create-class.controller';
 import { CreateClassService } from './services/create-class.service';
@@ -35,72 +44,69 @@ import { FetchClassController } from './controllers/fetch-class.controller';
 import { FetchClassService } from './services/fetch-class.service';
 
 import { FetchClassUpdateController } from './controllers/fetch-class-update.controller';
-import { FetchClassUpdateService } from './services/fetch-class-update.service';
+import { FetchClassUpdateService } from './services/updates/fetch-class-update.service';
 
 import { CreateClassUpdateController } from './controllers/create-class-update.controller';
-import { CreateClassUpdateService } from './services/create-class-update.service';
+import { CreateClassUpdateService } from './services/updates/create-class-update.service';
 
 import { FetchSingleClassUpdateController } from './controllers/fetch-single-class-update.controller';
-import { FetchSingleClassUpdateService } from './services/fetch-single-class-update.service';
+import { FetchSingleClassUpdateService } from './services/updates/fetch-single-class-update.service';
 
 import { UpdateClassUpdateController } from './controllers/update-class-update.controller';
-import { UpdateClassUpdateService } from './services/update-class-update.service';
+import { UpdateClassUpdateService } from './services/updates/update-class-update.service';
 
 import { TogglePinClassUpdateController } from './controllers/toggle-pin-class-update.controller';
-import { TogglePinClassUpdateService } from './services/toggle-pin-class-update.service';
+import { TogglePinClassUpdateService } from './services/updates/toggle-pin-class-update.service';
 
 import { DeleteSingleClassUpdateController } from './controllers/delete-single-class-update.controller';
-import { DeleteSingleClassUpdateService } from './services/delete-single-class-update.service';
+import { DeleteSingleClassUpdateService } from './services/updates/delete-single-class-update.service';
 
 import { ClassFacultyController } from './controllers/class-faculty.controller';
-import { FetchClassFacultiesService } from './services/fetch-class-faculties.service';
-import { CreateClassFacultyService } from './services/create-class-faculty.service';
-import { UpdateSingleClassFacultyService } from './services/update-single-class-faculty.service';
-import { DeleteClassFacultyService } from './services/delete-class-faculty.service';
-import { FetchSingleClassFacultyService } from './services/fetch-single-class-faculty.service';
+import { FetchClassFacultiesService } from './services/facultys/fetch-class-faculties.service';
+import { CreateClassFacultyService } from './services/facultys/create-class-faculty.service';
+import { UpdateSingleClassFacultyService } from './services/facultys/update-single-class-faculty.service';
+import { DeleteClassFacultyService } from './services/facultys/delete-class-faculty.service';
+import { FetchSingleClassFacultyService } from './services/facultys/fetch-single-class-faculty.service';
 
 import { ClassMemberController } from './controllers/class-member.controller';
-import { FetchClassMembersService } from './services/fetch-class-members.service';
-import { AssistantAssignClassMemberService } from './services/assistant-assign-class-member.service';
-import { AssistantRevokeClassMemberService } from './services/assistant-revoke-class-member.service';
-import { MemberRevokeClassMemberService } from './services/member-revoke-class-member.service';
+import { FetchClassMembersService } from './services/members/fetch-class-members.service';
+import { AssistantAssignClassMemberService } from './services/members/assistant-assign-class-member.service';
+import { AssistantRevokeClassMemberService } from './services/members/assistant-revoke-class-member.service';
+import { MemberRevokeClassMemberService } from './services/members/member-revoke-class-member.service';
 
 import { ClassGroupController } from './controllers/class-group.controller';
-import { FetchClassGroupsService } from './services/fetch-class-groups.service';
-import { FetchSingleClassGroupService } from './services/fetch-single-class-group.service';
-import { CreateClassGroupService } from './services/create-class-group.service';
-import { UpdateClassGroupService } from './services/update-class-group.service';
-import { DeleteClassGroupService } from './services/delete-class-group.service';
+import { FetchClassGroupsService } from './services/group/fetch-class-groups.service';
+import { FetchSingleClassGroupService } from './services/group/fetch-single-class-group.service';
+import { CreateClassGroupService } from './services/group/create-class-group.service';
+import { UpdateClassGroupService } from './services/group/update-class-group.service';
+import { DeleteClassGroupService } from './services/group/delete-class-group.service';
 
 import { ClassActionsController } from './controllers/class-settings.controller';
-import { LeaveClassService } from './services/leave-class.service';
-import { DeleteClassService } from './services/delete-class.service';
-import { MarkClassAsEndedService } from './services/mark-class-as-ended.service';
-import { FetchClassSettingsService } from './services/fetch-class-settings.service';
-import { RegenerateClassCodeService } from './services/regenerate-class-code.service';
-import { ClassJoinAllowedToggleService } from './services/class-join-allowed-toggle.service';
+import { LeaveClassService } from './services/settings/leave-class.service';
+import { DeleteClassService } from './services/settings/delete-class.service';
+import { MarkClassAsEndedService } from './services/settings/mark-class-as-ended.service';
+import { FetchClassSettingsService } from './services/settings/fetch-class-settings.service';
+import { RegenerateClassCodeService } from './services/settings/regenerate-class-code.service';
+import { ClassJoinAllowedToggleService } from './services/settings/class-join-allowed-toggle.service';
 
 import { ClassAccessService } from './services/class-access.service';
 import { AgentModule } from '../agent/agent.module';
 
+import { ClassRoleGuard } from './guards/class-role.guard';
+// import { ClassRole } from './decorators/class-role.decorator';
 
 @Module({
   imports: [
     AgentModule,
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-    MongooseModule.forFeature([{ name: Class.name, schema: ClassSchema }]),
     MongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
+      { name: Class.name, schema: ClassSchema },
       { name: Enrollment.name, schema: EnrollmentSchema },
-    ]),
-    MongooseModule.forFeature([
       { name: ClassUpdate.name, schema: ClassUpdateSchema },
-    ]),
-    MongooseModule.forFeature([
       { name: Material.name, schema: MaterialSchema },
+      { name: Faculty.name, schema: FacultySchema },
+      { name: ClassGroup.name, schema: ClassGroupSchema },
     ]),
-
-    MongooseModule.forFeature([{ name: Faculty.name, schema: FacultySchema }]),
-    MongooseModule.forFeature([{ name: ClassGroup.name, schema: ClassGroupSchema }]),
   ],
   controllers: [
     CreateClassController,
@@ -124,42 +130,53 @@ import { AgentModule } from '../agent/agent.module';
     ClassActionsController,
   ],
   providers: [
+    // Services
     CreateClassService,
     FetchEnrolledClassesService,
     EnrollClassService,
     FetchClassService,
+
     FetchClassUpdateService,
     CreateClassUpdateService,
     FetchSingleClassUpdateService,
     UpdateClassUpdateService,
     TogglePinClassUpdateService,
     DeleteSingleClassUpdateService,
-    // Class Faculty Services
+
+    // Faculty
     FetchClassFacultiesService,
     CreateClassFacultyService,
     UpdateSingleClassFacultyService,
     DeleteClassFacultyService,
     FetchSingleClassFacultyService,
-    // Class Member Services
+
+    // Members
     FetchClassMembersService,
     AssistantAssignClassMemberService,
     AssistantRevokeClassMemberService,
     MemberRevokeClassMemberService,
-    // Class Group Services
+
+    // Groups
     FetchClassGroupsService,
     FetchSingleClassGroupService,
     CreateClassGroupService,
     UpdateClassGroupService,
     DeleteClassGroupService,
-    // Class Settings Services
+
+    // Settings
     LeaveClassService,
     DeleteClassService,
     MarkClassAsEndedService,
     FetchClassSettingsService,
     RegenerateClassCodeService,
     ClassJoinAllowedToggleService,
-    // Access Service
+
+    // Access
     ClassAccessService,
+
+    // Guards
+    ClassRoleGuard,
   ],
+  // exports: [ClassAccessService, ClassRoleGuard],
 })
 export class ClassModule { }

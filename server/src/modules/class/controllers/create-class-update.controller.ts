@@ -5,7 +5,7 @@ import {
   CreateClassUpdateRequestDto, 
   CreateClassUpdateResponseDto 
 } from '../dto/create-class-update.dto';
-import { CreateClassUpdateService } from '../services/create-class-update.service';
+import { CreateClassUpdateService } from '../services/updates/create-class-update.service';
 import { CurrentActor } from '../../../common/decorators/current-actor.decorator';
 import type { IActor } from '../../auth/interfaces/actor.interface';
 

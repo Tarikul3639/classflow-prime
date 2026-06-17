@@ -6,7 +6,7 @@ import type { IJwtPayload } from '../../auth/interfaces/jwt-payload.interface';
 
 import { UpdateClassUpdateRequestDto } from '../dto/update-class-update.dto';
 import { UpdateClassUpdateResponseDto } from '../dto/update-class-update.dto';
-import { UpdateClassUpdateService } from '../services/update-class-update.service';
+import { UpdateClassUpdateService } from '../services/updates/update-class-update.service';
 
 @ApiTags('Class')
 @Controller('classes')

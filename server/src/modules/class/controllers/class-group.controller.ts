@@ -19,11 +19,11 @@ import {
     CreateClassGroupRequestDto,
 } from '../dto/class-group.dto';
 
-import { FetchClassGroupsService } from '../services/fetch-class-groups.service';
-import { FetchSingleClassGroupService } from '../services/fetch-single-class-group.service';
-import { CreateClassGroupService } from '../services/create-class-group.service';
-import { UpdateClassGroupService } from '../services/update-class-group.service';
-import { DeleteClassGroupService } from '../services/delete-class-group.service';
+import { FetchClassGroupsService } from '../services/group/fetch-class-groups.service';
+import { FetchSingleClassGroupService } from '../services/group/fetch-single-class-group.service';
+import { CreateClassGroupService } from '../services/group/create-class-group.service';
+import { UpdateClassGroupService } from '../services/group/update-class-group.service';
+import { DeleteClassGroupService } from '../services/group/delete-class-group.service';
 
 @ApiTags('Class Group')
 @Controller('classes/:classId/groups')

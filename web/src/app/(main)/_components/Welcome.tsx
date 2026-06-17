@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { User, Star } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { APP_CONFIG } from "@/config/app-config";
 
 
@@ -57,10 +57,13 @@ export default function Welcome({ user }: { user: any }) {
     const emoji = getGreetingEmoji();
 
     const [showDialog, setShowDialog] = useState(false);
+    const [hasUnread, setHasUnread] = useState(false);
 
-    // Check localStorage for unread updates -> Red dot showing on badge
-    const hasUnread = typeof window !== "undefined"
-        && localStorage.getItem(STORAGE_KEY) !== APP_CONFIG.version;
+    useEffect(() => {
+        setHasUnread(
+            localStorage.getItem(STORAGE_KEY) !== APP_CONFIG.version
+        );
+    }, []);
 
     return (
         <>

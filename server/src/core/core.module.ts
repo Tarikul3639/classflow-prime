@@ -11,7 +11,7 @@ import { TransformInterceptor } from '../common/interceptors/transform.intercept
 import { HybridAuthGuard } from '../common/guards/hybrid-auth.guard';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
-import { PermissionsGuard } from '../common/permissions/permissions.guard';
+import { PermissionsGuard } from '../modules/class/permissions/permissions.guard';
 
 import { AuthModule } from '../modules/auth/auth.module';
 import { AgentModule } from '../modules/agent/agent.module';

@@ -5,7 +5,7 @@ import { CurrentUser } from '../../../common/decorators/current-user.decorator';
 import type { IJwtPayload } from '../../auth/interfaces/jwt-payload.interface';
 
 import { DeleteSingleClassUpdateResponseDto } from '../dto/delete-single-class-update.dto';
-import { DeleteSingleClassUpdateService } from '../services/delete-single-class-update.service';
+import { DeleteSingleClassUpdateService } from '../services/updates/delete-single-class-update.service';
 
 @ApiTags('Class')
 @Controller('classes')

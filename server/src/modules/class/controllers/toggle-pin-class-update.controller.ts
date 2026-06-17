@@ -5,7 +5,7 @@ import { CurrentUser } from '../../../common/decorators/current-user.decorator';
 import type { IJwtPayload } from '../../auth/interfaces/jwt-payload.interface';
 
 import { TogglePinClassUpdateRequestDto, TogglePinClassUpdateResponseDto } from '../dto/toggle-pin-class-update.dto';
-import { TogglePinClassUpdateService } from '../services/toggle-pin-class-update.service';
+import { TogglePinClassUpdateService } from '../services/updates/toggle-pin-class-update.service';
 
 @ApiTags('Class')
 @Controller('classes')

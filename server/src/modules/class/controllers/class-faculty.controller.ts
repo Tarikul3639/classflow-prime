@@ -21,12 +21,12 @@ import {
     DeleteClassFacultyResponseDto,
 } from '../dto/class-faculty.dto';
 
-import { FetchClassFacultiesService } from '../services/fetch-class-faculties.service';
-import { CreateClassFacultyService } from '../services/create-class-faculty.service';
-import { UpdateSingleClassFacultyService } from '../services/update-single-class-faculty.service';
-import { DeleteClassFacultyService } from '../services/delete-class-faculty.service';
+import { FetchClassFacultiesService } from '../services/facultys/fetch-class-faculties.service';
+import { CreateClassFacultyService } from '../services/facultys/create-class-faculty.service';
+import { UpdateSingleClassFacultyService } from '../services/facultys/update-single-class-faculty.service';
+import { DeleteClassFacultyService } from '../services/facultys/delete-class-faculty.service';
 
-import { FetchSingleClassFacultyService } from '../services/fetch-single-class-faculty.service';
+import { FetchSingleClassFacultyService } from '../services/facultys/fetch-single-class-faculty.service';
 
 @ApiTags('Class Faculty')
 @Controller('classes/:classId/faculties')

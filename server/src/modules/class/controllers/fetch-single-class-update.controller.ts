@@ -6,7 +6,7 @@ import type { IJwtPayload } from '../../auth/interfaces/jwt-payload.interface';
 
 // আপনার তৈরি করা নতুন Single Response DTO টি ইমপোর্ট করুন
 import { FetchSingleClassUpdateResponseDto } from '../dto/fetch-single-class-update.dto';
-import { FetchSingleClassUpdateService } from '../services/fetch-single-class-update.service';
+import { FetchSingleClassUpdateService } from '../services/updates/fetch-single-class-update.service';
 
 @ApiTags('Class')
 @Controller('classes')

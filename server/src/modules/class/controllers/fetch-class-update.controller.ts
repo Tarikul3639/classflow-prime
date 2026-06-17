@@ -5,7 +5,7 @@ import { CurrentUser } from '../../../common/decorators/current-user.decorator';
 import type { IJwtPayload } from '../../auth/interfaces/jwt-payload.interface';
 
 import { FetchClassUpdateResponseDto } from '../dto/fetch-class-update.dto';
-import { FetchClassUpdateService } from '../services/fetch-class-update.service';
+import { FetchClassUpdateService } from '../services/updates/fetch-class-update.service';
 
 @ApiTags('Class')
 @Controller('classes')
