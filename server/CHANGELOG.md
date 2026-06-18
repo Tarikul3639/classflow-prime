@@ -1,3 +1,10 @@
+# [server-v1.3.0](https://github.com/Tarikul3639/classflow-prime/compare/server-v1.2.0...server-v1.3.0) (2026-06-18)
+
+
+### Features
+
+* add AI agent class update support and migrate instructor ownership to enrollment ([c9ae9b5](https://github.com/Tarikul3639/classflow-prime/commit/c9ae9b5b3af649f06e92c5b1d4ae7df720437651))
+
 # [server-v1.2.0](https://github.com/Tarikul3639/Classflow-Prime/compare/server-v1.1.0...server-v1.2.0) (2026-06-15)
 
 
