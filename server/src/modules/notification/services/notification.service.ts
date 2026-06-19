@@ -62,8 +62,8 @@ export class NotificationService {
                 notification: {
                     title: dto.title,
                     body: dto.message,
-                    icon: '/icon.png',
-                    badge: '/icon.png',
+                    icon: '/favicon.ico',
+                    badge: '/favicon.ico',
                 },
                 data: {
                     classId: dto.metadata?.classId ?? null,

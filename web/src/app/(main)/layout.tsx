@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Sidebar } from "@/components/layout/sidebar/Sidebar";
 import { BottomNavbar } from "@/components/layout/navbar/BottomNav";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
