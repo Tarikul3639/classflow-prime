@@ -1,3 +1,10 @@
+# [server-v3.2.1](https://github.com/Tarikul3639/classflow-prime/compare/server-v3.2.0...server-v3.2.1) (2026-06-19)
+
+
+### Bug Fixes
+
+* Agent guard.. ([7d02782](https://github.com/Tarikul3639/classflow-prime/commit/7d027825b8f9284a2b15e8c654ba49ed5c2aee96))
+
 # [server-v3.2.0](https://github.com/Tarikul3639/classflow-prime/compare/server-v3.1.0...server-v3.2.0) (2026-06-19)
 
 
