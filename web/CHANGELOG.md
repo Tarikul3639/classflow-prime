@@ -1,3 +1,10 @@
+# [web-v2.14.0](https://github.com/Tarikul3639/classflow-prime/compare/web-v2.13.0...web-v2.14.0) (2026-06-19)
+
+
+### Features
+
+* improve class update tracking, notifications and UI experience ([2e6f0ad](https://github.com/Tarikul3639/classflow-prime/commit/2e6f0ad4ae5e9aade74522b9232665b521171a01))
+
 # [web-v2.13.0](https://github.com/Tarikul3639/classflow-prime/compare/web-v2.12.0...web-v2.13.0) (2026-06-19)
 
 
