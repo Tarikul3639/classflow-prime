@@ -6,12 +6,13 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 
 import {
   Agent,
   AgentDocument,
 } from '../../../infrastructure/database/entities/agent.entity';
+
 import { AgentStatus } from '../../../infrastructure/database/interface/agent.interface';
 
 @Injectable()
@@ -25,27 +26,24 @@ export class AgentGuard implements CanActivate {
     const request = ctx.switchToHttp().getRequest();
 
     const rawApiKey = request.headers['x-api-key'];
-    const apiKey = Array.isArray(rawApiKey) ? rawApiKey[0] : rawApiKey;
+    const apiKey = Array.isArray(rawApiKey)
+      ? rawApiKey[0]
+      : rawApiKey;
 
     if (!apiKey || typeof apiKey !== 'string') {
       throw new UnauthorizedException('API key is required');
     }
 
-    const prefix = apiKey.split('_').slice(0, 2).join('_');
-
     const agent = await this.agentModel
       .findOne({
-        apiKeyPrefix: prefix,
+        apiKey,
         status: AgentStatus.ACTIVE,
       })
       .exec();
 
-    if (!agent) {
-      throw new UnauthorizedException('API key not found');
-    }
+    // console.log('Agent found:', agent);
 
-    const isValid = await agent.compareApiKey(apiKey);
-    if (!isValid) {
+    if (!agent) {
       throw new UnauthorizedException('Invalid API key');
     }
 
@@ -58,18 +56,15 @@ export class AgentGuard implements CanActivate {
       agent.classId &&
       agent.classId.toString() !== request.params.classId
     ) {
-      throw new ForbiddenException('This agent cannot access this class');
+      throw new ForbiddenException(
+        'This agent cannot access this class',
+      );
     }
 
-    request.agent = {
-      _id: agent._id,
-      userId: agent.userId,
-      classId: agent.classId,
-      scopes: agent.scopes,
-      status: agent.status,
-      expiresAt: agent.expiresAt,
-      apiKeyPrefix: agent.apiKeyPrefix,
-    };
+    agent.touch();
+    await agent.save();
+
+    request.agent = agent;
 
     return true;
   }
