@@ -15,7 +15,7 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   const dispatch = useAppDispatch();
-  const { loading } = useAppSelector((state) => state.profile.fetchUser.status);
+  const { loading, isFetched } = useAppSelector((state) => state.profile.fetchUser.status);
   const userId = useAppSelector((state) => state.profile.fetchUser.user?._id);
 
   // ── Push notification subscription ──────────────────────
@@ -40,7 +40,7 @@ export default function MainLayout({
       });
   }, [dispatch]);
 
-  if (loading) {
+  if (loading || !isFetched) {
     return <Loader />;
   }
   return (

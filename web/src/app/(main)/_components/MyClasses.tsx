@@ -40,7 +40,7 @@ function ClassCard({ cls }: { cls: DashboardClassItem }) {
             <div className="pl-5 pr-4 pt-4 pb-3">
                 <div className="flex items-start justify-between gap-2 mb-1">
                     <h4 className="text-sm sm:text-md font-bold text-slate-900 leading-snug">
-                        {cls.name}
+                        {cls.className}
                     </h4>
                     {isEnded ? (
                         <span className="shrink-0 text-[11px] font-medium px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">

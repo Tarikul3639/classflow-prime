@@ -28,7 +28,7 @@ export enum ClassStatus {
 
 export interface DashboardClassItem {
     _id: string;
-    name: string;
+    className: string;
     department?: string;
     semester?: string;
     themeColor: string;
