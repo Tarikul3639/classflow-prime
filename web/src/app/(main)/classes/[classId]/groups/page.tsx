@@ -54,7 +54,7 @@ export default function GroupsPage() {
 
   const isAdmin = classDetails?.isInstructor || classDetails?.isAssistant;
   const isEmpty = groups.length === 0 && !isFetching;
-  const isLoading = (isFetching && groups.length === 0) || (classFetching && !classDetails);
+  const isLoading = isFetching || classFetching || !isFetched;
 
   const handleDelete = async (groupId: string) => {
     const promise = dispatch(deleteClassGroup({ classId, groupId })).unwrap();

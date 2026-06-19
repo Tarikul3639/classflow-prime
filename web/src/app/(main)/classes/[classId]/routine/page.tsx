@@ -49,7 +49,7 @@ export default function ClassRoutine() {
 
     // ── Redux state ────────────────────────────────────────────────────────
 
-    const { loading: fetching, error: fetchError } = useAppSelector(
+    const { loading: fetching, isFetched, error: fetchError } = useAppSelector(
         (state) => state.classes.routine.fetchRoutine,
     );
 
@@ -229,7 +229,7 @@ export default function ClassRoutine() {
     }
 
     // ── Derived UI State ───────────────────────────────────────────────────────
-    const isLoading = fetching || classFetching;
+    const isLoading = fetching || classFetching || !isFetched;
 
     // ── Render ─────────────────────────────────────────────────────────────
 

@@ -15,11 +15,13 @@ interface ClassFacultyBucket {
 
     fetch: {
         loading: boolean;
+        isFetched: boolean;
         error: string | null;
     };
 
     fetchSingle: {
         loading: boolean;
+        isFetched: boolean;
         error: string | null;
     };
 
@@ -52,11 +54,13 @@ const createEmptyBucket = (): ClassFacultyBucket => ({
 
     fetch: {
         loading: false,
+        isFetched: false,
         error: null,
     },
 
     fetchSingle: {
         loading: false,
+        isFetched: false,
         error: null,
     },
 
@@ -131,6 +135,7 @@ const classFacultySlice = createSlice({
                 }
 
                 state.facultiesByClass[classId].fetch.loading = true;
+                state.facultiesByClass[classId].fetch.isFetched = false;
                 state.facultiesByClass[classId].fetch.error = null;
             })
 
@@ -140,6 +145,7 @@ const classFacultySlice = createSlice({
 
                 if (bucket) {
                     bucket.fetch.loading = false;
+                    bucket.fetch.isFetched = true;
                     bucket.faculties = action.payload;
                 }
             })
@@ -150,6 +156,7 @@ const classFacultySlice = createSlice({
 
                 if (bucket) {
                     bucket.fetch.loading = false;
+                    bucket.fetch.isFetched = true;
                     bucket.fetch.error =
                         action.payload ?? "Failed to fetch faculties.";
                 }
@@ -165,6 +172,7 @@ const classFacultySlice = createSlice({
                 }
 
                 state.facultiesByClass[classId].fetchSingle.loading = true;
+                state.facultiesByClass[classId].fetchSingle.isFetched = false;
                 state.facultiesByClass[classId].fetchSingle.error = null;
             })
 
@@ -174,9 +182,8 @@ const classFacultySlice = createSlice({
 
                 if (bucket) {
                     bucket.fetchSingle.loading = false;
-
+                    bucket.fetchSingle.isFetched = true;
                     const fetched = action.payload;
-
                     const index = bucket.faculties.findIndex(
                         (f) => f.facultyId === fetched.facultyId
                     );
@@ -195,6 +202,7 @@ const classFacultySlice = createSlice({
 
                 if (bucket) {
                     bucket.fetchSingle.loading = false;
+                    bucket.fetchSingle.isFetched = true;
                     bucket.fetchSingle.error =
                         action.payload ?? "Failed to fetch faculty details.";
                 }

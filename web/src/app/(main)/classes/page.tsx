@@ -17,7 +17,7 @@ const Classes: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState(ClassStatus.ACTIVE); // Default to first filter
   const [searchQuery, setSearchQuery] = useState("");
   const dispatch = useAppDispatch();
-  const { classes, loading } = useAppSelector(
+  const { classes, loading, isFetched } = useAppSelector(
     (state) => state.classes.fetchEnrolledClasses,
   );
 
@@ -155,7 +155,7 @@ const Classes: React.FC = () => {
       </header>
 
       {/* Scrollable Content */}
-      {loading && classes.length === 0 ? (
+      {loading || !isFetched ? (
         <ClassesSkeleton />
       ) : (
         <div className="flex-1 overflow-y-auto">

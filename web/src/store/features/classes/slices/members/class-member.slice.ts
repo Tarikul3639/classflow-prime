@@ -16,6 +16,7 @@ interface ClassBucket {
     fetchMembers: {
         loading: boolean;
         error: string | null;
+        isFetched: boolean;
     };
 }
 
@@ -33,6 +34,7 @@ const createInitialClassBucket = (): ClassBucket => ({
 
     fetchMembers: {
         loading: false,
+        isFetched: false,
         error: null,
     },
 });
@@ -62,6 +64,7 @@ const classMemberSlice = createSlice({
                 }
 
                 state.membersByClass[classId].fetchMembers.loading = true;
+                state.membersByClass[classId].fetchMembers.isFetched = false;
                 state.membersByClass[classId].fetchMembers.error = null;
             })
 
@@ -76,6 +79,7 @@ const classMemberSlice = createSlice({
                 state.membersByClass[classId].lastFetched = Date.now();
 
                 state.membersByClass[classId].fetchMembers.loading = false;
+                state.membersByClass[classId].fetchMembers.isFetched = true;
                 state.membersByClass[classId].fetchMembers.error = null;
             })
 
@@ -87,6 +91,7 @@ const classMemberSlice = createSlice({
                 }
 
                 state.membersByClass[classId].fetchMembers.loading = false;
+                state.membersByClass[classId].fetchMembers.isFetched = true;
                 state.membersByClass[classId].fetchMembers.error =
                     action.payload?.message || "Failed to fetch class members";
             })

@@ -8,11 +8,11 @@ import AgentHeader from "./_components/AgentHeader";
 import AgentList from "./_components/AgentList";
 import EmptyAgents from "./_components/EmptyAgents";
 import CreateAgentDialog from "./_components/CreateAgentDialog";
-import { TopLoader } from "@/components/ui/TopLoader";
+import AgentListSkeleton from "./_components/AgentCardSkeleton";
 
 const AgentsPage: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { loading } = useAppSelector((state) => state.agent.fetch.status);
+  const { loading, isFetched } = useAppSelector((state) => state.agent.fetch.status);
   const agents = useAppSelector((state) => state.agent.agents);
 
   useEffect(() => {
@@ -26,10 +26,8 @@ const AgentsPage: React.FC = () => {
       </AgentHeader>
 
       <div className="mx-auto w-full max-w-6xl px-4 lg:px-6 py-6">
-        {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <TopLoader isLoading={loading} />
-          </div>
+        {loading || !isFetched ? (
+          <AgentListSkeleton />
         ) : agents.length === 0 ? (
           <EmptyAgents />
         ) : (

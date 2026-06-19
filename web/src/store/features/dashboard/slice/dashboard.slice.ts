@@ -17,6 +17,9 @@ interface DashboardState {
     loading: {
         fetchDashboard: boolean;
     };
+    isFetched: {
+        fetchDashboard: boolean;
+    };
     error: {
         fetchDashboard: string | null;
     };
@@ -33,6 +36,9 @@ const initialState: DashboardState = {
     error: {
         fetchDashboard: null,
     },
+    isFetched: {
+        fetchDashboard: false,
+    }
 };
 
 // ─── Slice ────────────────────────────────────────────────────────────────────
@@ -56,9 +62,11 @@ const dashboardSlice = createSlice({
             .addCase(fetchDashboardData.pending, (state) => {
                 state.loading.fetchDashboard = true;
                 state.error.fetchDashboard = null;
+                state.isFetched.fetchDashboard = false;
             })
             .addCase(fetchDashboardData.fulfilled, (state, action) => {
                 state.loading.fetchDashboard = false;
+                state.isFetched.fetchDashboard = true;
 
                 // Guard against null/undefined payload from the API
                 if (!action.payload) return;
@@ -72,6 +80,7 @@ const dashboardSlice = createSlice({
                 state.loading.fetchDashboard = false;
                 state.error.fetchDashboard =
                     action.payload?.message || "Failed to load dashboard";
+                state.isFetched.fetchDashboard = true;
             });
     },
 });

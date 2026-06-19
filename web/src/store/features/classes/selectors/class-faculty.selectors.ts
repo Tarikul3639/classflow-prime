@@ -17,9 +17,3 @@ export const selectSingleFaculty = createSelector(
     (bucket, facultyId) =>
         bucket?.faculties.find((f) => f.facultyId === facultyId) ?? null
 );
-
-// ─── 6. Is Already Fetched Guard ─────────────────────────────────────────────
-export const selectIsFacultyFetched = createSelector(
-    [selectFacultyBucket],
-    (bucket) => !!bucket && bucket.faculties.length > 0
-);

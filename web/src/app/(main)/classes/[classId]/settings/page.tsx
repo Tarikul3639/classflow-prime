@@ -40,8 +40,9 @@ export default function ClassSettingsPage() {
     const classCode = settingsBucket?.classCode ?? null;
     const isJoiningAllowed = settingsBucket?.isJoiningAllowed ?? true;
     const settingsFetching = settingsBucket?.fetchClassSettings.loading ?? false;
+    const isFetched = settingsBucket?.fetchClassSettings.isFetched ?? false;
 
-    const isLoading = classFetching || settingsFetching;
+    const isLoading = classFetching || settingsFetching || !isFetched;
 
     // ── Initialization ─────────────────────────────────────────────────────
 

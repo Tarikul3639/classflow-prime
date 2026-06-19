@@ -12,7 +12,7 @@ export type MeState = {
 
 export const initialState: MeState = {
     user: null,
-    status: { loading: false, error: null, message: null },
+    status: { loading: false, isFetched: false, error: null, message: null },
 };
 
 export const userSlice = createSlice({
@@ -28,15 +28,18 @@ export const userSlice = createSlice({
                 state.status.loading = true;
                 state.status.error = null;
                 state.status.message = null;
+                state.status.isFetched = false;
             })
             .addCase(meThunk.fulfilled, (state, action) => {
                 state.status.loading = false;
                 state.status.message = "User loaded";
+                state.status.isFetched = true;
                 state.user = action.payload;
             })
             .addCase(updateProfileThunk.fulfilled, (state, action) => {
                 state.status.loading = false;
                 state.status.message = "Profile updated";
+                state.status.isFetched = true;
                 if (state.user) {
                     state.user.name = action.payload.data.user.name;
                     state.user.email = action.payload.data.user.email;
@@ -47,6 +50,7 @@ export const userSlice = createSlice({
             .addCase(meThunk.rejected, (state, action) => {
                 state.status.loading = false;
                 state.status.error = action.payload ?? "Failed to load user";
+                state.status.isFetched = true;
             });
     },
 });

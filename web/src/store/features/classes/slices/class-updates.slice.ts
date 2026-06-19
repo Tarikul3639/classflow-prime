@@ -19,6 +19,7 @@ interface ClassBucket {
 
     fetch: {
         loading: boolean;
+        isFetched: boolean;
         error: ApiError | null;
     };
 
@@ -54,6 +55,7 @@ const createEmptyBucket = (): ClassBucket => ({
 
     fetch: {
         loading: false,
+        isFetched: false,
         error: null,
     },
 
@@ -115,6 +117,7 @@ const classUpdatesSlice = createSlice({
                 }
 
                 state.updatesByClass[classId].fetch.loading = true;
+                state.updatesByClass[classId].fetch.isFetched = false;
                 state.updatesByClass[classId].fetch.error = null;
             })
 
@@ -124,6 +127,7 @@ const classUpdatesSlice = createSlice({
 
                 if (bucket) {
                     bucket.fetch.loading = false;
+                    bucket.fetch.isFetched = true;
                     bucket.items = action.payload;
                 }
             })
@@ -134,6 +138,7 @@ const classUpdatesSlice = createSlice({
 
                 if (bucket) {
                     bucket.fetch.loading = false;
+                    bucket.fetch.isFetched = true;
                     bucket.fetch.error =
                         action.payload ?? {
                             message: "Failed to fetch class updates.",
@@ -271,6 +276,7 @@ const classUpdatesSlice = createSlice({
 
                 state.updatesByClass[classId].fetch.loading = true;
                 state.updatesByClass[classId].fetch.error = null;
+                state.updatesByClass[classId].fetch.isFetched = false;
             })
 
             .addCase(fetchSingleClassUpdate.fulfilled, (state, action) => {
@@ -279,7 +285,7 @@ const classUpdatesSlice = createSlice({
 
                 if (bucket) {
                     bucket.fetch.loading = false;
-
+                    bucket.fetch.isFetched = true;
                     const index = bucket.items.findIndex(
                         (u) => u._id === update._id
                     );
@@ -302,6 +308,7 @@ const classUpdatesSlice = createSlice({
                         action.payload ?? {
                             message: "Failed to fetch update.",
                         };
+                    bucket.fetch.isFetched = true;
                 }
             })
 
@@ -348,6 +355,7 @@ const classUpdatesSlice = createSlice({
                         action.payload ?? {
                             message: "Failed to update.",
                         };
+                    bucket.fetch.isFetched = true;
                 }
             });
     },

@@ -114,6 +114,7 @@ export const selectSingleUpdateState = createSelector(
         return {
             data: item,
             loading: false, // or separate update loading slice use
+            isFetched: false,
             updating: false,
             error: null,
         };

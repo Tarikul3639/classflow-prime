@@ -42,6 +42,12 @@ export default function MembersPage() {
       state.classes.classMembers.membersByClass[classId]?.fetchMembers
         ?.loading ?? false
   );
+  const isFetched = useAppSelector(
+    (state) =>
+      state.classes.classMembers.membersByClass[classId]?.fetchMembers
+        ?.isFetched ?? false
+  );
+
   // const fetchError = useAppSelector(
   //   (state) =>
   //     state.classes.classMembers.membersByClass[classId]?.fetchMembers
@@ -139,7 +145,7 @@ export default function MembersPage() {
   );
 
   // ─── Derived State ─────────────────────────────────────────
-  const isEmpty = filteredMembers.length === 0 && !isFetching;
+  const isEmpty = filteredMembers.length === 0 && !isFetching && isFetched;
 
   // ─── Render ───────────────────────────────────────────────
   return (
@@ -158,7 +164,7 @@ export default function MembersPage() {
       <div className="flex-1 relative flex flex-col px-4 py-6 space-y-6 pb-24 lg:pb-8">
 
         {/* Skeleton → Empty → List: mutually exclusive */}
-        {isFetching && members.length === 0 ? (
+        {isFetching || !isFetched ? (
           <MembersSkeleton adminCount={2} studentCount={6} />
         ) : isEmpty ? (
           <div className="flex-1 flex items-center justify-center py-10">

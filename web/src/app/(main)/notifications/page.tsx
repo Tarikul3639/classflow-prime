@@ -32,7 +32,7 @@ interface Filter {
 
 const Notifications: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { notifications, meta, unreadCount, isLoading, error } = useAppSelector(
+  const { notifications, meta, unreadCount, isLoading, isFetched, error } = useAppSelector(
     (state) => state.notification,
   );
 
@@ -166,7 +166,7 @@ const Notifications: React.FC = () => {
       <div className="flex-1 relative flex flex-col mx-auto w-full px-4 lg:px-8 py-6">
 
         {/* Skeleton → Empty → List: mutually exclusive */}
-        {isLoading && notifications.length === 0 ? (
+        {isLoading || !isFetched ? (
           <NotificationsSkeleton />
         ) : filteredNotifications.length === 0 ? (
           <div className="flex-1 flex items-center justify-center">

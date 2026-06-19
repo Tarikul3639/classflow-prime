@@ -23,7 +23,7 @@ export const selectSingleGroup = createSelector(
 // ─── 5. Is Already Fetched Guard ─────────────────────────────────────────
 export const selectIsGroupsFetched = createSelector(
     [selectGroupBucket],
-    (bucket) => !!bucket
+    (bucket) => bucket?.fetch?.isFetched ?? false
 );
 
 // ─── 6. Group Count ──────────────────────────────────────────────────────

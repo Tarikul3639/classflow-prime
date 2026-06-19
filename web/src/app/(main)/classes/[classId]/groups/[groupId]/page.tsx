@@ -36,7 +36,7 @@ export default function UpdateGroupPage() {
     selectSingleGroup(state, classId, groupId),
   );
 
-  const { loading: isFetching, error: fetchError } = useAppSelector(
+  const { loading: isFetching, isFetched, error: fetchError } = useAppSelector(
     (state) =>
       state.classes.classGroups.groupsByClass[classId]?.fetchSingle || {},
   );
@@ -168,7 +168,7 @@ export default function UpdateGroupPage() {
         classId={classId as string}
         isNew={false}
         isDirty={isDirty}
-        isLoading={isFetching || isUpdating}
+        isLoading={isFetching || isUpdating || !isFetched}
       />
 
       {/* Error Alert */}

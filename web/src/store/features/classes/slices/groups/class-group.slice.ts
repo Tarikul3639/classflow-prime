@@ -16,11 +16,13 @@ interface ClassGroupBucket {
 
     fetch: {
         loading: boolean;
+        isFetched: boolean;
         error: string | null;
     };
 
     fetchSingle: {
         loading: boolean;
+        isFetched: boolean;
         error: string | null;
     };
 
@@ -53,11 +55,13 @@ const createEmptyBucket = (): ClassGroupBucket => ({
 
     fetch: {
         loading: false,
+        isFetched: false,
         error: null,
     },
 
     fetchSingle: {
         loading: false,
+        isFetched: false,
         error: null,
     },
 
@@ -133,6 +137,7 @@ const classGroupSlice = createSlice({
 
                 if (bucket) {
                     bucket.fetch.loading = false;
+                    bucket.fetch.isFetched = true;
                     bucket.groups = action.payload.groups ?? [];
                 }
             })
@@ -143,6 +148,7 @@ const classGroupSlice = createSlice({
 
                 if (bucket) {
                     bucket.fetch.loading = false;
+                    bucket.fetch.isFetched = true;
                     bucket.fetch.error =
                         action.payload ?? "Failed to fetch groups.";
                 }
@@ -158,6 +164,7 @@ const classGroupSlice = createSlice({
                 }
 
                 state.groupsByClass[classId].fetchSingle.loading = true;
+                state.groupsByClass[classId].fetchSingle.isFetched = false;
                 state.groupsByClass[classId].fetchSingle.error = null;
             })
 
@@ -167,7 +174,7 @@ const classGroupSlice = createSlice({
 
                 if (bucket) {
                     bucket.fetchSingle.loading = false;
-
+                    bucket.fetchSingle.isFetched = true;
                     const group = action.payload;
 
                     const index = bucket.groups.findIndex(
@@ -190,6 +197,7 @@ const classGroupSlice = createSlice({
                     bucket.fetchSingle.loading = false;
                     bucket.fetchSingle.error =
                         action.payload ?? "Failed to fetch group details.";
+                    bucket.fetchSingle.isFetched = true; // to prevent infinite loading state in case of error
                 }
             })
 

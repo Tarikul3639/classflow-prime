@@ -11,7 +11,7 @@ import Preferences from "./_components/Preferences";
 import VersionInfo from "./_components/VersionInfo";
 import { EmptyState } from "@/components/ui/EmptyState";
 import BravePushGuideModal from "@/components/ui/BravePushGuideModal";
-import { isBraveBrowser } from '@/lib/brave-push-helper'; 
+import { isBraveBrowser } from "@/lib/brave-push-helper";
 
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { signoutCurrentThunk } from "@/store/features/auth/thunks/signout.thunk";
@@ -51,7 +51,6 @@ const ProfileSettings: React.FC = () => {
     null,
   );
 
-  // Sync Redux user data with local form state
   useEffect(() => {
     if (user) {
       const data = {
@@ -70,7 +69,6 @@ const ProfileSettings: React.FC = () => {
     darkMode: false,
   });
 
-  // Sync push notification state with preferences
   useEffect(() => {
     setPreferences((prev) => ({
       ...prev,
@@ -106,8 +104,7 @@ const ProfileSettings: React.FC = () => {
     const isBrave = await isBraveBrowser();
 
     const promise = toggleNotification().catch((err) => {
-      // Show Brave setup modal instead of toast error for FCM-related failures
-      if (err?.name === 'AbortError' && isBrave) {
+      if (err?.name === "AbortError" && isBrave) {
         setShowBraveModal(true);
         return;
       }
@@ -115,21 +112,22 @@ const ProfileSettings: React.FC = () => {
     });
 
     toast.promise(promise, {
-      loading: 'Updating notification settings...',
+      loading: "Updating notification settings...",
       success: () =>
         isSubscribed
-          ? 'Notifications disabled successfully'
-          : 'Notifications enabled successfully',
+          ? "Notifications disabled successfully"
+          : "Notifications enabled successfully",
       error: (err) => {
         const errorMessage =
           err instanceof Error
             ? err.message
-            : 'Failed to update notification settings';
+            : "Failed to update notification settings";
         setNotificationError(errorMessage);
         return errorMessage;
       },
     });
   };
+
   const handleToggle = (field: keyof typeof preferences) => {
     if (field === "notifications") {
       handleNotificationToggle();
@@ -169,27 +167,25 @@ const ProfileSettings: React.FC = () => {
     });
   };
 
+  const showLoading = status.loading || !status.isFetched;
+  const showEmpty = status.isFetched && !status.loading && !user;
+
   return (
     <>
       <main className="relative flex flex-col min-h-screen bg-slate-50">
-        {/* Fixed Header */}
         <ProfileHeader onSave={handleSave} isChanged={isChanged} />
 
-        {/* Main Content Area */}
         <div className="flex-1 flex flex-col">
-          {/* ── State 1: Loading ── */}
-          {status.loading && (
+          {showLoading ? (
             <div className="flex-1 flex items-center justify-center">
-              <TopLoader isLoading={status.loading} />
+              <TopLoader isLoading={status.loading || !status.isFetched} />
             </div>
-          )}
+          ) : null}
 
-          {/* ── State 2: User found ── */}
-          {!status.loading && user && (
+          {!showLoading && user && (
             <div className="flex-1 overflow-y-auto pb-24 lg:pb-8">
               <div className="mx-auto px-4 lg:px-8 py-6">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                  {/* Left Column */}
                   <div className="lg:col-span-5 space-y-5">
                     <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
                       <ProfilePicture
@@ -216,7 +212,6 @@ const ProfileSettings: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Right Column */}
                   <div className="lg:col-span-7 space-y-5">
                     {user.enrolledClasses?.length > 0 && (
                       <EnrolledClasses classes={user.enrolledClasses} />
@@ -237,8 +232,7 @@ const ProfileSettings: React.FC = () => {
             </div>
           )}
 
-          {/* ── State 3: No user + not loading ── */}
-          {!status.loading && !user && (
+          {showEmpty ? (
             <div className="flex-1 flex items-center justify-center p-4">
               <EmptyState
                 icon={UserX}
@@ -248,7 +242,7 @@ const ProfileSettings: React.FC = () => {
                 onAction={() => window.location.reload()}
               />
             </div>
-          )}
+          ) : null}
         </div>
       </main>
 
@@ -256,7 +250,6 @@ const ProfileSettings: React.FC = () => {
         isOpen={showBraveModal}
         onClose={() => setShowBraveModal(false)}
       />
-
     </>
   );
 };

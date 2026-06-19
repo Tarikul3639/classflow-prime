@@ -19,7 +19,6 @@ import {
 // Selectors
 import {
     selectClassFaculties,
-    selectIsFacultyFetched,
 } from "@/store/features/classes/selectors/class-faculty.selectors";
 import { ClassFaculty } from "@/store/features/classes/class.types";
 
@@ -42,11 +41,8 @@ export default function FacultyPage() {
     );
 
     const isFetching = facultyFetch?.loading ?? false;
+    const isFetched = facultyFetch?.isFetched ?? false;
     const fetchingError = facultyFetch?.error ?? null;
-
-    const isFetched = useAppSelector((state) =>
-        selectIsFacultyFetched(state, classId),
-    );
 
     const classDetails = useAppSelector(
         (state) =>
@@ -148,7 +144,7 @@ export default function FacultyPage() {
             )}
 
             {/* Skeleton → Empty → List: mutually exclusive */}
-            {isFetching && faculties.length === 0 ? (
+            {isFetching || !isFetched ? (
                 <FacultySkeleton count={6} />
             ) : fetchingError ? (
                 <div className="flex-1 flex flex-col items-center justify-center py-10">

@@ -17,7 +17,7 @@ interface ClassActionsBucket {
     leaveClass: { loading: boolean; error: string | null };
     deleteClass: { loading: boolean; error: string | null };
     markAsEnded: { loading: boolean; error: string | null };
-    fetchClassSettings: { loading: boolean; error: string | null };
+    fetchClassSettings: { loading: boolean; isFetched: boolean; error: string | null };
     regenerateClassCode: { loading: boolean; error: string | null };
     toggleJoiningAllowed: { loading: boolean; error: string | null };
 }
@@ -37,7 +37,7 @@ const createInitialClassActionsBucket = (): ClassActionsBucket => ({
     leaveClass: { loading: false, error: null },
     deleteClass: { loading: false, error: null },
     markAsEnded: { loading: false, error: null },
-    fetchClassSettings: { loading: false, error: null },
+    fetchClassSettings: { loading: false, isFetched: false, error: null },
     regenerateClassCode: { loading: false, error: null },
     toggleJoiningAllowed: { loading: false, error: null },
 });
@@ -145,6 +145,7 @@ const classActionsSlice = createSlice({
                 const classId = action.meta.arg;
                 ensureBucket(state, classId);
                 state.actionsByClass[classId].fetchClassSettings.loading = true;
+                state.actionsByClass[classId].fetchClassSettings.isFetched = false;
                 state.actionsByClass[classId].fetchClassSettings.error = null;
                 state.actionsByClass[classId].classCode = null;
                 state.actionsByClass[classId].isJoiningAllowed = true;
@@ -153,6 +154,7 @@ const classActionsSlice = createSlice({
                 const classId = action.meta.arg;
                 ensureBucket(state, classId);
                 state.actionsByClass[classId].fetchClassSettings.loading = false;
+                state.actionsByClass[classId].fetchClassSettings.isFetched = true;
                 state.actionsByClass[classId].classCode = action.payload.code;
                 state.actionsByClass[classId].isJoiningAllowed = action.payload.isJoiningAllowed;
             })
@@ -160,6 +162,7 @@ const classActionsSlice = createSlice({
                 const classId = action.meta.arg;
                 ensureBucket(state, classId);
                 state.actionsByClass[classId].fetchClassSettings.loading = false;
+                state.actionsByClass[classId].fetchClassSettings.isFetched = true;
                 state.actionsByClass[classId].fetchClassSettings.error =
                     action.payload || "Failed to fetch class settings.";
             })

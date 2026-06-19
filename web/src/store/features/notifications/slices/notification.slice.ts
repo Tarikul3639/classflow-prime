@@ -13,6 +13,7 @@ interface NotificationState {
     meta: INotificationMeta;
     unreadCount: number;
     isLoading: boolean;
+    isFetched: boolean;
     isUpdating: boolean;
     error: string | null;
 }
@@ -31,6 +32,7 @@ const initialState: NotificationState = {
     meta: initialMeta,
     unreadCount: 0,
     isLoading: false,
+    isFetched: false,
     isUpdating: false,
     error: null,
 };
@@ -57,6 +59,7 @@ const notificationSlice = createSlice({
             .addCase(fetchNotifications.pending, (state) => {
                 state.isLoading = true;
                 state.error = null;
+                state.isFetched = false;
             })
             .addCase(
                 fetchNotifications.fulfilled,
@@ -65,10 +68,12 @@ const notificationSlice = createSlice({
                     state.notifications = action.payload.data;
                     state.meta = action.payload.meta;
                     state.unreadCount = action.payload.meta.unreadCount;
+                    state.isFetched = true;
                 }
             )
             .addCase(fetchNotifications.rejected, (state, action) => {
                 state.isLoading = false;
+                state.isFetched = true;
                 state.error = action.payload?.message ?? "Something went wrong";
             });
 

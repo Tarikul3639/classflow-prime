@@ -6,6 +6,9 @@ import { RootState } from "@/store/store";
 export const selectDashboardLoading = (state: RootState) =>
     state.dashboard.loading.fetchDashboard;
 
+export const selectDashboardIsFetched = (state: RootState) =>
+    state.dashboard.isFetched.fetchDashboard;
+
 export const selectDashboardError = (state: RootState) =>
     state.dashboard.error.fetchDashboard;
 

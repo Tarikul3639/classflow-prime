@@ -33,7 +33,7 @@ export default function EditUpdatePage() {
     const updateId = params.updateId as string;
 
     // Select update data from Redux
-    const { data, loading, error } = useAppSelector((state) =>
+    const { data, loading, isFetched, error } = useAppSelector((state) =>
         selectSingleUpdateState(state, classId, updateId)
     );
 
@@ -124,7 +124,7 @@ export default function EditUpdatePage() {
     };
 
     // FIX: use loading (not fetchLoading)
-    if (loading) {
+    if (loading && !isFetched) {
         return (
             <div className="flex items-center justify-center min-h-screen bg-slate-50">
                 <p className="text-sm text-slate-500">Loading update...</p>

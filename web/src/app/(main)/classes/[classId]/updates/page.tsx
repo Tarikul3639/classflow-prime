@@ -68,6 +68,7 @@ export default function UpdatesPage() {
   );
 
   const isFetching = fetchState?.loading ?? false;
+  const isFetched = fetchState?.isFetched ?? false;
   const fetchingError = fetchState?.error ?? null;
 
   // Class-level permissions
@@ -169,7 +170,7 @@ export default function UpdatesPage() {
   // ── Derived UI State ───────────────────────────────────────────────────────
   const isAdmin = !!(classDetails?.isInstructor || classDetails?.isAssistant);
   const isEmpty = sortedDateKeys.length === 0 && !isFetching && !fetchingError;
-  const isLoading = isFetching || classLoading;
+  const isLoading = isFetching || classLoading || !isFetched;
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (

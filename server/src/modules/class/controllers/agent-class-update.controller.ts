@@ -11,6 +11,7 @@ import { AgentPermissionGuard } from '../guards/agent-permission.guard';
 import { AgentPermission } from '../decorators/agent-permission.decorator';
 import { CurrentAgent } from '../decorators/current-agent.decorator';
 import type { AgentDocument } from '../../../infrastructure/database/entities/agent.entity';
+import { Public } from '../../../common/decorators/public.decorator';
 
 @ApiTags('Agent Class Updates')
 @ApiSecurity('x-api-key')
@@ -21,6 +22,7 @@ export class AgentClassUpdateController {
     ) { }
 
     @Post()
+    @Public()
     @UseGuards(AgentGuard, AgentPermissionGuard)
     @AgentPermission('create')
     @ApiOperation({ summary: 'Create class update using agent API key' })

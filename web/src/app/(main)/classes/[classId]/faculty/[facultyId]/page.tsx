@@ -49,7 +49,7 @@ export default function EditFacultyPage() {
     selectSingleFaculty(state, classId, facultyId)
   );
 
-  const { loading: isFetching, error: fetchError } = useAppSelector(
+  const { loading: isFetching, isFetched, error: fetchError } = useAppSelector(
     (state) =>
       state.classes.classFaculty.facultiesByClass[classId].fetchSingle || {},
   );
@@ -163,7 +163,7 @@ export default function EditFacultyPage() {
   };
 
   // ── Loading State ──────────────────────────────────────────────────────────
-  if (isFetching && !cachedFaculty) {
+  if (isFetching|| !isFetched) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-slate-50">
         <p className="text-sm text-slate-500">Loading faculty details...</p>

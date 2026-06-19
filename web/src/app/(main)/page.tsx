@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchDashboardData } from "@/store/features/dashboard/thunk/dashboard.thunk";
 import {
   selectDashboardLoading,
+  selectDashboardIsFetched,
   selectDashboardError,
   selectClasses,
   selectActiveClasses,
@@ -30,6 +31,7 @@ export default function DashboardPage() {
 
   const user = useAppSelector((state) => state.profile.fetchUser.user);
   const isLoading = useAppSelector(selectDashboardLoading);
+  const isFetched = useAppSelector(selectDashboardIsFetched);
   const error = useAppSelector(selectDashboardError);
   const classes = useAppSelector(selectClasses);
   const activeClasses = useAppSelector(selectActiveClasses);
@@ -51,7 +53,7 @@ export default function DashboardPage() {
       <DashboardHeader />
 
       <main className="flex-1 overflow-y-auto pb-24">
-        {isLoading && classes.length ===0 ? (
+        {isLoading || !isFetched ? (
           <DashboardSkeleton />
         ) : error ? (
           <ErrorState

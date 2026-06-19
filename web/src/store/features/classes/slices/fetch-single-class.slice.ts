@@ -9,6 +9,7 @@ interface SingleClassBucket {
 
     fetch: {
         loading: boolean;
+        isFetched: boolean;
         error: string | null;
     };
 }
@@ -26,6 +27,7 @@ const createEmptyBucket = (): SingleClassBucket => ({
 
     fetch: {
         loading: false,
+        isFetched: false,
         error: null,
     },
 });
@@ -63,7 +65,8 @@ const fetchSingleClassSlice = createSlice({
                 if (!state.classesByClassId[classId]) {
                     state.classesByClassId[classId] = createEmptyBucket();
                 }
-
+                
+                state.classesByClassId[classId].fetch.isFetched = false;
                 state.classesByClassId[classId].fetch.loading = true;
                 state.classesByClassId[classId].fetch.error = null;
             })
@@ -74,6 +77,7 @@ const fetchSingleClassSlice = createSlice({
 
                 if (bucket) {
                     bucket.fetch.loading = false;
+                    bucket.fetch.isFetched = true;
                     bucket.classDetails = action.payload;
                 }
             })
@@ -84,6 +88,7 @@ const fetchSingleClassSlice = createSlice({
 
                 if (bucket) {
                     bucket.fetch.loading = false;
+                    bucket.fetch.isFetched = true;
                     bucket.fetch.error =
                         action.payload?.message ?? "Failed to fetch class details.";
                 }

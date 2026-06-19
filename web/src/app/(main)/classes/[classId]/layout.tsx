@@ -33,6 +33,7 @@ export default function ClassLayout({
 
     const classDetails = classState?.classDetails;
     const isLoading = classState?.fetch?.loading ?? false;
+    const isFetched = classState?.fetch?.isFetched ?? false;
     const isAdmin = !!classDetails?.isInstructor || !!classDetails?.isAssistant;
 
     // ── Class Settings (for invite link) ───────────────────────────────────
@@ -99,7 +100,7 @@ export default function ClassLayout({
     ];
 
     const isActiveTab = (href: string) => pathname === href;
-    const loading = isLoading || !classDetails?.classId;
+    const loading = isLoading || !isFetched;
 
     // ── Handlers ───────────────────────────────────────────────────────────
 
@@ -257,12 +258,12 @@ export default function ClassLayout({
                     {tabs.map((tab) => {
                         const active = isActiveTab(tab.href);
                         return (
-                            <Link
+                            <button
                                 key={tab.id}
-                                href={tab.href}
+                                onClick={() => router.replace(tab.href)}
                                 className={`relative flex-none px-4 py-4 text-[12px] md:text-[13px] lg:text-[14px] font-semibold transition-colors overflow-hidden ${active
-                                    ? "text-primary font-bold"
-                                    : "text-slate-800 hover:text-slate-900"
+                                    ? "text-primary font-bold hover:text-primary"
+                                    : "text-slate-800 hover:text-primary cursor-pointer"
                                     }`}
                             >
                                 {tab.label}
@@ -280,7 +281,7 @@ export default function ClassLayout({
                                         />
                                     </>
                                 )}
-                            </Link>
+                            </button>
                         );
                     })}
                 </div>

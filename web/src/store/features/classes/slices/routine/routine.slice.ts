@@ -11,6 +11,7 @@ import { deleteRoutine } from "../../thunks/routine/deleteRoutine.thunk";
 
 interface ActionState {
     loading: boolean;
+    isFetched: boolean;
     error: string | null;
     success: boolean;
 }
@@ -29,9 +30,8 @@ interface RoutineState {
 
 const defaultActionState: ActionState = {
     loading: false,
-
+    isFetched: false,
     error: null,
-
     success: false,
 };
 
@@ -133,9 +133,8 @@ const routineSlice = createSlice({
             // ── Fetch Routine ───────────────────────────────────────────────
             .addCase(fetchRoutine.pending, (state) => {
                 state.fetchRoutine.loading = true;
-
+                state.fetchRoutine.isFetched = false;
                 state.fetchRoutine.error = null;
-
                 state.fetchRoutine.success = false;
             })
 
@@ -143,11 +142,9 @@ const routineSlice = createSlice({
                 fetchRoutine.fulfilled,
                 (state, action) => {
                     state.fetchRoutine.loading = false;
-
                     state.fetchRoutine.success = true;
-
+                    state.fetchRoutine.isFetched = true;
                     state.fetchRoutine.error = null;
-
                     const routine = action.payload;
 
                     if (routine?.classId) {
@@ -162,7 +159,7 @@ const routineSlice = createSlice({
                 fetchRoutine.rejected,
                 (state, action) => {
                     state.fetchRoutine.loading = false;
-
+                    state.fetchRoutine.isFetched = true;
                     state.fetchRoutine.error =
                         (action.payload as string) ||
                         "Failed to fetch routine";
@@ -172,21 +169,15 @@ const routineSlice = createSlice({
             // ── Add Slot ────────────────────────────────────────────────────
             .addCase(addSlot.pending, (state) => {
                 state.addSlot.loading = true;
-
                 state.addSlot.error = null;
-
                 state.addSlot.success = false;
             })
 
             .addCase(addSlot.fulfilled, (state, action) => {
                 state.addSlot.loading = false;
-
                 state.addSlot.success = true;
-
                 state.addSlot.error = null;
-
                 const routine = action.payload;
-
                 if (routine?.classId) {
                     state.routines[
                         routine.classId
@@ -196,7 +187,6 @@ const routineSlice = createSlice({
 
             .addCase(addSlot.rejected, (state, action) => {
                 state.addSlot.loading = false;
-
                 state.addSlot.error =
                     (action.payload as string) ||
                     "Failed to add slot";
@@ -205,19 +195,14 @@ const routineSlice = createSlice({
             // ── Edit Slot ───────────────────────────────────────────────────
             .addCase(editSlot.pending, (state) => {
                 state.editSlot.loading = true;
-
                 state.editSlot.error = null;
-
                 state.editSlot.success = false;
             })
 
             .addCase(editSlot.fulfilled, (state, action) => {
                 state.editSlot.loading = false;
-
                 state.editSlot.success = true;
-
                 state.editSlot.error = null;
-
                 const routine = action.payload;
 
                 if (routine?.classId) {
@@ -229,7 +214,6 @@ const routineSlice = createSlice({
 
             .addCase(editSlot.rejected, (state, action) => {
                 state.editSlot.loading = false;
-
                 state.editSlot.error =
                     (action.payload as string) ||
                     "Failed to edit slot";
@@ -266,19 +250,14 @@ const routineSlice = createSlice({
 
             .addCase(deleteRoutine.pending, (state) => {
                 state.deleteRoutine.loading = true;
-
                 state.deleteRoutine.error = null;
-
                 state.deleteRoutine.success = false;
             })
 
             .addCase(deleteRoutine.fulfilled, (state, action) => {
                 state.deleteRoutine.loading = false;
-
                 state.deleteRoutine.success = true;
-
                 state.deleteRoutine.error = null;
-
                 delete state.routines[action.payload.classId];
             })
 
