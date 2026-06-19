@@ -1,3 +1,10 @@
+# [server-v3.1.0](https://github.com/Tarikul3639/classflow-prime/compare/server-v3.0.1...server-v3.1.0) (2026-06-19)
+
+
+### Features
+
+* update class/enrollment architecture, agent integration, and frontend loading UX ([467e332](https://github.com/Tarikul3639/classflow-prime/commit/467e3321086945a1adee0552bd476d5da0ca734b))
+
 # [server-v3.0.1](https://github.com/Tarikul3639/classflow-prime/compare/server-v3.0.0...server-v3.0.1) (2026-06-19)
 
 
