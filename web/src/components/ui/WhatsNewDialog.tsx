@@ -85,6 +85,21 @@ export function WhatsNewDialog({ open: externalOpen, onClose }: WhatsNewDialogPr
     const [open, setOpen] = useState(false);
 
     useEffect(() => {
+        if (open) {
+            document.body.classList.add("overflow-hidden");
+            document.documentElement.classList.add("overflow-hidden");
+        } else {
+            document.body.classList.remove("overflow-hidden");
+            document.documentElement.classList.remove("overflow-hidden");
+        }
+
+        return () => {
+            document.body.classList.remove("overflow-hidden");
+            document.documentElement.classList.remove("overflow-hidden");
+        };
+    }, [open]);
+
+    useEffect(() => {
         const seen = localStorage.getItem(STORAGE_KEY);
         if (seen !== APP_CONFIG.version) {
             setOpen(true);
@@ -106,7 +121,7 @@ export function WhatsNewDialog({ open: externalOpen, onClose }: WhatsNewDialogPr
 
     return (
         <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/40 p-4 md:px-10 md:py-6 lg:px-20 lg:py-10">
-            <div className="bg-slate-50 rounded-2xl border border-slate-300 w-full max-width-[440px] overflow-hidden py-2 px-0.5">
+            <div className="bg-slate-50 rounded-lg border border-slate-300 w-full max-width-[440px] overflow-hidden py-2 px-0.5">
 
                 {/* Header */}
                 <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
@@ -149,7 +164,7 @@ export function WhatsNewDialog({ open: externalOpen, onClose }: WhatsNewDialogPr
                     <span className="text-xs text-slate-400">Released {PUBLISH_DATE}</span>
                     <button
                         onClick={handleClose}
-                        className="bg-primary text-white text-[13px] font-medium px-4 py-1.5 rounded-md hover:bg-primary/90 transition-colors cursor-pointer"
+                        className="bg-primary text-white text-[13px] font-medium px-4 py-1.5 rounded hover:bg-primary/90 transition-colors cursor-pointer"
                     >
                         Got it
                     </button>

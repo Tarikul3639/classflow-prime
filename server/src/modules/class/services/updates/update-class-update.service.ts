@@ -21,8 +21,12 @@ import { ClassStatus } from '../../../../infrastructure/database/interface/class
 import { UpdateCategory } from '../../../../infrastructure/database/interface/update.interface';
 
 // DTOs & Services
-import { UpdateClassUpdateRequestDto, UpdateClassUpdateResponseDto } from '../../dto/update-class-update.dto';
+import {
+  UpdateClassUpdateRequestDto,
+  UpdateClassUpdateResponseDto,
+} from '../../dto/update-class-update.dto';
 import { NotificationService } from '../../../notification/services/notification.service';
+import { trackChange } from '../../../../utils/change-tracker.util';
 
 @Injectable()
 export class UpdateClassUpdateService {
@@ -47,8 +51,6 @@ export class UpdateClassUpdateService {
     updateId: string,
     dto: UpdateClassUpdateRequestDto,
   ): Promise<UpdateClassUpdateResponseDto> {
-    
-    // 1. Validation check (ObjectId)
     if (!Types.ObjectId.isValid(classId)) {
       throw new NotFoundException('Invalid class id');
     }
@@ -60,11 +62,11 @@ export class UpdateClassUpdateService {
     const classObjectId = new Types.ObjectId(classId);
     const updateObjectId = new Types.ObjectId(updateId);
 
-    // 2. Fetch class data and check status
     const classData = await this.classModel
       .findById(classObjectId)
-      .select('name status')
-      .lean<{ name: string; status: ClassStatus }>();
+      .select('className status')
+      .lean<{ className: string; status: ClassStatus }>()
+      .exec();
 
     if (!classData) {
       throw new NotFoundException('Class not found');
@@ -74,7 +76,6 @@ export class UpdateClassUpdateService {
       throw new ForbiddenException('Cannot modify updates of an ended class');
     }
 
-    // 3. Find the existing update
     const existingUpdate = await this.classUpdateModel
       .findOne({
         _id: updateObjectId,
@@ -87,41 +88,45 @@ export class UpdateClassUpdateService {
         category: UpdateCategory;
         eventAt?: Date | null;
         postedBy: Types.ObjectId;
-      }>();
+      }>()
+      .exec();
 
     if (!existingUpdate) {
       throw new NotFoundException('Update not found');
     }
 
-    // 4. Track changes for notifications
     const changes: string[] = [];
 
-    if (dto.title !== undefined && dto.title !== existingUpdate.title) {
-      changes.push('Title updated');
-    }
+    const titleChange = trackChange('Title', existingUpdate.title, dto.title);
+    if (titleChange) changes.push(titleChange);
 
-    if (dto.description !== undefined && dto.description !== existingUpdate.description) {
-      changes.push('Description updated');
-    }
+    const descriptionChange = trackChange(
+      'Description',
+      existingUpdate.description,
+      dto.description,
+    );
+    if (descriptionChange) changes.push(descriptionChange);
 
-    if (dto.category !== undefined && dto.category !== existingUpdate.category) {
-      changes.push('Category updated');
-    }
+    const categoryChange = trackChange(
+      'Category',
+      existingUpdate.category,
+      dto.category,
+    );
+    if (categoryChange) changes.push(categoryChange);
 
-    if (dto.eventAt !== undefined) {
-      const oldDate = existingUpdate.eventAt ? existingUpdate.eventAt.toISOString() : null;
-      const newDate = dto.eventAt ? new Date(dto.eventAt).toISOString() : null;
+    const oldEventAt = existingUpdate.eventAt ?? null;
+    const newEventAt = dto.eventAt ? new Date(dto.eventAt) : null;
+    const eventAtChange = trackChange('Event date', oldEventAt, newEventAt);
+    if (eventAtChange) changes.push(eventAtChange);
 
-      if (oldDate !== newDate) {
-        changes.push('Event date updated');
+    if (dto.materials !== undefined) {
+      if (dto.materials.length === 0) {
+        changes.push('• Materials cleared');
+      } else {
+        changes.push('• Materials updated');
       }
     }
 
-    if (dto.materials !== undefined) {
-      changes.push('Materials updated');
-    }
-
-    // 5. Prepare update fields
     const updateFields: Record<string, unknown> = {};
 
     if (dto.title !== undefined) updateFields.title = dto.title;
@@ -132,7 +137,6 @@ export class UpdateClassUpdateService {
       updateFields.eventAt = dto.eventAt ? new Date(dto.eventAt) : undefined;
     }
 
-    // 6. Start database transaction
     const session = await this.classModel.db.startSession();
     session.startTransaction();
 
@@ -143,7 +147,6 @@ export class UpdateClassUpdateService {
         { session },
       );
 
-      // Handle material updates
       if (dto.materials !== undefined) {
         await this.materialModel.deleteMany(
           { updateId: updateObjectId },
@@ -191,7 +194,6 @@ export class UpdateClassUpdateService {
       session.endSession();
     }
 
-    // 7. Fetch updated data and send notifications
     const updatedDoc = await this.classUpdateModel
       .findById(updateObjectId)
       .populate<{
@@ -223,13 +225,16 @@ export class UpdateClassUpdateService {
       ...new Set(enrollments.map((e) => e.userId.toString())),
     ].filter((id) => id !== updatedDoc.postedBy._id.toString());
 
-    const message = changes.length > 0 ? changes.join(', ') : 'An update has been modified.';
+    const message =
+      changes.length > 0
+        ? changes.join('\n')
+        : 'An update has been modified.';
 
     if (recipientIds.length > 0) {
       await this.notificationService.createBulk({
         recipientIds,
         senderId: updatedDoc.postedBy._id.toString(),
-        title: classData.name,
+        title: classData.className,
         message,
         type: NotificationType.UPDATE,
         metadata: {
@@ -239,7 +244,6 @@ export class UpdateClassUpdateService {
       });
     }
 
-    // 8. Return response
     return {
       success: true,
       message: 'Update modified successfully',
