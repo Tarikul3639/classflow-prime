@@ -1,3 +1,10 @@
+# [web-v2.15.0](https://github.com/Tarikul3639/classflow-prime/compare/web-v2.14.1...web-v2.15.0) (2026-06-23)
+
+
+### Features
+
+* major faculty module enhancement, notification improvements & frontend refactor ([6c59809](https://github.com/Tarikul3639/classflow-prime/commit/6c59809fb6a761c8d69c489be33a62b8b19e232b))
+
 # [web-v2.14.1](https://github.com/Tarikul3639/classflow-prime/compare/web-v2.14.0...web-v2.14.1) (2026-06-22)
 
 
