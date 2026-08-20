@@ -30,9 +30,11 @@
 
 ## Overview
 
-**ClassFlow Prime** is a full-stack education management platform designed to streamline academic operations for students, instructors, and administrators. It provides a centralized digital workspace for managing class updates, exam schedules, study groups, member roles, faculty assignments, and real-time notifications.
+**ClassFlow Prime** is a full-stack education management platform built to help Class Representatives (CRs) organize and manage academic information for their section. In a semester, multiple courses are conducted by different faculty members, making it difficult for students to keep track of CTs, assignments, vivas, exams, classroom details, and important announcements.
 
-Built with a modern monorepo architecture, the platform consists of a **Next.js 16** frontend and a **NestJS 11** backend, connected via RESTful APIs and powered by **MongoDB Atlas** for data persistence. The UI is crafted with **Tailwind CSS 4**, **shadcn/ui**, and **Framer Motion** for a polished, responsive experience across desktop and mobile devices.
+The platform centralizes all academic activities in one place, allowing the CR to publish schedules with dates, times, and descriptions, share classroom codes, faculty contact information, section group invitation links, and other important resources.
+
+This ensures students can easily stay updated and avoid schedule conflicts, even if they miss a class..
 
 ---
 
