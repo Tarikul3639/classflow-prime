@@ -74,6 +74,45 @@ class MaterialDto {
 }
 
 /**
+ * DTO for a comment on a class update
+ */
+class ClassUpdateCommentDto {
+  @ApiProperty({ example: 'comment123' })
+  @IsString()
+  _id!: string;
+
+  @ApiProperty({ example: true })
+  @IsBoolean()
+  isOwner!: boolean;
+
+  @ApiProperty({ example: 'John Doe' })
+  @IsString()
+  name!: string;
+
+  @ApiProperty({
+    example: 'https://cdn.example.com/avatar.jpg',
+    required: false,
+    nullable: true,
+  })
+  @IsOptional()
+  @IsString()
+  avatarUrl?: string | null;
+
+  @ApiProperty({
+    example: 'Thanks for sharing this update!',
+  })
+  @IsString()
+  @IsNotEmpty()
+  message!: string;
+
+  @ApiProperty({
+    example: '2026-08-25T10:00:00.000Z',
+  })
+  @IsString()
+  createdAt!: string;
+}
+
+/**
  * Main Class Update Item DTO
  */
 export class ClassUpdateItemDto {
@@ -128,6 +167,16 @@ export class ClassUpdateItemDto {
     example: '2026-03-15T10:30:00.000Z',
   })
   updatedAt!: string;
+
+  @ApiProperty({
+    type: [ClassUpdateCommentDto],
+    required: false,
+  })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ClassUpdateCommentDto)
+  comments!: ClassUpdateCommentDto[];
 
   @ApiProperty({ type: [MaterialDto], required: false })
   @IsOptional()

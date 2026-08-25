@@ -8,6 +8,9 @@ import { updateClassUpdate } from "../thunks/update-class-update.thunk";
 import { togglePinClassUpdate } from "../thunks/toggle-pin-class-update.thunk";
 import { deleteSingleClassUpdate } from "../thunks/delete-single-class-update.thunk";
 
+import { createClassUpdateComment } from "../thunks/create-class-update-comment.thunk";
+import { deleteCommentFromUpdate } from "../thunks/delete-comment-from-update.thunk"
+
 // Types
 import type { ClassUpdateItem } from "@/types/update.types";
 import type { ApiError } from "@/api/extract-error";
@@ -39,6 +42,18 @@ interface ClassBucket {
     };
 
     delete: {
+        loading: boolean;
+        error: ApiError | null;
+    };
+
+    // ── Comments ──────────────────────────────
+
+    commentCreate: {
+        loading: boolean;
+        error: ApiError | null;
+    };
+
+    commentDelete: {
         loading: boolean;
         error: ApiError | null;
     };
@@ -75,6 +90,18 @@ const createEmptyBucket = (): ClassBucket => ({
     },
 
     delete: {
+        loading: false,
+        error: null,
+    },
+
+    // ── Comments ──────────────────────────────
+
+    commentCreate: {
+        loading: false,
+        error: null,
+    },
+
+    commentDelete: {
         loading: false,
         error: null,
     },
@@ -356,6 +383,133 @@ const classUpdatesSlice = createSlice({
                             message: "Failed to update.",
                         };
                     bucket.fetch.isFetched = true;
+                }
+            })
+
+            // ── Create Comment ────────────────────────────
+
+            .addCase(createClassUpdateComment.pending, (state, action) => {
+                const { classId } = action.meta.arg;
+
+                const bucket = state.updatesByClass[classId];
+
+                if (bucket) {
+                    bucket.commentCreate.loading = true;
+                    bucket.commentCreate.error = null;
+                }
+            })
+
+            .addCase(createClassUpdateComment.fulfilled, (state, action) => {
+                const { classId, updateId } = action.meta.arg;
+                const comment = action.payload;
+
+                const bucket = state.updatesByClass[classId];
+
+                if (!bucket) return;
+
+                bucket.commentCreate.loading = false;
+
+                const update = bucket.items.find(
+                    (item) => item._id === updateId
+                );
+
+                if (!update) return;
+
+                if (!update.comments) {
+                    update.comments = [];
+                }
+
+                const alreadyExists = update.comments.some(
+                    (item) => item._id === comment._id
+                );
+
+                if (!alreadyExists) {
+                    update.comments.push(comment);
+                }
+
+                if (!update.engagement) {
+                    update.engagement = {
+                        avatars: [],
+                        commentCount: 0,
+                    };
+                }
+
+                update.engagement.commentCount = update.comments.length;
+            })
+
+            .addCase(createClassUpdateComment.rejected, (state, action) => {
+                const { classId } = action.meta.arg;
+
+                const bucket = state.updatesByClass[classId];
+
+                if (bucket) {
+                    bucket.commentCreate.loading = false;
+
+                    bucket.commentCreate.error =
+                        action.payload ?? {
+                            message: "Failed to create comment.",
+                        };
+                }
+            })
+
+
+            // ── Delete Comment ────────────────────────────
+
+            .addCase(deleteCommentFromUpdate.pending, (state, action) => {
+                const { classId } = action.meta.arg;
+
+                const bucket = state.updatesByClass[classId];
+
+                if (bucket) {
+                    bucket.commentDelete.loading = true;
+                    bucket.commentDelete.error = null;
+                }
+            })
+
+            .addCase(deleteCommentFromUpdate.fulfilled, (state, action) => {
+                // Use original thunk arguments
+                const { classId, updateId, commentId } = action.meta.arg;
+
+                const bucket = state.updatesByClass[classId];
+
+                if (!bucket) return;
+
+                bucket.commentDelete.loading = false;
+
+                const update = bucket.items.find(
+                    (item) => item._id === updateId
+                );
+
+                if (!update) return;
+
+                // Remove deleted comment
+                update.comments = (update.comments ?? []).filter(
+                    (comment) => comment._id !== commentId
+                );
+
+                // Update comment count
+                if (!update.engagement) {
+                    update.engagement = {
+                        avatars: [],
+                        commentCount: 0,
+                    };
+                }
+
+                update.engagement.commentCount = update.comments.length;
+            })
+
+            .addCase(deleteCommentFromUpdate.rejected, (state, action) => {
+                const { classId } = action.meta.arg;
+
+                const bucket = state.updatesByClass[classId];
+
+                if (bucket) {
+                    bucket.commentDelete.loading = false;
+
+                    bucket.commentDelete.error =
+                        action.payload ?? {
+                            message: "Failed to delete comment.",
+                        };
                 }
             });
     },

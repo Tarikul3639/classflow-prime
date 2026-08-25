@@ -32,6 +32,11 @@ export function UpdatePreview({ form }: UpdatePreviewProps) {
       <div className="space-y-4 mx-auto w-full">
         <UpdateCard
           updateId="preview"
+          postedBy={{
+            _id: "preview",
+            name: "You",
+            avatarUrl: "/default-avatar.png",
+          }}
           icon={currentConfig.icon}
           iconBg={currentConfig.iconBg}
           iconColor={currentConfig.iconColor}

@@ -20,6 +20,10 @@ import { fetchClassUpdate } from "@/store/features/classes/thunks/fetch-class-up
 import { togglePinClassUpdate } from "@/store/features/classes/thunks/toggle-pin-class-update.thunk";
 import { deleteSingleClassUpdate } from "@/store/features/classes/thunks/delete-single-class-update.thunk";
 
+// Comments Thunks
+import { createClassUpdateComment } from "@/store/features/classes/thunks/create-class-update-comment.thunk";
+import { deleteCommentFromUpdate } from "@/store/features/classes/thunks/delete-comment-from-update.thunk";
+
 // Memoized Selectors
 import {
   selectGroupedUpdates,
@@ -167,6 +171,43 @@ export default function UpdatesPage() {
     });
   };
 
+  // ── Comment Handlers ─────────────────────────────────────────────────────────
+  const handleAddComment = (updateId: string, message: string) => {
+    const promise = dispatch(
+      createClassUpdateComment({
+        classId,
+        updateId,
+        message,
+      })
+    ).unwrap();
+
+    toast.promise(promise, {
+      loading: "Posting comment...",
+      success: "Comment posted successfully",
+      error: (err) => err.message ?? "Failed to post comment",
+    });
+  };
+
+  // ── Comment Handlers ─────────────────────────────────────────────────────────
+  const handleDeleteComment = (
+    updateId: string,
+    commentId: string
+  ) => {
+    const promise = dispatch(
+      deleteCommentFromUpdate({
+        classId,
+        updateId,
+        commentId,
+      })
+    ).unwrap();
+
+    toast.promise(promise, {
+      loading: "Deleting comment...",
+      success: "Comment deleted successfully",
+      error: (err) => err.message ?? "Failed to delete comment",
+    });
+  };
+
   // ── Derived UI State ───────────────────────────────────────────────────────
   const isAdmin = !!(classDetails?.isInstructor || classDetails?.isAssistant);
   const isEmpty = sortedDateKeys.length === 0 && !isFetching && !fetchingError;
@@ -236,6 +277,7 @@ export default function UpdatesPage() {
                         eventAt={update.eventAt ?? undefined}
                         description={update.description}
                         materials={update.materials}
+                        comments={update.comments}
                         postedBy={update.postedBy}
                         isPinned={update.isPinned}
                         onTogglePin={() =>
@@ -246,6 +288,9 @@ export default function UpdatesPage() {
                         }
                         onDelete={() => handleDelete(update._id)}
                         onCopy={() => handleCopy(update)}
+
+                        onAddComment={handleAddComment}
+                        onDeleteComment={handleDeleteComment}
                       />
                     );
                   })}

@@ -10,6 +10,7 @@ import { Enrollment, EnrollmentSchema } from '../../infrastructure/database/enti
 import { Faculty, FacultySchema } from '../../infrastructure/database/entities/faculty.entity';
 import { Material, MaterialSchema } from '../../infrastructure/database/entities/material.entity';
 import { User, UserSchema } from '../../infrastructure/database/entities/user.entity';
+import { ClassUpdateComment, ClassUpdateCommentSchema } from '../../infrastructure/database/entities/class-update-comment.entity';
 
 // Controllers
 import { AgentClassUpdateController } from './controllers/agent-class-update.controller';
@@ -28,6 +29,7 @@ import { FetchSingleClassUpdateController } from './controllers/fetch-single-cla
 import { TogglePinClassUpdateController } from './controllers/toggle-pin-class-update.controller';
 import { UpdateClassController } from './controllers/update-class.controller';
 import { UpdateClassUpdateController } from './controllers/update-class-update.controller';
+import { ClassUpdateCommentController } from './controllers/class-update-comment.controller';
 
 // Services
 import { AssistantAssignClassMemberService } from './services/members/assistant-assign-class-member.service';
@@ -61,6 +63,8 @@ import { UpdateClassGroupService } from './services/group/update-class-group.ser
 import { UpdateClassService } from './services/update-class.service';
 import { UpdateClassUpdateService } from './services/updates/update-class-update.service';
 import { UpdateSingleClassFacultyService } from './services/facultys/update-single-class-faculty.service';
+import { CreateClassUpdateCommentService } from "./services/updates/create-class-update-comment.service"
+import { DeleteClassUpdateCommentService } from './services/updates/delete-class-update-comment.service';
 
 // Guards
 import { ClassRoleGuard } from './guards/class-role.guard';
@@ -75,6 +79,7 @@ import { ClassRoleGuard } from './guards/class-role.guard';
       { name: Material.name, schema: MaterialSchema },
       { name: Faculty.name, schema: FacultySchema },
       { name: ClassGroup.name, schema: ClassGroupSchema },
+      { name: ClassUpdateComment.name, schema: ClassUpdateCommentSchema },
       { name: Agent.name, schema: AgentSchema },
     ]),
   ],
@@ -95,6 +100,7 @@ import { ClassRoleGuard } from './guards/class-role.guard';
     TogglePinClassUpdateController,
     UpdateClassController,
     UpdateClassUpdateController,
+    ClassUpdateCommentController
   ],
   providers: [
     AssistantAssignClassMemberService,
@@ -129,6 +135,8 @@ import { ClassRoleGuard } from './guards/class-role.guard';
     UpdateClassService,
     UpdateClassUpdateService,
     UpdateSingleClassFacultyService,
+    CreateClassUpdateCommentService,
+    DeleteClassUpdateCommentService,
   ],
 })
-export class ClassModule {}
+export class ClassModule { }
