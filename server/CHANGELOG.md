@@ -1,3 +1,16 @@
+# [server-v3.3.0](https://github.com/Tarikul3639/classflow-prime/compare/server-v3.2.1...server-v3.3.0) (2026-08-25)
+
+
+### Bug Fixes
+
+* Add status to API responses & refactor enroll flow ([6a44e03](https://github.com/Tarikul3639/classflow-prime/commit/6a44e03d1bac5a50bad03f004a6bd2c79d7fa3aa))
+
+
+### Features
+
+* **class:** add comment support for class updates ([c8a6f74](https://github.com/Tarikul3639/classflow-prime/commit/c8a6f7484b259f985b95cf901dc8b507a660cd0a))
+* major faculty module enhancement, notification improvements & frontend refactor ([6c59809](https://github.com/Tarikul3639/classflow-prime/commit/6c59809fb6a761c8d69c489be33a62b8b19e232b))
+
 # [server-v3.2.1](https://github.com/Tarikul3639/classflow-prime/compare/server-v3.2.0...server-v3.2.1) (2026-06-19)
 
 
