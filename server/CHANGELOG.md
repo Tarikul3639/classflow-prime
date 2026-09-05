@@ -1,3 +1,10 @@
+# [server-v3.4.0](https://github.com/Tarikul3639/classflow-prime/compare/server-v3.3.0...server-v3.4.0) (2026-09-05)
+
+
+### Features
+
+* **dashboard:** implement just admin dashboard  backend ([7b69e77](https://github.com/Tarikul3639/classflow-prime/commit/7b69e7742ca0fb50f621776d451c9d65dd1a50de))
+
 # [server-v3.3.0](https://github.com/Tarikul3639/classflow-prime/compare/server-v3.2.1...server-v3.3.0) (2026-08-25)
 
 
