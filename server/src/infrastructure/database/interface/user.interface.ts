@@ -6,6 +6,12 @@ export enum UserRole {
   SUPER_ADMIN = 'super_admin'
 }
 
+export enum UserStatus {
+  ACTIVE = 'ACTIVE',
+  SUSPENDED = 'SUSPENDED',
+  BANNED = 'BANNED',
+}
+
 export interface IUser {
   _id?: Types.ObjectId | string; // MongoDB ObjectId as string
   name: string;

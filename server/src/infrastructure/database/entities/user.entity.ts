@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { IUser, UserRole } from '../interface/user.interface';
+import { IUser, UserRole, UserStatus } from '../interface/user.interface';
 
 export type UserDocument = HydratedDocument<User & IUser>;
 
@@ -23,6 +23,14 @@ export class User implements IUser {
     default: UserRole.USER,
   })
   role!: UserRole;
+
+  @Prop({
+    required: true,
+    enum: UserStatus,
+    default: UserStatus.ACTIVE,
+    index: true,
+  })
+  status!: UserStatus;
 
   // Unique email (lowercase)
   @Prop({
