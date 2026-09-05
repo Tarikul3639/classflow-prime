@@ -19,12 +19,22 @@ export enum ClassStatus {
 }
 
 /**
+ * User role enum.
+ */
+export enum UserRole {
+    USER = 'user',
+    ADMIN = 'admin',
+    SUPER_ADMIN = 'super_admin',
+}
+
+/**
  * User model.
  */
 export type IUser = {
     _id: string;
     name: string;
     email: string;
+    role: UserRole;
     emailVerified: boolean;
     bio?: string;
     avatarUrl?: string;

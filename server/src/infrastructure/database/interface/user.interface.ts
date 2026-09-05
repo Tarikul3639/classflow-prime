@@ -1,9 +1,9 @@
 import { Types } from 'mongoose';
 
 export enum UserRole {
-  USER = 'student',
+  USER = 'user',
   ADMIN = 'admin',
-  TEACHER = 'teacher',
+  SUPER_ADMIN = 'super_admin'
 }
 
 export interface IUser {

@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { UserPlus, LayersPlus } from "lucide-react";
+import { UserPlus, LayersPlus, ShieldCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { ComingSoonDialog } from "@/components/ui/ComingSoonDialog";
+import { UserRole } from "@/store/features/profile/profile.types";
 
 const SECOND_COLORS = [
   "text-indigo-500",
@@ -83,7 +84,8 @@ function LiveClock() {
   );
 }
 
-export default function DashboardHeader() {
+export default function DashboardHeader({ userRole }: { userRole: UserRole | undefined }) {
+
   const [showDialog, setShowDialog] = useState(false);
   return (
     <>
@@ -96,6 +98,15 @@ export default function DashboardHeader() {
         {/* Enroll & Create button */}
         {/* Desktop Buttons */}
         <div className="hidden md:flex items-center gap-2">
+          {userRole === UserRole.ADMIN && (
+            <Link
+              href="/admin"
+              className="flex items-center gap-2 bg-primary text-white px-4 py-2 border border-primary rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors cursor-pointer"
+            >
+              <ShieldCheck size={16} />
+              <span>Admin</span>
+            </Link>
+          )}
           <Link
             href="/classes/enroll"
             className="flex items-center gap-2 bg-white border border-slate-300 text-slate-600 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-100 transition-colors cursor-pointer"
@@ -114,6 +125,15 @@ export default function DashboardHeader() {
 
         {/* Mobile Buttons */}
         <div className="md:hidden flex items-center gap-2">
+          {userRole === UserRole.ADMIN && (
+            <Link
+              href="/admin"
+              className="flex items-center justify-center w-10 h-10 bg-primary border border-primary text-white rounded-lg hover:bg-primary/90 transition-colors shadow-sm"
+            >
+              <ShieldCheck size={16} />
+            </Link>
+          )}
+          <div className="w-px h-6 bg-slate-200" />
           <Link
             href="/classes/enroll"
             className="flex items-center justify-center w-10 h-10 bg-white border border-slate-300 text-slate-600 rounded-lg hover:bg-slate-100 transition-colors shadow-sm"

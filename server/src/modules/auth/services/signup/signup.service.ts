@@ -18,7 +18,7 @@ import {
   Verification,
   VerificationDocument,
 } from '../../../../infrastructure/database/entities/verification.entity';
-import { IUser } from '../../../../infrastructure/database/interface/user.interface';
+import { IUser, UserRole } from '../../../../infrastructure/database/interface/user.interface';
 import { IVerification } from '../../../../infrastructure/database/interface/verification.interface';
 
 import { MailService } from '../../../../infrastructure/mail/mail.service';
@@ -65,6 +65,7 @@ export class SignUpService {
         user = new this.userModel({
           name: dto.name,
           email,
+          role: UserRole.USER,
           avatarUrl: dto.avatarUrl,
           emailVerified: false,
         });

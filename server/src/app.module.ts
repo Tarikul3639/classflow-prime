@@ -17,6 +17,8 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { CloudinaryModule } from './infrastructure/cloudinary/cloudinary.module';
 import { CoreModule } from './core/core.module';
 
+// Admin Dashboard Module
+import { AdminDashboardModule } from './modules/admin-dashboard/admin-dashboard.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -35,6 +37,8 @@ import { CoreModule } from './core/core.module';
     CloudinaryModule,
     ProfileModule,
     AgentModule,
+    // Admin Dashboard Module
+    AdminDashboardModule,
   ],
   controllers: [],
   providers: [],

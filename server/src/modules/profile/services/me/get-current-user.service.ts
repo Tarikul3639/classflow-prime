@@ -3,11 +3,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types, PipelineStage } from 'mongoose';
 
 import { User, UserDocument } from '../../../../infrastructure/database/entities/user.entity';
+import { UserRole } from '../../../../infrastructure/database/interface/user.interface';
 
 export interface IUser {
   _id: string;
   name: string;
   email: string;
+  role: UserRole;
   emailVerified: boolean;
   bio?: string;
   avatarUrl?: string;
@@ -94,6 +96,7 @@ export class GetCurrentUserService {
           emailVerified: 1,
           bio: 1,
           avatarUrl: 1,
+          role: 1,
           enrolledClasses: 1,
         },
       },
@@ -120,6 +123,7 @@ export class GetCurrentUserService {
           _id: userData._id.toString(),
           name: userData.name,
           email: userData.email,
+          role: userData.role,
           emailVerified: userData.emailVerified,
           bio: userData.bio,
           avatarUrl: userData.avatarUrl || undefined,
