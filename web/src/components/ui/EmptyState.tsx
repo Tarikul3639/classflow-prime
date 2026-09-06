@@ -1,6 +1,3 @@
-"use client";
-
-import React from "react";
 import { LucideIcon, BellOff } from "lucide-react";
 
 type EmptyStateSize = "sm" | "md" | "lg";
@@ -63,7 +60,7 @@ export const EmptyState = ({
     >
       {/* Icon */}
       <div
-        className={`rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center ${styles.iconWrap}`}
+        className={`rounded-full bg-muted flex items-center justify-center ${styles.iconWrap}`}
       >
         <Icon className="text-slate-400" size={styles.icon} />
       </div>
@@ -74,7 +71,7 @@ export const EmptyState = ({
       </p>
 
       {/* Description */}
-      <p className={`text-slate-400 leading-relaxed ${styles.desc}`}>
+      <p className={`mt-1 text-xs text-muted-foreground leading-relaxed ${styles.desc}`}>
         {description}
       </p>
 

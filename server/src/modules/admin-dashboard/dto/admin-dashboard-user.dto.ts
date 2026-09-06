@@ -5,6 +5,7 @@ export class AdminDashboardUserDto {
     name!: string;
     email!: string;
     role!: UserRole;
+    status!: string;
     emailVerified!: boolean;
     avatarUrl!: string | null;
     createdAt!: Date;

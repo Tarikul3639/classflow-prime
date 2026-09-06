@@ -5,7 +5,6 @@ import { Loader } from "@/components/ui/Loader";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { usePushNotification } from "@/hooks/usePushNotification";
 import { meThunk } from "@/store/features/profile/thunks/fetch-user.thunk";
 
 function BottomNavbar() {
@@ -20,10 +19,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const dispatch = useAppDispatch();
   const { loading, isFetched } = useAppSelector((state) => state.profile.fetchUser.status);
-  const userId = useAppSelector((state) => state.profile.fetchUser.user?._id);
-
-  // ── Push notification subscription ──────────────────────
-  usePushNotification(userId ?? null);
 
   // On mount, fetch current user if not already authenticated
   useEffect(() => {
@@ -54,7 +49,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <AdminSidebar />
 
       {/* Main Content */}
-      <main className="flex-1 w-full">{children}</main>
+      <main className="flex-1 min-w-0 px-4 lg:px-6 py-6">{children}</main>
 
       {/* Mobile Bottom Navbar */}
       <BottomNavbar />

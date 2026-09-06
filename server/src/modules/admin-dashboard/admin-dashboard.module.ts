@@ -9,6 +9,8 @@ import { FetchAdminDashboardService } from './services/fetch-admin-dashboard.ser
 import { FetchAdminDashboardStatsService } from './services/fetch-admin-dashboard-stats.service';
 import { FetchAdminRecentUsersService } from './services/fetch-admin-recent-users.service';
 import { FetchAdminRecentClassesService } from './services/fetch-admin-recent-classes.service';
+import { FetchAdminUserVerificationService } from './services/fetch-admin-user-verification.service';
+import { FetchUserGrowthService } from './services/fetch-user-growth.service';
 
 // Database Entities
 import {
@@ -71,6 +73,8 @@ import {
         FetchAdminDashboardStatsService,
         FetchAdminRecentUsersService,
         FetchAdminRecentClassesService,
+        FetchAdminUserVerificationService,
+        FetchUserGrowthService,
     ],
 })
 export class AdminDashboardModule { }

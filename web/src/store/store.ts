@@ -1,4 +1,5 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
+import { baseApi } from "./services/base-api";
 
 // Auth slices
 import signinReducer from "./features/auth/slices/signin.slice";
@@ -82,7 +83,13 @@ export const store = configureStore({
     notification: notificationReducer,
     dashboard: dashboardReducer,
     agent: agentReducer,
+
+    // RTK Query Reducer
+    [baseApi.reducerPath]: baseApi.reducer,
   },
+
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(baseApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
