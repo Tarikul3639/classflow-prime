@@ -1,3 +1,12 @@
+# [web-v2.16.0](https://github.com/Tarikul3639/classflow-prime/compare/web-v2.15.0...web-v2.16.0) (2026-09-06)
+
+
+### Features
+
+* **admin:** complete dashboard with analytics and RTK Query ([d5e311e](https://github.com/Tarikul3639/classflow-prime/commit/d5e311e941aca3f3081db16f1a0543fa6aacf2fc))
+* **class:** add comment support for class updates ([c8a6f74](https://github.com/Tarikul3639/classflow-prime/commit/c8a6f7484b259f985b95cf901dc8b507a660cd0a))
+* **dashboard:** implement just admin dashboard  backend ([7b69e77](https://github.com/Tarikul3639/classflow-prime/commit/7b69e7742ca0fb50f621776d451c9d65dd1a50de))
+
 # [web-v2.15.0](https://github.com/Tarikul3639/classflow-prime/compare/web-v2.14.1...web-v2.15.0) (2026-06-23)
 
 
