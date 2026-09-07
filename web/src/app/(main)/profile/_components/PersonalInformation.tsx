@@ -1,8 +1,8 @@
 "use client";
 
 import { User, Mail } from "lucide-react";
-import { Input } from "@/components/ui/Input";
-import { Textarea } from "@/components/ui/Textarea";
+import { Input } from "@/components/ui/form-input";
+import { Textarea } from "@/components/ui/form-textarea";
 
 interface PersonalInformationProps {
   name: string;

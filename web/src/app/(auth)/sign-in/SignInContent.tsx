@@ -17,7 +17,7 @@ import { useSearchParams } from "next/navigation";
 import { SignInThunk } from "@/store/features/auth/thunks/signin.thunks";
 import { resetSignInStatus } from "@/store/features/auth/slices/signin.slice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { Input } from "@/components/ui/Input";
+import { Input } from "@/components/ui/form-input";
 
 interface SignInPayload {
     email: string;

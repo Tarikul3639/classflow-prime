@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Mail, ArrowRight } from "lucide-react";
-import { Input } from "@/components/ui/Input";
+import { Input } from "@/components/ui/form-input";
 import AuthFooter from "./AuthFooter";
 
 interface StepEmailInputProps {

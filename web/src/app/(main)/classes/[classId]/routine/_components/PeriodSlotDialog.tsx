@@ -13,8 +13,8 @@ import {
 import { formatTo12Hour } from "@/utils/date.utils";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/Input";
-import { Select } from "@/components/ui/Select";
+import { Input } from "@/components/ui/form-input";
+import { Select } from "@/components/ui/form-select";
 
 import type {
     RoutineSlot,

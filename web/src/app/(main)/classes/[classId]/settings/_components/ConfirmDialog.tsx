@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
-import { Input } from "@/components/ui/Input";
+import { Input } from "@/components/ui/form-input";
 
 interface ConfirmDialogProps {
   isOpen: boolean;

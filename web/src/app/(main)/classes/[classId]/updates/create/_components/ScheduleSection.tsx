@@ -3,7 +3,7 @@
 import React from "react";
 import { Calendar as CalendarIcon, X } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
-import { Input } from "@/components/ui/Input";
+import { Input } from "@/components/ui/form-input";
 import type { CreateUpdateFormData } from "@/types/update.types";
 import { localToISO, isoToLocalDate, isoToLocalTime } from "@/utils/date.utils";
 

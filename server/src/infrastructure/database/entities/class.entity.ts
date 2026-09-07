@@ -54,6 +54,41 @@ export class Class implements IClass {
 
   @Prop({ default: true })
   allowEnroll!: boolean;
+
+  @Prop({
+    default: false,
+    index: true,
+  })
+  isBlocked!: boolean;
+
+  @Prop({
+    type: String,
+    default: null,
+    trim: true,
+    maxlength: 500,
+  })
+  blockedReason?: string | null;
+
+  @Prop({
+    type: Date,
+    default: null,
+  })
+  blockedAt?: Date | null;
+
+  @Prop({
+    type: Types.ObjectId,
+    ref: 'User',
+    default: null,
+  })
+  blockedBy?: Types.ObjectId | null;
+
+  @Prop({
+    type: Types.ObjectId,
+    ref: 'User',
+    required: true,
+    index: true,
+  })
+  createdBy!: Types.ObjectId;
 }
 
 export const ClassSchema = SchemaFactory.createForClass(Class);

@@ -12,6 +12,7 @@ export const baseApi = createApi({
         "AdminUsers",
         "AdminUser",
         "AdminUserActivity",
+        "AdminClasses",
     ],
     reducerPath: "api",
     endpoints: () => ({}),

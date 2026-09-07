@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { Input } from "@/components/ui/Input";
-import { Select } from "@/components/ui/Select";
+import { Input } from "@/components/ui/form-input";
+import { Select } from "@/components/ui/form-select";
 import { ScheduleSection } from "./ScheduleSection";
 import { DescriptionEditor } from "./DescriptionEditor";
 import { MaterialsSection } from "./MaterialsSection";

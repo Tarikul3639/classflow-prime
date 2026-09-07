@@ -10,7 +10,7 @@ import {
   User,
 } from "lucide-react";
 
-import { Input } from "@/components/ui/Input";
+import { Input } from "@/components/ui/form-input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 

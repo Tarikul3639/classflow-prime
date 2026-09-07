@@ -31,6 +31,7 @@ export class CreateClassService {
         allowEnroll: dto.allowEnroll ?? true,
         status: ClassStatus.ACTIVE,
         enrollCode,
+        createdBy: userObjectId,
       }], { session });
 
       await this.enrollmentModel.create([{

@@ -20,6 +20,7 @@ import { CoreModule } from './core/core.module';
 // Admin Dashboard Module
 import { AdminDashboardModule } from './modules/admin-dashboard/admin-dashboard.module';
 import { AdminUsersModule } from './modules/admin-users/users.module';
+import { AdminClassesModule } from './modules/admin-classes/admin-classes.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -40,7 +41,8 @@ import { AdminUsersModule } from './modules/admin-users/users.module';
     AgentModule,
     // Admin Dashboard Module
     AdminDashboardModule,
-    AdminUsersModule
+    AdminUsersModule,
+    AdminClassesModule,
   ],
   controllers: [],
   providers: [],

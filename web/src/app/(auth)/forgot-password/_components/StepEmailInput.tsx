@@ -1,7 +1,7 @@
 "use client";
 
 import { Mail, ArrowRight, Loader2, ArrowLeft } from "lucide-react";
-import { Input } from "@/components/ui/Input";
+import { Input } from "@/components/ui/form-input";
 import Link from "next/link";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { requestPasswordResetThunk } from "@/store/features/auth/thunks/password-reset.thunk";

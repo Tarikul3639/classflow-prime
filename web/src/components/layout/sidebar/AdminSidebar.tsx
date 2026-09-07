@@ -49,6 +49,12 @@ export const AdminSidebar: React.FC = () => {
             icon: Users,
             href: "/admin/users",
         },
+        {
+            id: "classes",
+            label: "Classes",
+            icon: GraduationCap,
+            href: "/admin/classes",
+        }
     ];
 
     return (
@@ -97,8 +103,8 @@ export const AdminSidebar: React.FC = () => {
                             key={item.id}
                             href={item.href}
                             className={`relative flex items-center gap-4 px-4 py-3 rounded-sm transition-all duration-200 ${isActive
-                                    ? "text-primary cursor-default"
-                                    : "text-slate-500 hover:text-slate-800 hover:bg-slate-200/60"
+                                ? "text-primary cursor-default"
+                                : "text-slate-500 hover:text-slate-800 hover:bg-slate-200/60"
                                 }`}
                             title={!isExpanded ? item.label : undefined}
                         >
@@ -166,7 +172,7 @@ export const AdminSidebar: React.FC = () => {
                                     className="flex-1 overflow-hidden"
                                 >
                                     <p className="text-sm font-semibold truncate text-slate-900">
-                                        {user?.name?? "No Name"}
+                                        {user?.name ?? "No Name"}
                                     </p>
                                     <p className="text-xs text-slate-500 truncate">
                                         {user?.email ?? "No Email"}

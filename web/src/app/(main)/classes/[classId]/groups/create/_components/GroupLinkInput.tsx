@@ -2,8 +2,8 @@
 
 import React from "react";
 import { Link as LinkIcon } from "lucide-react";
-import { Input } from "@/components/ui/Input";
-import { Select } from "@/components/ui/Select";
+import { Input } from "@/components/ui/form-input";
+import { Select } from "@/components/ui/form-select";
 import { ClassGroup, GroupPlatform, GroupErrorFieldType, GroupErrorField } from "@/types/group.types";
 import { ApiError } from "@/api/extract-error";
 

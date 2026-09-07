@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Mail, Phone, BookOpenText } from "lucide-react";
-import { Input } from "@/components/ui/Input";
+import { Input } from "@/components/ui/form-input";
 import type { ClassFaculty } from "@/store/features/classes/class.types";
 
 interface ContactInfoSectionProps {

@@ -16,6 +16,11 @@ export interface IClass {
   themeColor?: string; // UI theme color (e.g., "#3B82F6")
   coverImage?: string | null; // Cover image URL (e.g., "https://example.com/image.png")
   status: ClassStatus; // active, ended, upcoming
+  isBlocked?: boolean; // Whether the class is blocked (e.g., due to violations)
+  blockedReason?: string | null; // Reason for blocking the class (if blocked)
+  blockedAt?: Date | null; // Timestamp when the class was blocked (if blocked)
+  blockedBy?: Types.ObjectId | string | null; // User ID of the admin who blocked the class (if blocked)
+  createdBy?: Types.ObjectId | string; // User ID of the admin who created the class
   createdAt?: Date;
   updatedAt?: Date;
 }
