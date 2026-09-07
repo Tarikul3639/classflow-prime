@@ -1,3 +1,10 @@
+# [web-v2.18.0](https://github.com/Tarikul3639/classflow-prime/compare/web-v2.17.0...web-v2.18.0) (2026-09-07)
+
+
+### Features
+
+* **admin:** add comprehensive admin class management system ([e79b440](https://github.com/Tarikul3639/classflow-prime/commit/e79b44035347c163de06d69055a09cb66f4193af))
+
 # [web-v2.17.0](https://github.com/Tarikul3639/classflow-prime/compare/web-v2.16.0...web-v2.17.0) (2026-09-07)
 
 
