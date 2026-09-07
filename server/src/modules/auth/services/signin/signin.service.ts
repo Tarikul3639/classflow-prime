@@ -9,6 +9,7 @@ import type { Model } from 'mongoose';
 import { SignInDto } from '../../dto/signin/signin.dto';
 import { TokenService } from '../token/token.service';
 import { User, UserDocument } from '../../../../infrastructure/database/entities/user.entity';
+import { UserStatus, UserRole } from '../../../../infrastructure/database/interface/user.interface';
 import {
   Account,
   AccountDocument,
@@ -39,7 +40,7 @@ export class SignInService {
     private readonly accountModel: Model<AccountDocument>,
     private readonly tokenService: TokenService,
     private readonly throttle: AuthThrottleService,
-  ) {}
+  ) { }
 
   async execute(
     dto: SignInDto,
@@ -61,6 +62,18 @@ export class SignInService {
     if (!user) {
       await this.handleFailure(t);
       throw new UnauthorizedException('No account found with this email');
+    }
+
+    // 3) Check if user is Banned
+    if (user.status === UserStatus.BANNED) {
+      await this.handleFailure(t);
+      throw new UnauthorizedException('Your account has been banned. Please contact support for assistance.');
+    }
+
+    // 4) Check if user is Suspended
+    if (user.status === UserStatus.SUSPENDED) {
+      await this.handleFailure(t);
+      throw new UnauthorizedException('Your account has been suspended temporarily. Please contact support for assistance.');
     }
 
     // 3️) Load Account for password verification

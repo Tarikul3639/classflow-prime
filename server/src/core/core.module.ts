@@ -11,6 +11,13 @@ import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 
 import { AuthModule } from '../modules/auth/auth.module';
 
+import {
+  User,
+  UserSchema,
+} from '../infrastructure/database/entities/user.entity';
+
+import { MongooseModule } from '@nestjs/mongoose';
+
 @Global()
 @Module({
   imports: [
@@ -24,6 +31,7 @@ import { AuthModule } from '../modules/auth/auth.module';
         secret: configService.get<StringValue>('jwt.accessToken.secret'),
       }),
     }),
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   providers: [
     JwtAuthGuard,

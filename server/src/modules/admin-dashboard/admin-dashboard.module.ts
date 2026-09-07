@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
+import { AuthModule } from '../auth/auth.module';
+
 // Controller
 import { AdminDashboardController } from './admin-dashboard.controller';
 
@@ -62,6 +64,7 @@ import {
                 schema: AgentSchema,
             },
         ]),
+        AuthModule,
     ],
 
     controllers: [

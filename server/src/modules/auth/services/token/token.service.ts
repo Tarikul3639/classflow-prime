@@ -12,8 +12,14 @@ import ms from 'ms';
 
 import type { IJwtPayload } from '../../interfaces/jwt-payload.interface';
 import type { ITokens } from './token.types';
-import { User, UserDocument } from '../../../../infrastructure/database/entities/user.entity';
-import { UserRole } from '../../../../infrastructure/database/interface/user.interface';
+import {
+  User,
+  UserDocument,
+} from '../../../../infrastructure/database/entities/user.entity';
+import {
+  UserRole,
+  UserStatus,
+} from '../../../../infrastructure/database/interface/user.interface';
 import {
   Session,
   SessionDocument,
@@ -173,6 +179,26 @@ export class TokenService {
       new Types.ObjectId(payload.userId),
     );
     if (!user) throw new UnauthorizedException('User no longer exists');
+
+    // Check if user is banned
+    if (user.status === UserStatus.BANNED) {
+      // Remove all active sessions
+      await this.sessionModel.deleteMany({
+        userId: user._id,
+      });
+
+      throw new ForbiddenException('Your account has been banned. Please contact support for assistance.');
+    }
+
+    // Check if user is suspended
+    if (user.status === UserStatus.SUSPENDED) {
+      // Remove all active sessions
+      await this.sessionModel.deleteMany({
+        userId: user._id,
+      });
+
+      throw new ForbiddenException('Your account has been suspended. Please contact support for assistance.');
+    }
 
     const tokens = await this.signTokens({
       userId: user._id.toString(),

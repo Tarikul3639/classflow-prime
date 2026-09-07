@@ -121,7 +121,7 @@ export function WhatsNewDialog({ open: externalOpen, onClose }: WhatsNewDialogPr
 
     return (
         <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/40 p-4 md:px-10 md:py-6 lg:px-20 lg:py-10">
-            <div className="bg-slate-50 rounded-lg border border-slate-300 w-full max-width-[440px] overflow-hidden py-2 px-0.5">
+            <div className="max-w-7xl bg-slate-50 rounded-lg border border-slate-300 w-full max-width-[440px] overflow-hidden py-2 px-0.5">
 
                 {/* Header */}
                 <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">

@@ -1,6 +1,11 @@
-import { Body, Controller, Get, Post, Param, Patch, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Param, Patch, Query, UseGuards } from '@nestjs/common';
 
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { UserRole } from '../../infrastructure/database/interface/user.interface';
 
 import { FetchAdminUsersService } from './services/fetch-admin-users.service';
 import { FetchAdminUserService } from './services/fetch-admin-user.service';
@@ -23,6 +28,8 @@ import { UpdateAdminUserRoleDto } from './dto/update-admin-user-role.dto';
 
 @ApiTags('Admin Users')
 @Controller('admin/users')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
 export class AdminUsersController {
     constructor(
         private readonly fetchAdminUsersService: FetchAdminUsersService,
