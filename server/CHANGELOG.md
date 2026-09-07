@@ -1,3 +1,11 @@
+# [server-v3.6.0](https://github.com/Tarikul3639/classflow-prime/compare/server-v3.5.0...server-v3.6.0) (2026-09-07)
+
+
+### Features
+
+* **admin:** complete dashboard with analytics and RTK Query ([d5e311e](https://github.com/Tarikul3639/classflow-prime/commit/d5e311e941aca3f3081db16f1a0543fa6aacf2fc))
+* enhance admin user management and password reset flow ([e9f07bf](https://github.com/Tarikul3639/classflow-prime/commit/e9f07bfa1803548d1f8f35f7bcc012a501133197))
+
 # [server-v3.5.0](https://github.com/Tarikul3639/classflow-prime/compare/server-v3.4.0...server-v3.5.0) (2026-09-05)
 
 
