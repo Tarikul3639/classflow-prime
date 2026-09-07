@@ -1,3 +1,11 @@
+# [web-v2.17.0](https://github.com/Tarikul3639/classflow-prime/compare/web-v2.16.0...web-v2.17.0) (2026-09-07)
+
+
+### Features
+
+* add user status validation and role-based access control ([f3d64e8](https://github.com/Tarikul3639/classflow-prime/commit/f3d64e85b0a4126ae3bc34d7aa9431b8e253e762))
+* enhance admin user management and password reset flow ([e9f07bf](https://github.com/Tarikul3639/classflow-prime/commit/e9f07bfa1803548d1f8f35f7bcc012a501133197))
+
 # [web-v2.16.0](https://github.com/Tarikul3639/classflow-prime/compare/web-v2.15.0...web-v2.16.0) (2026-09-06)
 
 
