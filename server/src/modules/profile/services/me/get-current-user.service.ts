@@ -1,8 +1,17 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types, PipelineStage } from 'mongoose';
+import { Model } from 'mongoose';
 
-import { User, UserDocument } from '../../../../infrastructure/database/entities/user.entity';
+import {
+  User,
+  UserDocument,
+} from '../../../../infrastructure/database/entities/user.entity';
+
+import {
+  Enrollment,
+  EnrollmentDocument,
+} from '../../../../infrastructure/database/entities/enrollment.entity';
+
 import { UserRole } from '../../../../infrastructure/database/interface/user.interface';
 
 export interface IUser {
@@ -21,7 +30,7 @@ export interface IUser {
     role: string;
     status: string;
     enrolledAt: Date;
-  };
+  }[];
 }
 
 export interface IGetCurrentUserResponseDto {
@@ -35,99 +44,59 @@ export interface IGetCurrentUserResponseDto {
 @Injectable()
 export class GetCurrentUserService {
   constructor(
-    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-  ) {}
+    @InjectModel(User.name)
+    private readonly userModel: Model<UserDocument>,
+
+    @InjectModel(Enrollment.name)
+    private readonly enrollmentModel: Model<EnrollmentDocument>,
+  ) { }
 
   async execute(userId: string): Promise<IGetCurrentUserResponseDto> {
-    // 1. Convert string ID to MongoDB ObjectId
-    const userObjId = new Types.ObjectId(userId);
+    // 1. Find user
+    const user = await this.userModel.findById(userId).lean();
 
-    const pipeline: PipelineStage[] = [
-      { $match: { _id: userObjId } },
-      {
-        $lookup: {
-          from: 'enrollments',
-          let: { userId: '$_id' }, // 'let' define variable for current user ID, Here '$_id' is the field reference for the 'users' collection
-          pipeline: [
-            { $match: { $expr: { $eq: ['$userId', '$$userId'] } } }, // '$expr' need for variable vs field compare, '$$' for variable reference, '$' for field reference. Here we compare 'userId' field in 'enrollments' with the variable 'userId' defined in 'let'
-            {
-              $lookup: {
-                from: 'classes',
-                let: { classId: '$classId' },
-                pipeline: [
-                  { $match: { $expr: { $eq: ['$_id', '$$classId'] } } },
-                  {
-                    $project: {
-                      className: 1,
-                      status: 1,
-                      themeColor: 1,
-                      coverImage: 1,
-                    },
-                  },
-                ],
-                as: 'classDetails',
-              },
-            },
-            {
-              $unwind: {
-                path: '$classDetails',
-                preserveNullAndEmptyArrays: true,
-              },
-            }, // Array to object conversion for easier access to class details in projection
-            {
-              $project: {
-                classId: 1,
-                role: 1,
-                enrolledAt: 1,
-                className: '$classDetails.className',
-                status: '$classDetails.status',
-                themeColor: '$classDetails.themeColor',
-                coverImage: '$classDetails.coverImage',
-              },
-            },
-          ],
-          as: 'enrolledClasses',
-        },
-      },
-      {
-        $project: {
-          name: 1,
-          email: 1,
-          emailVerified: 1,
-          bio: 1,
-          avatarUrl: 1,
-          role: 1,
-          enrolledClasses: 1,
-        },
-      },
-    ];
-
-    // 2. Optimized User & Enrollment Fetch using Aggregation
-    const result: IUser[] = await this.userModel.aggregate(pipeline);
-
-    // DEBUG: Add after aggregation result is obtained:
-    // console.log("User Data: ", result);
-
-    if (!result || result.length === 0) {
+    if (!user) {
       throw new NotFoundException('User profile not found');
     }
 
-    const userData = result[0]; // mongoose aggregate always returns an array even if it's just one document
+    // 2. Find user's enrollments with class information
+    const enrollments = await this.enrollmentModel
+      .find({
+        userId: user._id,
+      })
+      .populate({
+        path: 'classId',
+        select: 'className status themeColor coverImage',
+      })
+      .lean();
 
-    // 3. Final sanitization for response
+    // 3. Format enrolled classes
+    const enrolledClasses = enrollments
+      .filter((enrollment) => enrollment.classId)
+      .map((enrollment: any) => ({
+        classId: enrollment.classId._id.toString(),
+        className: enrollment.classId.className,
+        status: enrollment.classId.status,
+        themeColor: enrollment.classId.themeColor,
+        coverImage: enrollment.classId.coverImage,
+        role: enrollment.role,
+        enrolledAt: enrollment.enrolledAt,
+      }));
+
+    // 4. Return response
     return {
       success: true,
       message: 'User profile fetched successfully',
       data: {
         user: {
-          _id: userData._id.toString(),
-          name: userData.name,
-          email: userData.email,
-          role: userData.role,
-          emailVerified: userData.emailVerified,
-          bio: userData.bio,
-          avatarUrl: userData.avatarUrl || undefined,
-          enrolledClasses: userData.enrolledClasses || [],
+          _id: user._id.toString(),
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          emailVerified: user.emailVerified,
+          bio: user.bio,
+          avatarUrl: user.avatarUrl || undefined,
+          enrolledClasses,
         },
       },
     };

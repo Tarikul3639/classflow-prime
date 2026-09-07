@@ -10,7 +10,7 @@ export default function DashboardStatCard({
   description,
 }: DashboardStatCardProps) {
   return (
-    <Card className="border-border rounded-md shadow-none">
+    <Card className="border-border rounded-md shadow-none py-0">
       {" "}
       <CardContent className="p-4">
         {" "}

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+    BadRequestException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
 
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -8,34 +12,43 @@ import {
     UserDocument,
 } from '../../../infrastructure/database/entities/user.entity';
 
-import {
-    Enrollment,
-    EnrollmentDocument,
-} from '../../../infrastructure/database/entities/enrollment.entity';
+import { UpdateAdminUserRoleDto } from '../dto/update-admin-user-role.dto';
 
 import { AdminUserDto } from '../dto/admin-user.dto';
 
 @Injectable()
-export class FetchAdminUserService {
+export class UpdateAdminUserRoleService {
     constructor(
         @InjectModel(User.name)
         private readonly userModel: Model<UserDocument>,
-
-        @InjectModel(Enrollment.name)
-        private readonly enrollmentModel: Model<EnrollmentDocument>,
     ) { }
 
-    async execute(userId: string) {
-        const user = await this.userModel
-            .findById(userId)
-            .select(
-                '_id name email role status emailVerified avatarUrl bio createdAt updatedAt',
-            )
-            .lean();
+    async execute(
+        userId: string,
+        dto: UpdateAdminUserRoleDto,
+    ) {
+        const user = await this.userModel.findById(userId);
 
         if (!user) {
             throw new NotFoundException('User not found');
         }
+
+        if (user.status === 'BANNED') {
+            throw new BadRequestException('Cannot update role of a banned user');
+        }
+
+        if (user.status === 'SUSPENDED') {
+            throw new BadRequestException('Cannot update role of a suspended user');
+        }
+
+        if (user.role === dto.role) {
+            throw new BadRequestException(`User already has the role ${dto.role}`);
+        }
+
+        // Update role
+
+        user.role = dto.role;
+        await user.save();
 
         const response: AdminUserDto = {
             id: user._id.toString(),
@@ -53,7 +66,7 @@ export class FetchAdminUserService {
         return {
             success: true,
             status: 200,
-            message: 'User fetched successfully',
+            message: `User role updated to ${dto.role}`,
             data: response,
         };
     }

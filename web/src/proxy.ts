@@ -1,19 +1,20 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-import { isAuthRoute } from './lib/auth/route-access';
+import { isAuthRoute } from "./lib/auth/route-access";
 
-function isProtectedPath(pathname: string) {
-  // public sections
-  if (pathname === '/') return true;
+function isProtectedPath(pathname: string): boolean {
+  // Public route
+  if (pathname === "/") return true;
 
-  // explicitly protected sections
+  // Explicitly protected routes
   return (
-    pathname.startsWith('/dashboard') ||
-    pathname.startsWith('/classes') ||
-    pathname.startsWith('/profile') ||
-    pathname.startsWith('/notifications') ||
-    pathname.startsWith('/agents')
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/classes") ||
+    pathname.startsWith("/profile") ||
+    pathname.startsWith("/notifications") ||
+    pathname.startsWith("/agents") ||
+    pathname.startsWith("/admin")
   );
 }
 
@@ -23,23 +24,27 @@ export function proxy(req: NextRequest) {
   const auth = isAuthRoute(pathname);
   const protectedRoute = isProtectedPath(pathname);
 
-  // only enforce on auth + protected
-  if (!auth && !protectedRoute) return NextResponse.next();
+  // Early return if route requires no auth enforcement
+  if (!auth && !protectedRoute) {
+    return NextResponse.next();
+  }
 
-  const refreshToken = req.cookies.get('refreshToken')?.value;
+  const refreshToken = req.cookies.get("refreshToken")?.value;
 
-  // not logged in -> block protected
+  // 1. Unauthenticated users attempting to access protected paths -> Redirect to sign-in
   if (!refreshToken && protectedRoute) {
     const url = req.nextUrl.clone();
-    url.pathname = '/sign-in';
+    url.pathname = "/sign-in";
     url.searchParams.set("next", req.nextUrl.pathname + req.nextUrl.search);
+
     return NextResponse.redirect(url);
   }
 
-  // logged in -> block auth pages
+  // 2. Authenticated users attempting to access auth paths (sign-in, sign-up, etc.) -> Redirect to home
   if (refreshToken && auth) {
     const url = req.nextUrl.clone();
-    url.pathname = '/';
+    url.pathname = "/";
+
     return NextResponse.redirect(url);
   }
 
@@ -48,14 +53,15 @@ export function proxy(req: NextRequest) {
 
 export const config = {
   matcher: [
-    '/', // dashboard
-    '/sign-in',
-    '/sign-up',
-    '/forgot-password',
-    '/dashboard/:path*',
-    '/classes/:path*',
-    '/profile/:path*',
-    '/notifications/:path*',
-    '/agents/:path*',
+    "/",
+    "/sign-in",
+    "/sign-up",
+    "/forgot-password",
+    "/dashboard/:path*",
+    "/classes/:path*",
+    "/profile/:path*",
+    "/notifications/:path*",
+    "/agents/:path*",
+    "/admin/:path*",
   ],
 };

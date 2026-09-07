@@ -1,8 +1,6 @@
-
-
-import { Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 import {
     User,
@@ -16,11 +14,10 @@ import { AdminUserResponseDto } from '../dto/admin-user-response.dto';
 @Injectable()
 export class FetchAdminUsersService {
     constructor(
-        @InjectModel(User.name) private readonly userModel: Model<UserDocument>
+        @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     ) { }
 
     async execute(query: AdminUserQueryDto) {
-
         const {
             page = 1,
             limit = 20,
@@ -34,34 +31,23 @@ export class FetchAdminUsersService {
 
         const filter: any = {};
 
-        if (search?.trim()) {
-            const searchTerm = search?.trim();
-
+        if (search && search.trim() !== '') {
+            const searchTerm = search.trim();
             filter.$or = [
-                {
-                    name: {
-                        $regex: searchTerm,
-                        $options: 'i',
-                    }
-                },
-                {
-                    email: {
-                        $regex: searchTerm,
-                        $options: 'i'
-                    }
-                }
-            ]
+                { name: { $regex: searchTerm, $options: 'i' } },
+                { email: { $regex: searchTerm, $options: 'i' } },
+            ];
         }
 
-        if (role) {
+        if (role && role.trim() !== '') {
             filter.role = role;
         }
 
-        if (status) {
+        if (status && status.trim() !== '') {
             filter.status = status;
         }
 
-        if (emailVerified !== undefined) {
+        if (emailVerified !== undefined && emailVerified !== null) {
             filter.emailVerified = emailVerified;
         }
 
@@ -83,10 +69,10 @@ export class FetchAdminUsersService {
                 )
                 .lean(),
 
-            this.userModel.countDocuments(filter)
-        ])
+            this.userModel.countDocuments(filter),
+        ]);
 
-        const totalPages = Math.ceil(total / limit)
+        const totalPages = Math.ceil(total / limit);
 
         const mappedUsers: AdminUserDto[] = users.map((user) => ({
             id: user._id.toString(),
@@ -106,15 +92,14 @@ export class FetchAdminUsersService {
             total,
             page,
             limit,
-            totalPages
-        }
+            totalPages,
+        };
 
         return {
             success: true,
-            message: "Users fetched successfully",
-            data: {
-                response
-            }
+            status: 200,
+            message: 'Users fetched successfully',
+            data: response,
         };
     }
 }

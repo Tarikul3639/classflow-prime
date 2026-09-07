@@ -15,7 +15,7 @@ export class MailService {
   constructor(
     private readonly mailerService: MailerService,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   private get frontendUrl(): string {
     return this.configService.get<string>(
@@ -81,7 +81,7 @@ export class MailService {
       await this.mailerService.sendMail({
         to: email,
         subject,
-        template: './verification', // templates/password-reset.hbs
+        template: './reset-password', // templates/reset-password.hbs
         context: {
           ...this.baseContext(),
           email,
@@ -91,6 +91,9 @@ export class MailService {
           title: 'Reset your password',
           expirationMinutes: this.verificationCodeExpiresIn,
           supportEmail: 'support@classflow.com',
+          resetPasswordUrl: `${this.buildAppUrl(
+            '/forgot-password',
+          )}?email=${encodeURIComponent(email)}`,
         },
       });
 

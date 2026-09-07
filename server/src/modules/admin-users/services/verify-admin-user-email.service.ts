@@ -8,34 +8,23 @@ import {
     UserDocument,
 } from '../../../infrastructure/database/entities/user.entity';
 
-import {
-    Enrollment,
-    EnrollmentDocument,
-} from '../../../infrastructure/database/entities/enrollment.entity';
-
 import { AdminUserDto } from '../dto/admin-user.dto';
 
 @Injectable()
-export class FetchAdminUserService {
+export class VerifyAdminUserEmailService {
     constructor(
         @InjectModel(User.name)
         private readonly userModel: Model<UserDocument>,
-
-        @InjectModel(Enrollment.name)
-        private readonly enrollmentModel: Model<EnrollmentDocument>,
     ) { }
 
     async execute(userId: string) {
-        const user = await this.userModel
-            .findById(userId)
-            .select(
-                '_id name email role status emailVerified avatarUrl bio createdAt updatedAt',
-            )
-            .lean();
-
+        const user = await this.userModel.findById(userId);
         if (!user) {
             throw new NotFoundException('User not found');
         }
+
+        user.emailVerified = true;
+        await user.save();
 
         const response: AdminUserDto = {
             id: user._id.toString(),
@@ -53,7 +42,7 @@ export class FetchAdminUserService {
         return {
             success: true,
             status: 200,
-            message: 'User fetched successfully',
+            message: 'User email verified successfully',
             data: response,
         };
     }

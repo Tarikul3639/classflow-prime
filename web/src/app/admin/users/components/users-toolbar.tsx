@@ -1,6 +1,7 @@
 'use client';
 
 import { Search, SlidersHorizontal } from 'lucide-react';
+import { UserStatus, UserRole } from '@/store/services/admin-users.api';
 
 interface UsersToolbarProps {
   search: string;
@@ -58,8 +59,8 @@ export function UsersToolbar({
           className="h-10 rounded-md border border-input bg-background px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
         >
           <option value="">All Roles</option>
-          <option value="USER">User</option>
-          <option value="ADMIN">Admin</option>
+          <option value={UserRole.USER}>User</option>
+          <option value={UserRole.ADMIN}>Admin</option>
         </select>
 
         {/* Status */}
@@ -71,9 +72,9 @@ export function UsersToolbar({
           className="h-10 rounded-md border border-input bg-background px-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
         >
           <option value="">All Status</option>
-          <option value="ACTIVE">Active</option>
-          <option value="SUSPENDED">Suspended</option>
-          <option value="BANNED">Banned</option>
+          <option value={UserStatus.ACTIVE}>Active</option>
+          <option value={UserStatus.SUSPENDED}>Suspended</option>
+          <option value={UserStatus.BANNED}>Banned</option>
         </select>
 
         {/* Email Verification */}

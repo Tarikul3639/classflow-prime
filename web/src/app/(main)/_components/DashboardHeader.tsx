@@ -85,7 +85,7 @@ function LiveClock() {
 }
 
 export default function DashboardHeader({ userRole }: { userRole: UserRole | undefined }) {
-
+ console.log(userRole);
   const [showDialog, setShowDialog] = useState(false);
   return (
     <>
@@ -98,7 +98,7 @@ export default function DashboardHeader({ userRole }: { userRole: UserRole | und
         {/* Enroll & Create button */}
         {/* Desktop Buttons */}
         <div className="hidden md:flex items-center gap-2">
-          {userRole === UserRole.ADMIN && (
+          {(userRole === UserRole.ADMIN || userRole === UserRole.SUPER_ADMIN) && (
             <Link
               href="/admin"
               className="flex items-center gap-2 bg-primary text-white px-4 py-2 border border-primary rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors cursor-pointer"
@@ -125,7 +125,7 @@ export default function DashboardHeader({ userRole }: { userRole: UserRole | und
 
         {/* Mobile Buttons */}
         <div className="md:hidden flex items-center gap-2">
-          {userRole === UserRole.ADMIN && (
+          {(userRole === UserRole.ADMIN || userRole === UserRole.SUPER_ADMIN) && (
             <Link
               href="/admin"
               className="flex items-center justify-center w-10 h-10 bg-primary border border-primary text-white rounded-lg hover:bg-primary/90 transition-colors shadow-sm"

@@ -43,8 +43,7 @@ export class UpdateAdminUserStatusService {
         dto: UpdateAdminUserStatusDto,
         adminUserId?: string,
     ) {
-
-        const UserObjectId = new Types.ObjectId(userId)
+        const UserObjectId = new Types.ObjectId(userId);
 
         const user = await this.userModel.findById(UserObjectId);
 
@@ -53,9 +52,7 @@ export class UpdateAdminUserStatusService {
         }
 
         if (user.status === dto.status) {
-            throw new BadRequestException(
-                `User is already ${dto.status}`,
-            );
+            throw new BadRequestException(`User is already ${dto.status}`);
         }
 
         const previousStatus = user.status;
@@ -83,7 +80,6 @@ export class UpdateAdminUserStatusService {
                 throw new BadRequestException('Invalid user status');
         }
 
-
         await this.activityLogModel.create({
             userId: user._id,
             action,
@@ -107,7 +103,6 @@ export class UpdateAdminUserStatusService {
             ipAddress: 'admin-panel',
         });
 
-
         // ==================== Response ====================
 
         const response: AdminUserDto = {
@@ -121,14 +116,13 @@ export class UpdateAdminUserStatusService {
             bio: user.bio,
             createdAt: user.createdAt!,
             updatedAt: user.updatedAt!,
-        }
+        };
 
         return {
             success: true,
+            status: 200,
             message: `User status updated to ${dto.status}`,
-            data: {
-                response
-            }
+            data: response,
         };
     }
 }

@@ -1,109 +1,166 @@
-import { Eye } from 'lucide-react';
+import type {
+    AdminUser,
+} from "@/store/services/admin-users.api";
 
-import { AdminUser } from './users-table';
+import {
+    ImagePreview,
+} from "@/components/ui/image-preview";
+
+import {
+    UserRoleBadge,
+} from "./user-role-badge";
+
+import {
+    UserStatusBadge,
+} from "./user-status-badge";
+
+import {
+    UserActions,
+} from "./user-actions";
+
 
 interface UsersTableRowProps {
+
     user: AdminUser;
-    onView: (user: AdminUser) => void;
+
+    onView: (
+        user: AdminUser,
+    ) => void;
 }
+
 
 export function UsersTableRow({
     user,
     onView,
 }: UsersTableRowProps) {
+
     return (
+
         <tr className="border-b border-border last:border-0 hover:bg-muted/30">
+
             {/* User */}
-            <td className="px-5 py-4">
-                <div className="flex items-center gap-3">
+
+            <td className="w-62.5 px-3 py-3">
+
+                <div className="flex items-center gap-2.5">
+
                     {user.avatarUrl ? (
-                        <img
+
+                        <ImagePreview
                             src={user.avatarUrl}
                             alt={user.name}
-                            className="size-9 rounded-full object-cover"
+                            className="size-10 shrink-0 rounded-full object-cover"
                         />
+
                     ) : (
-                        <div className="flex size-9 items-center justify-center rounded-full bg-primary/10 text-sm font-medium text-primary">
-                            {user.name.charAt(0).toUpperCase()}
+
+                        <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-medium text-primary">
+
+                            {user.name
+                                .charAt(0)
+                                .toUpperCase()}
+
                         </div>
+
                     )}
 
-                    <div className="min-w-0">
-                        <p className="truncate font-medium">
+
+                    <div className="min-w-0 max-w-45">
+
+                        <button
+                            type="button"
+                            onClick={() => onView(user)}
+                            className="block w-full truncate text-left text-sm font-medium hover:text-primary hover:underline"
+                        >
                             {user.name}
-                        </p>
+                        </button>
+
 
                         <p className="truncate text-xs text-muted-foreground">
+
                             {user.email}
+
                         </p>
+
                     </div>
+
                 </div>
+
             </td>
+
 
             {/* Role */}
-            <td className="px-5 py-4">
-                <span className="rounded-md bg-muted px-2 py-1 text-xs font-medium">
-                    {user.role}
-                </span>
+
+            <td className="w-27.5 px-3 py-3">
+
+                <UserRoleBadge
+                    role={user.role}
+                />
+
             </td>
+
 
             {/* Status */}
-            <td className="px-5 py-4">
-                <span
-                    className={[
-                        'rounded-md px-2 py-1 text-xs font-medium',
-                        user.status === 'ACTIVE' &&
-                        'bg-primary/10 text-primary',
-                        user.status === 'SUSPENDED' &&
-                        'bg-yellow-100 text-yellow-700',
-                        user.status === 'BANNED' &&
-                        'bg-red-100 text-red-700',
-                    ]
-                        .filter(Boolean)
-                        .join(' ')}
-                >
-                    {user.status}
-                </span>
+
+            <td className="w-30 px-3 py-3">
+
+                <UserStatusBadge
+                    status={user.status}
+                />
+
             </td>
+
 
             {/* Verification */}
-            <td className="px-5 py-4">
+
+            <td className="w-27.5 px-3 py-3">
+
                 <span
-                    className={
+                    className={`text-xs font-medium ${
                         user.emailVerified
-                            ? 'text-primary'
-                            : 'text-muted-foreground'
-                    }
+                            ? "text-primary"
+                            : "text-muted-foreground"
+                    }`}
                 >
+
                     {user.emailVerified
-                        ? 'Verified'
-                        : 'Unverified'}
+                        ? "Verified"
+                        : "Unverified"}
+
                 </span>
+
             </td>
+
 
             {/* Joined */}
-            <td className="whitespace-nowrap px-5 py-4 text-muted-foreground">
-                {new Date(user.createdAt).toLocaleDateString(
-                    'en-US',
+
+            <td className="w-32.5 whitespace-nowrap px-3 py-3 text-xs text-muted-foreground">
+
+                {new Date(
+                    user.createdAt,
+                ).toLocaleDateString(
+                    "en-US",
                     {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric',
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
                     },
                 )}
+
             </td>
 
-            {/* Action */}
-            <td className="px-5 py-4 text-right">
-                <button
-                    type="button"
-                    onClick={() => onView(user)}
-                    className="inline-flex size-8 items-center justify-center rounded-md border border-border text-muted-foreground transition hover:bg-muted hover:text-foreground cursor-pointer"
-                    aria-label={`View ${user.name}`}
-                >
-                    <Eye className="size-4" />
-                </button>
+
+            {/* Actions */}
+
+            <td className="w-12.5 px-3 py-3 text-right">
+
+                <UserActions
+                    user={user}
+                    onView={onView}
+                />
+
             </td>
+
         </tr>
     );
 }

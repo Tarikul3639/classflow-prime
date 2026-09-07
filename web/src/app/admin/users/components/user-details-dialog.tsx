@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { X } from 'lucide-react';
+import { X } from "lucide-react";
 
-import { AdminUser } from './users-table';
+import { AdminUser } from "@/store/services/admin-users.api";
+import { ImagePreview } from "@/components/ui/image-preview";
 
 interface UserDetailsDialogProps {
   user: AdminUser | null;
@@ -20,14 +21,15 @@ export function UserDetailsDialog({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 p-4">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 p-4"
+      onClick={onClose}
+    >
       <div className="w-full max-w-lg rounded-lg border border-border bg-background shadow-lg">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
           <div>
-            <h2 className="font-semibold">
-              User Details
-            </h2>
+            <h2 className="font-semibold">User Details</h2>
 
             <p className="mt-1 text-xs text-muted-foreground">
               View account information.
@@ -47,7 +49,7 @@ export function UserDetailsDialog({
         <div className="space-y-5 p-5">
           <div className="flex items-center gap-4">
             {user.avatarUrl ? (
-              <img
+              <ImagePreview
                 src={user.avatarUrl}
                 alt={user.name}
                 className="size-14 rounded-full object-cover"
@@ -59,35 +61,23 @@ export function UserDetailsDialog({
             )}
 
             <div>
-              <h3 className="font-semibold">
-                {user.name}
-              </h3>
+              <h3 className="font-semibold">{user.name}</h3>
 
-              <p className="text-sm text-muted-foreground">
-                {user.email}
-              </p>
+              <p className="text-sm text-muted-foreground">{user.email}</p>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-xs text-muted-foreground">
-                Role
-              </p>
+              <p className="text-xs text-muted-foreground">Role</p>
 
-              <p className="mt-1 text-sm font-medium">
-                {user.role}
-              </p>
+              <p className="mt-1 text-sm font-medium">{user.role}</p>
             </div>
 
             <div>
-              <p className="text-xs text-muted-foreground">
-                Status
-              </p>
+              <p className="text-xs text-muted-foreground">Status</p>
 
-              <p className="mt-1 text-sm font-medium">
-                {user.status}
-              </p>
+              <p className="mt-1 text-sm font-medium">{user.status}</p>
             </div>
 
             <div>
@@ -96,34 +86,24 @@ export function UserDetailsDialog({
               </p>
 
               <p className="mt-1 text-sm font-medium">
-                {user.emailVerified
-                  ? 'Verified'
-                  : 'Unverified'}
+                {user.emailVerified ? "Verified" : "Unverified"}
               </p>
             </div>
 
             <div>
-              <p className="text-xs text-muted-foreground">
-                Joined
-              </p>
+              <p className="text-xs text-muted-foreground">Joined</p>
 
               <p className="mt-1 text-sm font-medium">
-                {new Date(
-                  user.createdAt,
-                ).toLocaleDateString()}
+                {new Date(user.createdAt).toLocaleDateString()}
               </p>
             </div>
           </div>
 
           {user.bio && (
             <div>
-              <p className="text-xs text-muted-foreground">
-                Bio
-              </p>
+              <p className="text-xs text-muted-foreground">Bio</p>
 
-              <p className="mt-1 text-sm">
-                {user.bio}
-              </p>
+              <p className="mt-1 text-sm">{user.bio}</p>
             </div>
           )}
         </div>

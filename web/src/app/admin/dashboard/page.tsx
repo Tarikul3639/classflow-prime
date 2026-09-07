@@ -39,7 +39,7 @@ export default function DashboardPage() {
     );
   }
 
-  console.log("Admin Dashboard Data:", data); // DEBUG: Log the fetched dashboard data
+  // console.log("Admin Dashboard Data:", data); // DEBUG: Log the fetched dashboard data
 
   return (
     <div className="space-y-6">
