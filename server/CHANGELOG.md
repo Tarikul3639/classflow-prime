@@ -1,3 +1,10 @@
+# [server-v3.6.1](https://github.com/Tarikul3639/classflow-prime/compare/server-v3.6.0...server-v3.6.1) (2026-09-07)
+
+
+### Bug Fixes
+
+* resolve admin dashboard user import path ([4c5622b](https://github.com/Tarikul3639/classflow-prime/commit/4c5622bed7adb717cfd42a360401d15bac64c5be))
+
 # [server-v3.6.0](https://github.com/Tarikul3639/classflow-prime/compare/server-v3.5.0...server-v3.6.0) (2026-09-07)
 
 
