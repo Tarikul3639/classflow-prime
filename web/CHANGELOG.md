@@ -1,3 +1,10 @@
+# [web-v2.19.0](https://github.com/Tarikul3639/classflow-prime/compare/web-v2.18.0...web-v2.19.0) (2026-09-08)
+
+
+### Features
+
+* **admin:** add responsive navigation and fix classes layout ([94fa2bf](https://github.com/Tarikul3639/classflow-prime/commit/94fa2bf74c6165cb32f02af58937b989efa5b155))
+
 # [web-v2.18.0](https://github.com/Tarikul3639/classflow-prime/compare/web-v2.17.0...web-v2.18.0) (2026-09-07)
 
 
