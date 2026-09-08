@@ -41,7 +41,7 @@ export function AdminClassActions({ classItem }: AdminClassActionsProps) {
     const [isEnrollmentDialogOpen, setIsEnrollmentDialogOpen] = useState(false);
 
     return (
-        <>
+        <div className="relative flex items-center justify-end gap-2">
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button
@@ -137,6 +137,6 @@ export function AdminClassActions({ classItem }: AdminClassActionsProps) {
                 open={isEnrollmentDialogOpen}
                 onOpenChange={setIsEnrollmentDialogOpen}
             />
-        </>
+        </div>
     );
 }

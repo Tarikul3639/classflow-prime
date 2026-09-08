@@ -1,41 +1,34 @@
 "use client";
 
-import AdminSidebar from "@/components/layout/sidebar/AdminSidebar";
-import { Loader } from "@/components/ui/Loader";
-import { toast } from "sonner";
 import { useEffect } from "react";
+import { toast } from "sonner";
+
+import AdminSidebar from "@/components/layout/sidebar/AdminSidebar";
+import AdminNavbar from "@/components/layout/navbar/AdminNavbar";
+import AdminBottomNavbar from "@/components/layout/navbar/AdminBottomNavbar";
+import { Loader } from "@/components/ui/Loader";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { meThunk } from "@/store/features/profile/thunks/fetch-user.thunk";
 
-function BottomNavbar() {
-  return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
-      {/* Bottom navbar content */}
-    </div>
-  );
-}
-
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
-
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const dispatch = useAppDispatch();
-  const { loading, isFetched } = useAppSelector((state) => state.profile.fetchUser.status);
 
-  // On mount, fetch current user if not already authenticated
+  const { loading, isFetched } = useAppSelector(
+    (state) => state.profile.fetchUser.status,
+  );
+
   useEffect(() => {
     dispatch(meThunk())
       .unwrap()
-      .then((res) => {
-        // if (res?.name) {
-        //   toast.success(`Welcome back, ${res.name}!`, {
-        //     position: "top-center",
-        //   });
-        // }
-      })
       .catch((err) => {
         toast.error("Failed to fetch user data", {
           description: err,
           position: "top-center",
-        }); // DEBUG: Show error message if fetch fails
+        });
       });
   }, [dispatch]);
 
@@ -44,15 +37,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
-      {/* Desktop Sidebar */}
-      <AdminSidebar />
+    <div className="min-h-screen bg-slate-50">
+      {/* Admin Navbar */}
+      <AdminNavbar />
 
-      {/* Main Content */}
-      <main className="flex-1 min-w-0 px-4 lg:px-6 py-6">{children}</main>
+      {/* Main Layout */}
+      <div className="flex">
+        {/* Desktop Sidebar */}
+        <AdminSidebar />
+
+        {/* Main Content */}
+        <main className="min-w-0 flex-1 px-4 py-6 pb-24 lg:px-6 lg:pb-6">
+          {children}
+        </main>
+      </div>
 
       {/* Mobile Bottom Navbar */}
-      <BottomNavbar />
+      <AdminBottomNavbar />
     </div>
   );
 }

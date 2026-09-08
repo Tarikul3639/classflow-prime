@@ -60,7 +60,7 @@ export const AdminSidebar: React.FC = () => {
     return (
         <aside
             ref={sidebarRef}
-            className={`flex border-r border-slate-200 bg-gray-50 h-screen sticky top-0 flex-col transition-all duration-300 overflow-hidden ${isExpanded ? "w-72" : "w-20"
+            className={`hidden md:flex border-r border-slate-200 bg-gray-50 h-screen sticky top-0 flex-col transition-all duration-300 overflow-hidden ${isExpanded ? "w-72" : "w-20"
                 }`}
             onMouseEnter={() => !isLocked && setIsExpanded(true)}
             onMouseLeave={() => !isLocked && setIsExpanded(false)}

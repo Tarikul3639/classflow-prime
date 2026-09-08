@@ -83,10 +83,10 @@ export function AdminClassesTable({
     }
 
     return (
-        <div className="overflow-hidden rounded-sm border border-border bg-background">
+        <div className="w-full min-w-0 overflow-hidden rounded-sm border border-border bg-background">
             {/* TABLE */}
-            <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+            <div className="w-full max-w-full overflow-x-auto">
+                <table className="w-full table-auto text-sm">
                     {/* TABLE HEADER */}
                     <thead className="border-b border-border bg-muted/40">
                         <tr>
@@ -106,7 +106,7 @@ export function AdminClassesTable({
                             <ClassesTableSkeleton />
                         ) : (
                             classes.map((classItem) => (
-                                <AdminClassesTableRow key={classItem._id} classItem={classItem}  />
+                                <AdminClassesTableRow key={classItem._id} classItem={classItem} />
                             ))
                         )}
                     </tbody>

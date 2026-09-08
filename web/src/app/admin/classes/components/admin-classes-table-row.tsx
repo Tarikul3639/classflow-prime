@@ -135,7 +135,7 @@ export function AdminClassesTableRow({ classItem }: AdminClassesTableRowProps) {
             </td>
 
             {/* ACTIONS */}
-            <td className="px-4 py-4 text-right">
+            <td className="w-16 whitespace-nowrap px-4 py-4 text-right">
                 <AdminClassActions classItem={classItem} />
             </td>
         </tr>
