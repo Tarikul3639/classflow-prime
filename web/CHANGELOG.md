@@ -1,3 +1,15 @@
+# [web-v2.20.0](https://github.com/Tarikul3639/classflow-prime/compare/web-v2.19.0...web-v2.20.0) (2026-09-08)
+
+
+### Bug Fixes
+
+* improve class blocking and access handling ([e4b37c7](https://github.com/Tarikul3639/classflow-prime/commit/e4b37c778e1c9b88525effcb703d29858048b70a))
+
+
+### Features
+
+* **admin:** improve class management and blocking ([349c528](https://github.com/Tarikul3639/classflow-prime/commit/349c528cd69de713df2261820cafc9c5b7700116))
+
 # [web-v2.19.0](https://github.com/Tarikul3639/classflow-prime/compare/web-v2.18.0...web-v2.19.0) (2026-09-08)
 
 
