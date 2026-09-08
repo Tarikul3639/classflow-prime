@@ -98,6 +98,30 @@ export class ClassDetailsDto {
     description: 'Indicates if enrollment is allowed for the class',
   })
   allowEnroll!: boolean;
+
+  @ApiProperty({
+    example: false,
+    description: 'Indicates if the class is blocked',
+  })
+  isBlocked!: boolean;
+
+  @ApiProperty({
+    example: 'Violation of rules',
+    description: 'Reason for blocking the class, if applicable',
+    required: false,
+    nullable: true,
+  })
+  @IsOptional()
+  blockedReason?: string | null;
+
+  @ApiProperty({
+    example: '2024-01-01T00:00:00Z',
+    description: 'Date and time when the class was blocked, if applicable',
+    required: false,
+    nullable: true,
+  })
+  @IsOptional()
+  blockedAt?: Date | null;
 }
 
 export class FetchClassDataDto {

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { ShieldBan, ShieldCheck, Loader2 } from "lucide-react";
+import { Clock3, ShieldBan, ShieldCheck, Loader2 } from "lucide-react";
 
 import type { AdminClass } from "@/store/services/admin-classes.api";
 
@@ -30,6 +30,19 @@ interface AdminClassBlockDialogProps {
     onOpenChange: (open: boolean) => void;
 }
 
+function formatBlockedAt(blockedAt?: string | null) {
+    if (!blockedAt) return null;
+
+    const date = new Date(blockedAt);
+
+    return Number.isNaN(date.getTime())
+        ? null
+        : new Intl.DateTimeFormat(undefined, {
+            dateStyle: "medium",
+            timeStyle: "short",
+        }).format(date);
+}
+
 export function AdminClassBlockDialog({
     classItem,
     open,
@@ -44,6 +57,7 @@ export function AdminClassBlockDialog({
         useUnblockAdminClassMutation();
 
     const isBlocked = classItem.isBlocked;
+    const blockedAt = formatBlockedAt(classItem.blockedAt);
 
     const isLoading = isBlocking || isUnblocking;
 
@@ -143,10 +157,27 @@ export function AdminClassBlockDialog({
                 )}
 
                 {isBlocked && (
-                    <div className="rounded-sm border border-border bg-muted/30 p-3">
+                    <div className="space-y-2 rounded-sm border border-destructive/20 bg-destructive/5 p-3">
+                        <p className="text-sm font-medium text-destructive">
+                            This class is currently blocked.
+                        </p>
+
+                        {classItem.blockedReason && (
+                            <div>
+                                <p className="text-xs font-medium text-muted-foreground">Block reason</p>
+                                <p className="mt-1 text-sm text-foreground">{classItem.blockedReason}</p>
+                            </div>
+                        )}
+
+                        {blockedAt && (
+                            <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                <Clock3 className="size-3.5" />
+                                Blocked {blockedAt}
+                            </p>
+                        )}
+
                         <p className="text-sm text-muted-foreground">
-                            Unblocking this class will restore its normal
-                            access.
+                            Unblocking this class will restore its normal access.
                         </p>
                     </div>
                 )}

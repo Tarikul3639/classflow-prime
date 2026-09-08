@@ -64,6 +64,7 @@ export interface AdminClass {
 
     isBlocked: boolean;
     blockedReason?: string | null;
+    blockedAt?: string | null;
 
     createdBy?: AdminClassCreator;
     

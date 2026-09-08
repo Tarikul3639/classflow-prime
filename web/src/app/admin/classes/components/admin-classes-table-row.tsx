@@ -1,6 +1,6 @@
 "use client";
 
-import { Users, UserRoundCheck } from "lucide-react";
+import { Clock3, ShieldAlert, Users } from "lucide-react";
 import type { AdminClass } from "@/store/services/admin-classes.api";
 import { ImagePreview } from "@/components/ui/image-preview";
 import { AdminClassActions } from "./admin-class-actions";
@@ -22,7 +22,22 @@ function getStatusClassName(status: string) {
     }
 }
 
+function formatBlockedAt(blockedAt?: string | null) {
+    if (!blockedAt) return null;
+
+    const date = new Date(blockedAt);
+
+    return Number.isNaN(date.getTime())
+        ? null
+        : new Intl.DateTimeFormat(undefined, {
+            dateStyle: "medium",
+            timeStyle: "short",
+        }).format(date);
+}
+
 export function AdminClassesTableRow({ classItem }: AdminClassesTableRowProps) {
+    const blockedAt = formatBlockedAt(classItem.blockedAt);
+
     return (
         <tr className="border-b border-border last:border-b-0 hover:bg-muted/30">
             {/* CLASS INFORMATION */}
@@ -98,7 +113,25 @@ export function AdminClassesTableRow({ classItem }: AdminClassesTableRowProps) {
                 </span>
 
                 {classItem.isBlocked && (
-                    <span className="mt-1 block text-xs text-destructive">Blocked</span>
+                    <div className="mt-2 max-w-56 rounded-sm border border-destructive/20 bg-destructive/5 p-2 text-xs text-destructive">
+                        <div className="flex items-center gap-1 font-medium">
+                            <ShieldAlert className="size-3.5 shrink-0" />
+                            <span>Class blocked</span>
+                        </div>
+
+                        {classItem.blockedReason && (
+                            <p className="mt-1 line-clamp-2 text-destructive/80" title={classItem.blockedReason}>
+                                {classItem.blockedReason}
+                            </p>
+                        )}
+
+                        {blockedAt && (
+                            <p className="mt-1 flex items-center gap-1 text-destructive/70">
+                                <Clock3 className="size-3 shrink-0" />
+                                <span>Blocked {blockedAt}</span>
+                            </p>
+                        )}
+                    </div>
                 )}
             </td>
 
