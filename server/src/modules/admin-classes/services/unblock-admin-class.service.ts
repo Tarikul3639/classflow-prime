@@ -23,6 +23,7 @@ export class UnBlockAdminClassService {
                 $set: {
                     isBlocked: isBlocked,
                     blockedReason: null,
+                    blockedAt: null,
                     blockedBy: null,
                 },
             },

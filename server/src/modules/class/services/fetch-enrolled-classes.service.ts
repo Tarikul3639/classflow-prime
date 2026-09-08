@@ -64,8 +64,12 @@ export class FetchEnrolledClassesService {
     const [classes, allEnrollments] = await Promise.all([
       this.classModel
         .find({ _id: { $in: classIds } })
+        .select(
+          '_id className department semester themeColor coverImage status isBlocked blockedReason blockedAt',
+        )
         .lean()
         .exec(),
+
       this.enrollmentModel
         .find({ classId: { $in: classIds } })
         .select('userId classId role')
@@ -118,6 +122,10 @@ export class FetchEnrolledClassesService {
         isInstructor: myEnrollment?.role === EnrollmentRole.INSTRUCTOR,
         isAssistant: myEnrollment?.role === EnrollmentRole.ASSISTANT,
         status: classData.status,
+
+        isBlocked: classData.isBlocked ?? false,
+        blockedReason: classData.blockedReason ?? null,
+        blockedAt: classData.blockedAt ?? null,
       };
     });
 

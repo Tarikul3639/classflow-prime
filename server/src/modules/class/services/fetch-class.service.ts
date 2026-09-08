@@ -60,7 +60,9 @@ export class FetchClassService {
 
     const classData = await this.classModel
       .findById(classObjectId)
-      .select('_id className department semester themeColor coverImage status allowEnroll')
+      .select(
+        '_id className department semester themeColor coverImage status allowEnroll isBlocked blockedReason blockedAt',
+      )
       .lean()
       .exec();
 
@@ -123,9 +125,11 @@ export class FetchClassService {
       themeColor: classData.themeColor ?? '#3B82F6',
       coverImage: classData.coverImage ?? null,
       allowEnroll: classData.allowEnroll,
-      isBlocked: classData.isBlocked,
+
+      isBlocked: classData.isBlocked ?? false,
       blockedReason: classData.blockedReason ?? null,
       blockedAt: classData.blockedAt ?? null,
+
       members: allEnrollments.length,
       instructor: instructorUser?.name ?? 'Unknown',
       avatarUrl: instructorUser?.avatarUrl ?? null,

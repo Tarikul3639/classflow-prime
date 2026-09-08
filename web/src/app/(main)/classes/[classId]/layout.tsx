@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, Share2, SquarePen, Users } from "lucide-react";
+import { ArrowLeft, ShieldBan, Share2, SquarePen, Users } from "lucide-react";
 import { usePathname, useRouter, useParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
@@ -35,6 +35,9 @@ export default function ClassLayout({
     const isLoading = classState?.fetch?.loading ?? false;
     const isFetched = classState?.fetch?.isFetched ?? false;
     const isAdmin = !!classDetails?.isInstructor || !!classDetails?.isAssistant;
+    const isBlocked = !!classDetails?.isBlocked;
+
+    console.log("Class Details:", classDetails);
 
     // ── Class Settings (for invite link) ───────────────────────────────────
 
@@ -59,10 +62,10 @@ export default function ClassLayout({
     }, [classId, dispatch, router]);
 
     useEffect(() => {
-        if (classId && isAdmin) {
+        if (classId && isAdmin && !isBlocked) {
             dispatch(fetchClassSettings(classId));
         }
-    }, [classId, isAdmin, dispatch]);
+    }, [classId, isAdmin, isBlocked, dispatch]);
 
     // ── Tabs ───────────────────────────────────────────────────────────────
 
@@ -105,6 +108,8 @@ export default function ClassLayout({
     // ── Handlers ───────────────────────────────────────────────────────────
 
     const handleShare = async () => {
+        if (isBlocked) return;
+
         if (!classCode) {
             toast.error("Class code not available. Please try again.");
             return;
@@ -144,7 +149,7 @@ export default function ClassLayout({
                         <h1 className="text-lg font-bold text-slate-900">Class Details</h1>
                     </div>
 
-                    {isAdmin && (
+                    {isAdmin && !isBlocked && (
                         <button
                             onClick={handleShare}
                             className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-50 cursor-pointer transition-colors"
@@ -235,7 +240,7 @@ export default function ClassLayout({
                                         <p className="text-sm font-bold">{classDetails?.instructor}</p>
                                     </div>
                                     {/* Edit Button */}
-                                    {classDetails?.isInstructor && (
+                                    {classDetails?.isInstructor && !isBlocked && (
                                         <Link
                                             href={`/classes/edit/${classId}`}
                                             className="flex items-center ml-auto px-3 py-1.5 text-xs font-medium rounded-full bg-white/20 backdrop-blur-md text-white hover:bg-white/30 transition-colors"
@@ -252,43 +257,60 @@ export default function ClassLayout({
                 )}
             </div>
 
-            {/* Sticky Tabs */}
-            <div className="sticky top-16 z-20 bg-slate-100 backdrop-blur-md border-b border-slate-200 mx-auto w-full">
-                <div className="flex overflow-x-auto no-scrollbar px-4 relative">
-                    {tabs.map((tab) => {
-                        const active = isActiveTab(tab.href);
-                        return (
-                            <button
-                                key={tab.id}
-                                onClick={() => router.replace(tab.href)}
-                                className={`relative flex-none px-4 py-4 text-[12px] md:text-[13px] lg:text-[14px] font-semibold transition-colors overflow-hidden ${active
-                                    ? "text-primary font-bold hover:text-primary"
-                                    : "text-slate-800 hover:text-primary cursor-pointer"
-                                    }`}
-                            >
-                                {tab.label}
-                                {active && (
-                                    <>
-                                        <motion.span
-                                            layoutId="activeGlow"
-                                            className="absolute -bottom-1 left-2 right-2 h-3 bg-primary/40 blur-md rounded-full"
-                                            transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                                        />
-                                        <motion.span
-                                            layoutId="activeTab"
-                                            className="absolute bottom-0 left-0 right-0 h-1 rounded-t-full bg-primary"
-                                            transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                                        />
-                                    </>
-                                )}
-                            </button>
-                        );
-                    })}
-                </div>
-            </div>
+            {!loading && (isBlocked ? (
+                <main className="mx-auto w-full px-4 py-6 md:px-8">
+                    <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-5 text-center">
+                        <ShieldBan className="mx-auto size-8 text-destructive" />
+                        <h2 className="mt-3 text-lg font-bold text-slate-900">This class is blocked</h2>
+                        <p className="mx-auto mt-2 max-w-xl text-sm text-slate-600">
+                            {classDetails?.blockedReason || "An administrator has restricted access to this class."}
+                        </p>
+                        <p className="mt-3 text-xs text-slate-500">
+                            You can still view this class, but its content and actions are unavailable until it is unblocked.
+                        </p>
+                    </div>
+                </main>
+            ) : (
+                <>
+                    {/* Sticky Tabs */}
+                    <div className="sticky top-16 z-20 bg-slate-100 backdrop-blur-md border-b border-slate-200 mx-auto w-full">
+                        <div className="flex overflow-x-auto no-scrollbar px-4 relative">
+                            {tabs.map((tab) => {
+                                const active = isActiveTab(tab.href);
+                                return (
+                                    <button
+                                        key={tab.id}
+                                        onClick={() => router.replace(tab.href)}
+                                        className={`relative flex-none px-4 py-4 text-[12px] md:text-[13px] lg:text-[14px] font-semibold transition-colors overflow-hidden ${active
+                                            ? "text-primary font-bold hover:text-primary"
+                                            : "text-slate-800 hover:text-primary cursor-pointer"
+                                            }`}
+                                    >
+                                        {tab.label}
+                                        {active && (
+                                            <>
+                                                <motion.span
+                                                    layoutId="activeGlow"
+                                                    className="absolute -bottom-1 left-2 right-2 h-3 bg-primary/40 blur-md rounded-full"
+                                                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                                                />
+                                                <motion.span
+                                                    layoutId="activeTab"
+                                                    className="absolute bottom-0 left-0 right-0 h-1 rounded-t-full bg-primary"
+                                                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                                                />
+                                            </>
+                                        )}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
 
-            {/* Page Content */}
-            <div className="flex-1">{children}</div>
+                    {/* Page Content */}
+                    <div className="flex-1">{children}</div>
+                </>
+            ))}
         </div>
     );
 }

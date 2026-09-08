@@ -26,6 +26,7 @@ export class BlockAdminClassService {
                 $set: {
                     isBlocked: dto.isBlocked,
                     blockedReason: dto.blockedReason ?? 'Violation of class rules',
+                    blockedAt: new Date(),
                     blockedBy: userObjectId,
                 },
             },

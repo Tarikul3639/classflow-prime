@@ -45,6 +45,16 @@ export class ClassItemDto {
 
   @IsEnum(ClassStatus)
   status!: ClassStatus;
+
+  @IsBoolean()
+  isBlocked!: boolean;
+
+  @IsOptional()
+  @IsString()
+  blockedReason?: string | null;
+
+  @IsOptional()
+  blockedAt?: Date | null;
 }
 
 export class ClassesDataDto {

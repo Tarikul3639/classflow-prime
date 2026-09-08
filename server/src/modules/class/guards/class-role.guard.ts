@@ -50,9 +50,18 @@ export class ClassRoleGuard implements CanActivate {
     const userObjectId = new Types.ObjectId(user.userId);
 
     // 3. Verify Class Existence
-    const existingClass = await this.classModel.findById(classObjectId).select('_id').lean();
+    const existingClass = await this.classModel
+      .findById(classObjectId)
+      .select('_id isBlocked')
+      .lean();
     if (!existingClass) {
       throw new NotFoundException('Class not found');
+    }
+
+    // A blocked class remains visible in the user's class list, but no class
+    // content or class-scoped action may be accessed until an admin unblocks it.
+    if (existingClass.isBlocked) {
+      throw new ForbiddenException('This class has been blocked by an administrator. Access is restricted until it is unblocked.');
     }
 
     // 4. Verify Enrollment & Roles

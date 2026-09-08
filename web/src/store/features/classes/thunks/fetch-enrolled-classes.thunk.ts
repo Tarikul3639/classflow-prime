@@ -20,6 +20,9 @@ export interface IClass {
     coverImage?: string;
     avatarUrl?: string | null;
     status: ClassStatus;
+    isBlocked: boolean;
+    blockedReason?: string | null;
+    blockedAt?: string | null;
 }
 
 interface FetchEnrolledClassesResponse {

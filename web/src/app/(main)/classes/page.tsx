@@ -1,7 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Search, Users, UserPlus, BookOpen, LayersPlus } from "lucide-react";
+import {
+  Search,
+  Users,
+  UserPlus,
+  BookOpen,
+  LayersPlus,
+  ShieldBan,
+} from "lucide-react";
 import Link from "next/link";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -22,10 +29,10 @@ const Classes: React.FC = () => {
   );
 
   const filters = [
-    { id: ClassStatus.ACTIVE, label: 'Active' },
-    { id: ClassStatus.ENDED, label: 'Ended' },
-    { id: ClassStatus.UPCOMING, label: 'Upcoming' },
-    { id: ClassStatus.ALL, label: 'All' },
+    { id: ClassStatus.ACTIVE, label: "Active" },
+    { id: ClassStatus.ENDED, label: "Ended" },
+    { id: ClassStatus.UPCOMING, label: "Upcoming" },
+    { id: ClassStatus.ALL, label: "All" },
   ];
 
   useEffect(() => {
@@ -143,8 +150,8 @@ const Classes: React.FC = () => {
                 key={filter.id}
                 onClick={() => setActiveFilter(filter.id)}
                 className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all whitespace-nowrap ${activeFilter === filter.id
-                  ? "bg-primary text-white shadow-sm shadow-primary/20"
-                  : "bg-slate-200 text-slate-600 border border-transparent hover:border-slate-200"
+                    ? "bg-primary text-white shadow-sm shadow-primary/20"
+                    : "bg-slate-200 text-slate-600 border border-transparent hover:border-slate-200"
                   }`}
               >
                 {filter.label}
@@ -165,7 +172,10 @@ const Classes: React.FC = () => {
                 <Link
                   href={`/classes/${cls.classId}/updates`}
                   key={cls.classId}
-                  className="group relative rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-1 flex flex-col w-full h-full sm:max-w-75 sm:min-w-70"
+                  className={`group relative flex h-full w-full flex-col overflow-hidden rounded-xl transition-all duration-300 sm:max-w-75 sm:min-w-70 ${cls.isBlocked
+                      ? "cursor-not-allowed opacity-75"
+                      : "hover:-translate-y-1"
+                    }`}
                   style={{
                     border: `1px solid ${cls.themeColor}40`,
                     boxShadow: `0 2px 10px ${cls.themeColor}20`,
@@ -178,6 +188,13 @@ const Classes: React.FC = () => {
                     e.currentTarget.style.borderColor = `${cls.themeColor}40`;
                     e.currentTarget.style.boxShadow = "none";
                   }}
+                  onClick={(event) => {
+                    if (cls.isBlocked) event.preventDefault();
+                  }}
+                  aria-disabled={cls.isBlocked}
+                  aria-label={
+                    cls.isBlocked ? `${cls.title} is blocked` : undefined
+                  }
                 >
                   {/* Banner */}
                   <div className="relative h-28 sm:h-36 overflow-hidden bg-slate-100">
@@ -236,6 +253,13 @@ const Classes: React.FC = () => {
                         cls.status.slice(1).toLowerCase()}
                     </div>
 
+                    {cls.isBlocked && (
+                      <div className="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-destructive px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm">
+                        <ShieldBan size={13} />
+                        Blocked
+                      </div>
+                    )}
+
                     {/* Department Label */}
                     <div className="absolute bottom-3 left-3">
                       <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/40 backdrop-blur-md text-white text-[10px] font-semibold uppercase tracking-wider">
@@ -268,6 +292,22 @@ const Classes: React.FC = () => {
                     <h3 className="text-md font-bold text-[#203044] leading-tight line-clamp-2">
                       {cls.title}
                     </h3>
+
+                    {cls.isBlocked && (
+                      <p
+                        title={
+                          cls.blockedReason ||
+                          "This class has been blocked by an administrator. Access is restricted until it is unblocked. please contact support for more information."
+                        }
+                        className="flex items-start gap-1.5 text-xs font-medium text-destructive"
+                      >
+                        <ShieldBan className="mt-0.5 size-3.5 shrink-0" />
+                        <span className="line-clamp-2">
+                          {cls.blockedReason ||
+                            "This class has been blocked by an administrator. Access is restricted until it is unblocked. please contact support for more information."}
+                        </span>
+                      </p>
+                    )}
 
                     {/* Instructor */}
                     <div className="flex items-center gap-2 ml-1">

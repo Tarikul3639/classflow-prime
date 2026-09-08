@@ -21,6 +21,9 @@ export interface IClassDetails {
     isInstructor: boolean; // ← bonus field to indicate if the current user is the instructor
     isAssistant: boolean; // ← bonus field to indicate if the current user is an assistant
     allowEnroll: boolean; // ← bonus field to indicate if enrollment is allowed
+    isBlocked: boolean;
+    blockedReason?: string | null;
+    blockedAt?: string | null;
 }
 
 interface FetchClassResponse {
